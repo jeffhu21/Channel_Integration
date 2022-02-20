@@ -3,6 +3,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\linnworks\AuthController as AuthController;
+use App\Http\Controllers\linnworks\ConfigController as ConfigController;
+use App\Http\Controllers\linnworks\OrderController as OrderController;
+use App\Http\Controllers\linnworks\ProductController as ProductController;
+use App\Http\Controllers\linnworks\ListingController as ListingController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,3 +23,66 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::controller(ConfigController::class)->prefix('Config')->group(
+
+    function()
+    {
+        Route::get('/AddNewUser','addNewUser');
+        Route::get('/UserConfig','userConfig');
+        Route::get('/SaveConfig','saveConfig');
+        Route::get('/ShippingTags','shippingTags');
+        Route::get('/PaymentTags','paymentTags');
+        Route::get('/ConfigDeleted','deleted');
+        Route::get('/ConfigTest','test');
+    }
+
+);
+
+Route::controller(OrderController::class)->prefix('Order')->group(
+
+    function()
+    {  
+        Route::get('/Orders','orders');
+        Route::get('/Despatch','despatch');
+    }
+
+);
+
+Route::controller(ProductController::class)->prefix('Product')->group(
+
+    function()
+    {
+        Route::get('/Products','products');
+        Route::get('/InventoryUpdate','inventoryUpdate');
+        Route::get('/PriceUpdate','priceUpdate');
+    }
+
+);
+
+Route::controller(ListingController::class)->prefix('Listing')->group(
+
+    function()
+    { 
+        Route::get('/GetConfiguratorSettings','getConfiguratorSettings');
+        Route::get('/GetCategories','getCategories');
+        Route::get('/GetAttributesByCategory','getAttributesByCategory');
+        Route::get('/GetVariationsByCategory','getVariationsByCategory');
+        Route::get('/ListingUpdate','listingUpdate');
+        Route::get('/ListingDelete','listingDelete');
+        Route::get('/CheckFeed','checkFeed');
+    }
+
+);
+
+Route::controller(AuthController::class)->prefix('linnworks')->group(
+
+    function()
+    {
+        Route::get('/postback/{token}','postBack');
+        Route::get('/token/{token}','token');
+    }
+
+);
+
+

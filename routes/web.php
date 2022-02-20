@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\client\OAuthController as OAuthController;
-use App\Http\Controllers\client\OrderController as OrderController;
+use App\Http\Controllers\discogs\OAuthController as OAuthController;
+use App\Http\Controllers\discogs\OrderController as OrderController;
+use App\Http\Controllers\linnworks\ConfigController as ConfigController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -29,7 +30,8 @@ Route::get('/time',function()
     return Config::get('discogsAuth.CONSUMER_KEY');
 });
 
-
+Route::get('/t0',[ConfigController::class,'addNewUser']);
+Route::get('/t1',[ConfigController::class,'UserConfig']);
 
 Route::controller(OAuthController::class)->group(
 

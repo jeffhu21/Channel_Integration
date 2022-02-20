@@ -1,0 +1,161 @@
+{
+    "LinnworksPermissions": [
+        "GlobalPermissions.Settings.ChannelIntegration.ChannelMappingNode",
+        "GlobalPermissions.Settings.ChannelIntegration.ChannelDeleteNode"
+    ],
+    "Modules": [
+        {
+            "RequiredPermissionId": null,
+            "moduleName": "MyChannel",
+            "formattedName": "My Channel",
+            "icon": null,
+            "path": "",
+            "type": "ChannelIntegration",
+            "isHidden": false,
+            "isBeta": false,
+            "isAngularComponent": false,
+            "maxOpened": 0,
+            "group": [],
+            "parameters": [
+                {
+                    "name": "ChannelName",
+                    "value": "DISCOGSINTEGRATION"
+                },
+                {
+                    "name": "ChannelFriendlyName",
+                    "value": "Discogs Integration"
+                },
+                {
+                    "name": "ChannelLogoURL",
+                    "value": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Canada_%28Pantone%29.svg/50px-Flag_of_Canada_%28Pantone%29.svg.png"
+                },
+                {
+                    "name": "AddNewUserEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Config/AddNewUser"
+                },
+                {
+                    "name": "UserConfigEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Config/UserConfig"
+                },
+                {
+                    "name": "SaveConfigEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Config/SaveUserConfig"
+                },
+                {
+                    "name": "ShippingTagsEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Config/ShippingTags"
+                },
+                {
+                    "name": "PaymentTagsEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Config/PaymentTags"
+                },
+                {
+                    "name": "ConfigDeletedEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Config/ConfigDeleted"
+                },
+                {
+                    "name": "ConfigTestEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Config/ConfigTest"
+                },
+                {
+                    "name": "OrdersEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Order/Orders"
+                },
+                {
+                    "name": "DespatchEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Order/Despatch"
+                },
+                {
+                    "name": "ProductsEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Products/Products"
+                },
+                {
+                    "name": "InventoryUpdateEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Products/InventoryUpdate"
+                },
+                {
+                    "name": "PriceUpdateEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Products/PriceUpdate"
+                },
+                {
+                    "name": "GetConfiguratorSettingsEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Listing/GetConfiguratorSettings"
+                },
+                {
+                    "name": "GetCategoriesEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Listing/GetCategories"
+                },
+                {
+                    "name": "GetAttributesByCategoryEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Listing/GetAttributesByCategory"
+                },
+                {
+                    "name": "GetVariationsByCategoryEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Listing/GetVariationsByCategory"
+                },
+                {
+                    "name": "ListingUpdateEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Listing/ListingUpdate"
+                },
+                {
+                    "name": "ListingDeleteEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Listing/ListingDelete"
+                },
+                {
+                    "name": "CheckFeedEndpoint",
+                    "value": "http://1cc9-2607-fea8-3d20-3f40-30c4-858a-6766-4032.ngrok.io/api/Listing/CheckFeed"
+                },
+                {
+                    "name": "IsListingSupported",
+                    "value": "True"
+                },
+                {
+                    "name": "InventoryUpdateBatchSize",
+                    "value": "1000"
+                },
+                {
+                    "name": "DespatchUpdateBatchSize",
+                    "value": "100"
+                },
+                {
+                    "name": "PriceUpdateBatchSize",
+                    "value": "1000"
+                },
+                {
+                    "name": "ListingUpdateBatchSize",
+                    "value": "50"
+                },
+                {
+                    "name": "AllowRefundOnCancel",
+                    "value": "True"
+                }
+            ],
+            "files": {
+                "scripts": [
+                    "https://www.discogs.com"
+                ],
+                "style": null,
+                "styles": []
+            }
+        },
+        {
+            "RequiredPermissionId": null,
+            "moduleName": "MyApp",
+            "formattedName": "My App",
+            "icon": null,
+            "path": "",
+            "type": "ExternalApplication",
+            "isHidden": false,
+            "isBeta": false,
+            "isAngularComponent": false,
+            "maxOpened": 0,
+            "group": [],
+            "parameters": [],
+            "files": {
+                "scripts": [],
+                "style": null,
+                "styles": []
+            }
+        }
+    ]
+}
