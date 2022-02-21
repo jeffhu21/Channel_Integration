@@ -9,7 +9,7 @@ use App\Models\Linnworks\ConfigItem as ConfigItem;
 use App\Models\Linnworks\UserConfig as UserConfig;
 //use App\Models\Linnworks\UserConfigItem as UserConfigItem;
 use App\Models\Linnworks\UserConfigResponse as UserConfigResponse;
-use App\Models\Linnworks\ConfigStage;
+use App\Models\Linnworks\ConfigStage as ConfigStage;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
@@ -18,21 +18,21 @@ use Illuminate\Support\Str;
 class ConfigController extends Controller
 {
     
-    public function ConfigStage(UserConfig $UserConfig)
+    public function ConfigStage($UserConfig)
     {
         $response=null;
 
-        if($UserConfig['StepName'] == 'AddCredentials')
+        if($UserConfig->StepName == 'AddCredentials')
         {
-            $response = getApiCredentials($UserConfig);
+            $response = ConfigStage::getApiCredentials($UserConfig);
         }
-        else if($UserConfig['StepName'] == 'OrderSetup')
+        else if($UserConfig->StepName == 'OrderSetup')
         {
-            $response = getOrderSetup($UserConfig);
+            $response = ConfigStage::getOrderSetup($UserConfig);
         }
-        else if($UserConfig['StepName'] == 'UserConfig')
+        else if($UserConfig->StepName == 'UserConfig')
         {
-            $response = getConfigStep($UserConfig);
+            $response = ConfigStage::getConfigStep($UserConfig);
         }
         else
         {
@@ -89,29 +89,36 @@ class ConfigController extends Controller
 
     public function userConfig(Request $request)
     {
-        $error = null;
+        
         $response = null;
+
+        //echo($request->AuthorizationToken);
 
         if($request->has('AuthorizationToken'))
         {
             $token = $request->AuthorizationToken;
-            $UserConfig=UserConfig::findOrFail($token);
+            //$UserConfig=UserConfig::findOrFail($token);
+            $UserConfig=UserConfig::where('AuthorizationToken',$token)->first();
+            //echo($UserConfig->Email);
+            
 
             if($UserConfig != null)
             {
-                $response = ConfigStage($UserConfig);
+                
+                $response = $this->ConfigStage($UserConfig);
+                return json_encode($response);
             }
             else
             {
-                $error = 'User Not Found!';
+                return 'User Not Found!';
             }
         }
         else
         {
-            $error = 'Invalid Request!';
+            return 'Invalid Request!';
         }
 
-        return ['Error'=>$error,'Response'=>$response];
+        //return $response;
 
         //dd(session('IsOauth'));
         //echo(session('IsOauth') . ', ' . session('StepName') . '<br>');

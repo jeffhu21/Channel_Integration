@@ -27,9 +27,5 @@ class UserConfig extends Model
     ];
 
     
-    public function config_items()
-    {
-        return $this->belongsToMany(Linnworks\ConfigItems::class);
-    }
     
 }

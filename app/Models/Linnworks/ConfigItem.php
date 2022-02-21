@@ -4,8 +4,34 @@ namespace App\Models\Linnworks;
 
 class ConfigItem
 {
+    public function GetConfigValueType($k)
+    {
+        switch ($k) {
+            case 'tString':
+                return 'STRING';
+                break;
+            case 'tInt':
+                return 'INT';
+                break;
+            case 'tDouble':
+                return 'DOUBLE';
+                break;
+            case 'tBool':
+                return 'BOOLEAN';
+                break;
+            case 'tPassword':
+                return 'PASSWORD';
+                break;
+            case 'tList':
+                return 'LIST';
+                break;
+            
+            
+        }
+    }
     
-    public const ConfigValueType=[
+    /*
+    public $ConfigValueType=[
         'tString' => 'STRING',
         'tInt' => 'INT',
         'tDouble' => 'DOUBLE',
@@ -13,15 +39,16 @@ class ConfigItem
         'tPassword' => 'PASSWORD',
         'tList' => 'LIST'
     ];
+    */
     
     public string $ConfigItemId;
     public string $Description;
     public string $GroupName;
-    public boolean $MustBeSpecified;
+    public bool $MustBeSpecified;
     public string $Name;
-    public boolean $ReadOnly;
+    public bool $ReadOnly;
     public string $SelectedValue;
-    public integer $Sortorder;
+    public int $Sortorder;
     public String $ValueType;
     public String $RegExValidation;
     public String $RegExError;
@@ -30,7 +57,7 @@ class ConfigItem
     
     public function __construct()
     {
-        $this->ValueType=ConfigValueType->tString;
+        $this->ValueType=$this->GetConfigValueType('tString');
         $this->ListValues=array();
     }
 }

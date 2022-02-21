@@ -9,8 +9,10 @@ use App\Models\Linnworks\ConfigItem;
 class UserConfigResponse
 {
     //use HasFactory;
-
-    public String $StepName,$WizardStepDescription,$WizardStepTitle;
+    
+    public $StepName,$WizardStepDescription,$WizardStepTitle;
+    //public $Error;
     public $ConfigItems = [];
+    
 
 }
