@@ -12,17 +12,24 @@ class UserConfig extends Model
     protected $table = 'user_configs';
 
     protected $fillable = [
-        'user_id',
-        'email',
-        'account_name',
-        'authorization_token',
-        'is_complete',
-        'step_name',
-        'is_config_active',
-        'api_key',
-        'api_secret_key',
-        'is_oauth',
-        'is_price_inc_tax',
-        'download_virtual_items',
+        'UserId',
+        'Email',
+        'AccountName',
+        'AuthorizationToken',
+        'IsComplete',
+        'StepName',
+        'IsConfigActive',
+        'ApiKey',
+        'ApiSecretKey',
+        'IsOauth',
+        'IsPriceIncTax',
+        'DownloadVirtualItems',
     ];
+
+    
+    public function config_items()
+    {
+        return $this->belongsToMany(Linnworks\ConfigItems::class);
+    }
+    
 }

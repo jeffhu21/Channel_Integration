@@ -5,7 +5,11 @@ namespace App\Http\Controllers\Linnworks;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\Linnworks\ConfigItem as ConfigItem;
 use App\Models\Linnworks\UserConfig as UserConfig;
+//use App\Models\Linnworks\UserConfigItem as UserConfigItem;
+use App\Models\Linnworks\UserConfigResponse as UserConfigResponse;
+use App\Models\Linnworks\ConfigStage;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
@@ -14,22 +18,21 @@ use Illuminate\Support\Str;
 class ConfigController extends Controller
 {
     
-    public function getUserConfigs($token)
+    public function ConfigStage(UserConfig $UserConfig)
     {
-        $config=UserConfig::findOrFail($token);
         $response=null;
 
-        if($config['step_name'] == 'AddCredentials')
+        if($UserConfig['StepName'] == 'AddCredentials')
         {
-            $response = getApiCredentials();
+            $response = getApiCredentials($UserConfig);
         }
-        else if($config['step_name'] == 'OrderSetup')
+        else if($UserConfig['StepName'] == 'OrderSetup')
         {
-            $response = getOrderSetup();
+            $response = getOrderSetup($UserConfig);
         }
-        else if($config['step_name'] == 'UserConfig')
+        else if($UserConfig['StepName'] == 'UserConfig')
         {
-            $response = getConfigStep();
+            $response = getConfigStep($UserConfig);
         }
         else
         {
@@ -38,20 +41,6 @@ class ConfigController extends Controller
         return $response;
     }
 
-    public function getApiCredentials()
-    {
-        
-    }
-
-    public function getOrderStep()
-    {
-        
-    }
-
-    public function getConfigStep()
-    {
-        
-    }
 
     public function addNewUser(Request $request)
     {
@@ -69,12 +58,12 @@ class ConfigController extends Controller
         $validator=Validator::make($request->all(),[
             'LinnworksUniqueIdentifier' => 'required',
             'Email' => 'required|string|email|max:255|unique:user_configs',
-            'AccountName' => 'required|string',
+            'AccountName' => 'required|string|unique:user_configs',
         ]);
 
         if($validator->fails())
         {
-            $error = 'Required Field is Empty or Duplicated Email!';
+            $error = 'Required Field is Empty or Duplicated Email or Account Name!';
             //return $error;
             //return ['Error'=>$error];
         }
@@ -83,12 +72,12 @@ class ConfigController extends Controller
             $auth_token = Str::orderedUuid();
 
             $user = UserConfig::create([
-                'user_id' => $request->LinnworksUniqueIdentifier,
-                'email' => $request->Email,
-                'account_name' => $request->AccountName,
-                'authorization_token' => $auth_token,
-                'is_oauth'=>true,
-                'step_name'=>'AddCredentials',
+                'UserId' => $request->LinnworksUniqueIdentifier,
+                'Email' => $request->Email,
+                'AccountName' => $request->AccountName,
+                'AuthorizationToken' => $auth_token,
+                'IsOauth'=>true,
+                'StepName'=>'AddCredentials',
             ]);
 
             //return ['Error'=>null,'AuthorizationToken'=>$auth_token];
@@ -101,20 +90,31 @@ class ConfigController extends Controller
     public function userConfig(Request $request)
     {
         $error = null;
+        $response = null;
 
         if($request->has('AuthorizationToken'))
         {
-            
+            $token = $request->AuthorizationToken;
+            $UserConfig=UserConfig::findOrFail($token);
+
+            if($UserConfig != null)
+            {
+                $response = ConfigStage($UserConfig);
+            }
+            else
+            {
+                $error = 'User Not Found!';
+            }
         }
         else
         {
-            $error = 'User Not Found!';
+            $error = 'Invalid Request!';
         }
 
-        return ['Error'=>$error];
+        return ['Error'=>$error,'Response'=>$response];
 
-        //dd(session('is_oauth'));
-        //echo(session('is_oauth') . ', ' . session('step_name') . '<br>');
+        //dd(session('IsOauth'));
+        //echo(session('IsOauth') . ', ' . session('StepName') . '<br>');
         //return 'User Config';
     }
 

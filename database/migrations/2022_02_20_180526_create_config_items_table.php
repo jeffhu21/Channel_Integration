@@ -15,7 +15,17 @@ class CreateConfigItemsTable extends Migration
     {
         Schema::create('config_items', function (Blueprint $table) {
             $table->id();
+            $table->string('ConfigItemId');
+            $table->string('Description');
+            $table->string('GroupName');
+            $table->boolean('MustBeSpecified')->default(true);
+            $table->string('Name');
+            $table->boolean('ReadOnly')->default(false);
+            $table->string('SelectedValue');
+            $table->integer('Sortorder');
+            $table->enum('ValueType',['STRING','INT','DOUBLE','BOOLEAN','PASSWORD','LIST']);
             $table->timestamps();
+            //$table->foreign('id')->references('id')->on('user_configs')->onDelete('cascade');
         });
     }
 
