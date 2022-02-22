@@ -11,7 +11,7 @@ class UserConfigResponse
     //use HasFactory;
     
     public $StepName,$WizardStepDescription,$WizardStepTitle;
-    //public $Error;
+    public $Error;
     public $ConfigItems = [];
     
 

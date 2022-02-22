@@ -25,8 +25,6 @@ class ConfigItem
             case 'tList':
                 return 'LIST';
                 break;
-            
-            
         }
     }
     

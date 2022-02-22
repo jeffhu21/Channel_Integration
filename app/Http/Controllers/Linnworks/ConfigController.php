@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Linnworks;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\Linnworks\ConfigItem as ConfigItem;
+//use App\Models\Linnworks\ConfigItem as ConfigItem;
 use App\Models\Linnworks\UserConfig as UserConfig;
 //use App\Models\Linnworks\UserConfigItem as UserConfigItem;
-use App\Models\Linnworks\UserConfigResponse as UserConfigResponse;
+//use App\Models\Linnworks\UserConfigResponse as UserConfigResponse;
 use App\Models\Linnworks\ConfigStage as ConfigStage;
 
 use Illuminate\Support\Facades\Validator;
@@ -17,29 +17,6 @@ use Illuminate\Support\Str;
 
 class ConfigController extends Controller
 {
-    
-    public function ConfigStage($UserConfig)
-    {
-        $response=null;
-
-        if($UserConfig->StepName == 'AddCredentials')
-        {
-            $response = ConfigStage::getApiCredentials($UserConfig);
-        }
-        else if($UserConfig->StepName == 'OrderSetup')
-        {
-            $response = ConfigStage::getOrderSetup($UserConfig);
-        }
-        else if($UserConfig->StepName == 'UserConfig')
-        {
-            $response = ConfigStage::getConfigStep($UserConfig);
-        }
-        else
-        {
-            $response = 'User Config is at invalid stage';
-        }
-        return $response;
-    }
 
 
     public function addNewUser(Request $request)
@@ -89,45 +66,89 @@ class ConfigController extends Controller
 
     public function userConfig(Request $request)
     {
-        
-        $response = null;
-
-        //echo($request->AuthorizationToken);
-
-        if($request->has('AuthorizationToken'))
+        if(!$request->has('AuthorizationToken'))
         {
-            $token = $request->AuthorizationToken;
-            //$UserConfig=UserConfig::findOrFail($token);
-            $UserConfig=UserConfig::where('AuthorizationToken',$token)->first();
-            //echo($UserConfig->Email);
-            
-
-            if($UserConfig != null)
-            {
-                
-                $response = $this->ConfigStage($UserConfig);
-                return json_encode($response);
-            }
-            else
-            {
-                return 'User Not Found!';
-            }
-        }
-        else
-        {
-            return 'Invalid Request!';
+            return ['Error'=>'Invalid Request!'];
         }
 
-        //return $response;
+        $token = $request->AuthorizationToken;
+        $UserConfig = ConfigStage::loadUserConfig($token);
 
-        //dd(session('IsOauth'));
-        //echo(session('IsOauth') . ', ' . session('StepName') . '<br>');
-        //return 'User Config';
+        if($UserConfig == null)
+        {
+            return ['Error'=>'User Not Found!'];   
+        }
+
+        $response = ConfigStage::ConfigSetUp($UserConfig,'userConfig');
+        //$collection = collect($response['ConfigItems'])->where('ConfigItemId',"APIKey")->first()['Description'];
+        //dd($collection);
+        return json_encode($response);
     }
 
-    public function saveConfig()
+    public function saveConfig(Request $request)
     {
-        return 'Save Config';
+        if(!$request->has('AuthorizationToken'))
+        {
+            return ['Error'=>'Invalid Request!'];
+        }
+
+        $token = $request->AuthorizationToken;
+        $UserConfig = ConfigStage::loadUserConfig($token);
+
+        if($UserConfig == null)
+        {
+            return ['Error'=>'User Not Found!'];
+        }
+
+        if($request->StepName != $UserConfig->StepName)
+        {
+            return ['Error'=>'Invalid Step Name Expected ' . $UserConfig->StepName];
+        }
+        
+        
+        if ($UserConfig->StepName == "AddCredentials")
+        {
+            /*
+            collect($request->ConfigItems)->each(function($item){
+                echo($item . '<br>');
+            });
+            */
+
+            //dd($request->ConfigItems);
+            //dd(collect($request->ConfigItems)->first());
+            //dd(json_decode($request->ConfigItems));
+
+            //dd(collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APIKey")->SelectedValue);
+
+            //dd('End');
+            
+
+            $UserConfig->ApiKey = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APIKey")->SelectedValue;
+            $UserConfig->ApiSecretKey = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APISecretKey")->SelectedValue;
+            $UserConfig->IsOauth = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsOauth")->SelectedValue ? 1 : 0;
+            $UserConfig->StepName = "OrderSetup";
+            
+            
+        }
+        else if ($UserConfig->StepName == "OrderSetup")
+        {
+            $UserConfig->IsPriceIncTax = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsPriceIncTax")->SelectedValue ? 1 : 0;
+            $UserConfig->DownloadVirtualItems = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"DownloadVirtualItems")->SelectedValue ? 1 : 0;
+            $UserConfig->StepName = "UserConfig";
+        }
+        else if ($UserConfig->StepName == "UserConfig")
+        {
+            $UserConfig->IsOauth = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsOauth")->SelectedValue ? 1 : 0;
+            $UserConfig->IsPriceIncTax = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsPriceIncTax")->SelectedValue ? 1 : 0;
+            $UserConfig->DownloadVirtualItems = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"DownloadVirtualItems")->SelectedValue ? 1 : 0;
+        }
+        
+        $UserConfig->save();
+
+        $response = ConfigStage::ConfigSetUp($UserConfig,'saveConfig');
+
+        return json_encode($response);
+
     }
 
     public function shippingTags()
