@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Linnworks;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-//use App\Models\Linnworks\ConfigItem as ConfigItem;
+
 use App\Models\Linnworks\UserConfig as UserConfig;
-//use App\Models\Linnworks\UserConfigItem as UserConfigItem;
-//use App\Models\Linnworks\UserConfigResponse as UserConfigResponse;
 use App\Models\Linnworks\ConfigStage as ConfigStage;
 
 use Illuminate\Support\Facades\Validator;
@@ -108,38 +106,21 @@ class ConfigController extends Controller
         
         if ($UserConfig->StepName == "AddCredentials")
         {
-            /*
-            collect($request->ConfigItems)->each(function($item){
-                echo($item . '<br>');
-            });
-            */
-
-            //dd($request->ConfigItems);
-            //dd(collect($request->ConfigItems)->first());
-            //dd(json_decode($request->ConfigItems));
-
-            //dd(collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APIKey")->SelectedValue);
-
-            //dd('End');
-            
-
             $UserConfig->ApiKey = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APIKey")->SelectedValue;
             $UserConfig->ApiSecretKey = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APISecretKey")->SelectedValue;
             $UserConfig->IsOauth = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsOauth")->SelectedValue ? 1 : 0;
             $UserConfig->StepName = "OrderSetup";
-            
-            
         }
         else if ($UserConfig->StepName == "OrderSetup")
         {
-            $UserConfig->IsPriceIncTax = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsPriceIncTax")->SelectedValue ? 1 : 0;
+            $UserConfig->IsPriceIncTax = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"PriceIncTax")->SelectedValue ? 1 : 0;
             $UserConfig->DownloadVirtualItems = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"DownloadVirtualItems")->SelectedValue ? 1 : 0;
             $UserConfig->StepName = "UserConfig";
         }
         else if ($UserConfig->StepName == "UserConfig")
         {
             $UserConfig->IsOauth = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsOauth")->SelectedValue ? 1 : 0;
-            $UserConfig->IsPriceIncTax = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsPriceIncTax")->SelectedValue ? 1 : 0;
+            $UserConfig->IsPriceIncTax = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"PriceIncTax")->SelectedValue ? 1 : 0;
             $UserConfig->DownloadVirtualItems = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"DownloadVirtualItems")->SelectedValue ? 1 : 0;
         }
         
@@ -151,24 +132,38 @@ class ConfigController extends Controller
 
     }
 
-    public function shippingTags()
+    public function shippingTags(Request $request)
     {
+        if(!$request->has('AuthorizationToken'))
+        {
+            return ['Error'=>'Invalid Request!'];
+        }
 
+        $token = $request->AuthorizationToken;
+        $UserConfig = ConfigStage::loadUserConfig($token);
+
+        if($UserConfig == null)
+        {
+            return ['Error'=>'User Not Found!'];
+        }
+        $response = ConfigStage::getShippingTags();
+
+        return json_encode($response);
     }
 
     public function paymentTags()
     {
-        
+        //
     }
 
     public function deleted()
     {
-        
+        //
     }
 
     public function test()
     {
-        
+        //
     }
 
     

@@ -7,8 +7,7 @@ use App\Models\Linnworks\UserConfig as UserConfig;
 //use App\Models\Linnworks\UserConfigResponse as UserConfigResponse;
 use App\Models\Linnworks\ConfigStageNotUsed as ConfigStageNotUsed;
 
-use App\Models\Linnworks\UserConfigSetting as UserConfigSetting;
-use App\Models\Linnworks\ShippingTagSetting as ShippingTagSetting;
+//use App\Models\Linnworks\UserConfigSetting as UserConfigSetting;
 
 class ConfigStage
 {
@@ -27,6 +26,7 @@ class ConfigStage
         if($UserConfig->StepName == 'AddCredentials')
         {
             $result = self::getApiCredentials($UserConfig);
+            //$result = ConfigStageNotUsed::getApiCredentials($UserConfig);
         }
         else if($UserConfig->StepName == 'OrderSetup')
         {
@@ -51,50 +51,15 @@ class ConfigStage
         }
         return $result;
     }
-
-    public static function getShippingTags()
-    {
-        $setting = new ShippingTagSetting();
-
-        $setting->response = [
-            'Error' => null,
-            'ShippingTags'=>[
-            $setting->ShippingTag=[
-                'Tag'=>'FedEx',
-                'FriendlyName'=>'FedEx',
-                'Site'=>''
-            ],
-            $setting->ShippingTag =[
-                'Tag'=>'UpS',
-                'FriendlyName'=>'UpS',
-                'Site'=>''
-            ],
-            $setting->ShippingTag =[
-                'Tag'=>'DHL',
-                'FriendlyName'=>'DHL',
-                'Site'=>''
-            ],
-            $setting->ShippingTag =[
-                'Tag'=>'Purolator',
-                'FriendlyName'=>'Purolator',
-                'Site'=>''
-            ]
-
-            ]
-        ];
-        return $setting->response;
-    }
     
     public static function getApiCredentials($userConfig)
     {
-        $setting = new UserConfigSetting();
-
-        $setting->response = [
+        $result = [
             'Error' => null,
             'StepName' => "AddCredentials",
             'WizardStepTitle' => "Add Credentials",
             'WizardStepDescription' => "This is where you add your website credentials",
-            'ConfigItems' => [$setting->ConfigItem = 
+            'ConfigItems' => [
                 [
                     'ConfigItemId' => "APIKey",
                     'Description' => "Website API Key",
@@ -110,7 +75,7 @@ class ConfigStage
                     'RegExError'=>null
 
                 ],
-                $setting->ConfigItem =
+
                 [
                     'ConfigItemId' => "APISecretKey",
                     'Description' => "Website API Secret Key",
@@ -125,7 +90,7 @@ class ConfigStage
                     'RegExValidation'=>null,
                     'RegExError'=>null
                 ],
-                $setting->ConfigItem =
+
                 [
                     'ConfigItemId' => "IsOauth",
                     'Description' => "Defines if the authentication type is Oauth",
@@ -142,19 +107,18 @@ class ConfigStage
                 ]
             ],      
         ];
-        return $setting->response;
+
+        return $result;
     }
 
     public static function getOrderSetup($userConfig)
     {
-        $setting = new UserConfigSetting();
-
-        $setting->response= [
+        $result= [
             'Error'=> null,
             'StepName'=> "OrderSetup",
             'WizardStepTitle'=> "Order Setup",
             'WizardStepDescription'=> "Definition of tax settings and items to return",
-            'ConfigItems' => [$setting->ConfigItem =
+            'ConfigItems' => [
                 [
                     'ConfigItemId'=> "PriceIncTax",
                     'Description'=> "Defines if the price of an item includes tax",
@@ -169,7 +133,7 @@ class ConfigStage
                     'RegExValidation'=>null,
                     'RegExError'=>null
                 ],
-                $setting->ConfigItem =
+
                 [
                     'ConfigItemId'=> "DownloadVirtualItems",
                     'Description'=> "Check to allow the download of virtual items",
@@ -184,21 +148,22 @@ class ConfigStage
                     'RegExValidation'=>null,
                     'RegExError'=>null
                 ]
+            
             ],
+
         ];
-        return $setting->response;
+
+        return $result;
     }
 
     public static function getConfigStep($userConfig)
     {
-        $setting = new UserConfigSetting();
-
-        $setting->response= [
+        $result= [
             'Error'=> null,
             'StepName'=> "UserConfig",
             'WizardStepTitle'=> "UserConfig",
             'WizardStepDescription'=> "User Config",
-            'ConfigItems' => [$setting->ConfigItem =
+            'ConfigItems' => [
                 [
                     'ConfigItemId'=> "IsOauth",
                     'Description'=> "Defines if the authentication type is Oauth",
@@ -213,7 +178,7 @@ class ConfigStage
                     'RegExValidation'=>null,
                     'RegExError'=>null
                 ],
-                $setting->ConfigItem =
+
                 [
                     'ConfigItemId'=> "PriceIncTax",
                     'Description'=> "Defines if the price of an item includes tax",
@@ -228,7 +193,7 @@ class ConfigStage
                     'RegExValidation'=>null,
                     'RegExError'=>null
                 ],
-                $setting->ConfigItem =
+
                 [
                     'ConfigItemId'=> "DownloadVirtualItems",
                     'Description'=> "Check to allow the download of virtual items",
@@ -243,8 +208,15 @@ class ConfigStage
                     'RegExValidation'=>null,
                     'RegExError'=>null
                 ],
+
             ],
+
         ];
-        return $setting->response;
+
+        return $result;
+
     }
+
+    
+
 }
