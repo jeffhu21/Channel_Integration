@@ -64,13 +64,20 @@ class ConfigController extends Controller
 
     public function userConfig(Request $request)
     {
+
         if(!$request->has('AuthorizationToken'))
         {
             return ['Error'=>'Invalid Request!'];
         }
 
         $token = $request->AuthorizationToken;
-        $UserConfig = ConfigStage::loadUserConfig($token);
+        $result = ConfigStage::loadUserConfig($token);
+        
+        if($result['Error'] != null)
+        {
+            return ['Error'=>$result['Error']];
+        }
+        $UserConfig = $result['UserConfig'];
 
         if($UserConfig == null)
         {
@@ -91,7 +98,13 @@ class ConfigController extends Controller
         }
 
         $token = $request->AuthorizationToken;
-        $UserConfig = ConfigStage::loadUserConfig($token);
+        $result = ConfigStage::loadUserConfig($token);
+        
+        if($result['Error'] != null)
+        {
+            return ['Error'=>$result['Error']];
+        }
+        $UserConfig = $result['UserConfig'];
 
         if($UserConfig == null)
         {
@@ -102,7 +115,6 @@ class ConfigController extends Controller
         {
             return ['Error'=>'Invalid Step Name Expected ' . $UserConfig->StepName];
         }
-        
         
         if ($UserConfig->StepName == "AddCredentials")
         {
@@ -140,7 +152,13 @@ class ConfigController extends Controller
         }
 
         $token = $request->AuthorizationToken;
-        $UserConfig = ConfigStage::loadUserConfig($token);
+        $result = ConfigStage::loadUserConfig($token);
+        
+        if($result['Error'] != null)
+        {
+            return ['Error'=>$result['Error']];
+        }
+        $UserConfig = $result['UserConfig'];
 
         if($UserConfig == null)
         {
@@ -153,14 +171,19 @@ class ConfigController extends Controller
 
     public function paymentTags(Request $request)
     {
-        //
         if(!$request->has('AuthorizationToken'))
         {
             return ['Error'=>'Invalid Request!'];
         }
 
         $token = $request->AuthorizationToken;
-        $UserConfig = ConfigStage::loadUserConfig($token);
+        $result = ConfigStage::loadUserConfig($token);
+        
+        if($result['Error'] != null)
+        {
+            return ['Error'=>$result['Error']];
+        }
+        $UserConfig = $result['UserConfig'];
 
         if($UserConfig == null)
         {
@@ -173,12 +196,59 @@ class ConfigController extends Controller
 
     public function deleted(Request $request)
     {
-        //
+        if(!$request->has('AuthorizationToken'))
+        {
+            return ['Error'=>'Invalid Request!'];
+        }
+
+        $token = $request->AuthorizationToken;
+        $result = ConfigStage::loadUserConfig($token);
+        
+        if($result['Error'] != null)
+        {
+            return ['Error'=>$result['Error']];
+        }
+        $UserConfig = $result['UserConfig'];
+
+        if($UserConfig == null)
+        {
+            return ['Error'=>'User Not Found!'];   
+        }
+
+        $error = null;
+
+        try
+        {
+            UserConfig::where('AuthorizationToken',$token)->delete();
+            $error = 'User config does not exist';
+        }
+        catch(Exception $ex)
+        {
+            $error = $ex->getMessage();
+        }
+        return ['Error'=>$error];
     }
 
     public function test(Request $request)
     {
-        //
+        if(!$request->has('AuthorizationToken'))
+        {
+            return ['Error'=>'Invalid Request!'];
+        }
+
+        $token = $request->AuthorizationToken;
+        $result = ConfigStage::loadUserConfig($token);
+        
+        if($result['Error'] != null)
+        {
+            return ['Error'=>$result['Error']];
+        }
+        $UserConfig = $result['UserConfig'];
+
+        if($UserConfig == null)
+        {
+            return ['Error'=>'User Not Found!'];   
+        }
     }
 
     

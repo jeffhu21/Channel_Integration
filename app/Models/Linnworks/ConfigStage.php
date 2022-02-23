@@ -17,8 +17,18 @@ class ConfigStage
     //Load UserConfig from UserConfig Model
     public static function loadUserConfig($token)
     {
-        $UserConfig=UserConfig::where('AuthorizationToken',$token)->first();
-        return $UserConfig;
+        $error = null;
+        $UserConfig = null;
+        
+        try{
+            $UserConfig=UserConfig::where('AuthorizationToken',$token)->first();
+            //return $UserConfig;
+        }
+        catch(Exception $ex)
+        {
+            $error = $ex->getMessage();
+        }
+        return ['Error'=>$error,'UserConfig'=>$UserConfig];
     }
 
     public static function ConfigSetUp($UserConfig,$action)
