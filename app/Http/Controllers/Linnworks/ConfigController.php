@@ -16,6 +16,30 @@ use Illuminate\Support\Str;
 class ConfigController extends Controller
 {
 
+    public function getUserConfig(Request $request)
+    {
+        $UserConfig = null;
+        
+        if(!$request->has('AuthorizationToken'))
+        {
+            return ['Error'=>'Invalid Request!','UserConfig'=>$UserConfig];
+        }
+
+        $token = $request->AuthorizationToken;
+        $result = ConfigStage::loadUserConfig($token);
+        
+        if($result['Error'] != null)
+        {
+            return ['Error'=>$result['Error'],'UserConfig'=>$result['UserConfig']];
+        }
+        $UserConfig = $result['UserConfig'];
+
+        if($UserConfig == null)
+        {
+            return ['Error'=>'User Not Found!','UserConfig'=>$result['UserConfig']];   
+        }
+        return ['Error' => null,'UserConfig'=>$UserConfig];
+    }
 
     public function addNewUser(Request $request)
     {
@@ -64,25 +88,13 @@ class ConfigController extends Controller
 
     public function userConfig(Request $request)
     {
-
-        if(!$request->has('AuthorizationToken'))
-        {
-            return ['Error'=>'Invalid Request!'];
-        }
-
-        $token = $request->AuthorizationToken;
-        $result = ConfigStage::loadUserConfig($token);
-        
+        $result = $this->getUserConfig($request);
         if($result['Error'] != null)
         {
-            return ['Error'=>$result['Error']];
+            return $result['Error'];
         }
+        
         $UserConfig = $result['UserConfig'];
-
-        if($UserConfig == null)
-        {
-            return ['Error'=>'User Not Found!'];   
-        }
 
         $response = ConfigStage::ConfigSetUp($UserConfig,'userConfig');
         //$collection = collect($response['ConfigItems'])->where('ConfigItemId',"APIKey")->first()['Description'];
@@ -92,24 +104,13 @@ class ConfigController extends Controller
 
     public function saveConfig(Request $request)
     {
-        if(!$request->has('AuthorizationToken'))
-        {
-            return ['Error'=>'Invalid Request!'];
-        }
-
-        $token = $request->AuthorizationToken;
-        $result = ConfigStage::loadUserConfig($token);
-        
+        $result = $this->getUserConfig($request);
         if($result['Error'] != null)
         {
-            return ['Error'=>$result['Error']];
+            return $result['Error'];
         }
+        
         $UserConfig = $result['UserConfig'];
-
-        if($UserConfig == null)
-        {
-            return ['Error'=>'User Not Found!'];
-        }
 
         if($request->StepName != $UserConfig->StepName)
         {
@@ -146,24 +147,14 @@ class ConfigController extends Controller
 
     public function shippingTags(Request $request)
     {
-        if(!$request->has('AuthorizationToken'))
-        {
-            return ['Error'=>'Invalid Request!'];
-        }
-
-        $token = $request->AuthorizationToken;
-        $result = ConfigStage::loadUserConfig($token);
-        
+        $result = $this->getUserConfig($request);
         if($result['Error'] != null)
         {
-            return ['Error'=>$result['Error']];
+            return $result['Error'];
         }
+        
         $UserConfig = $result['UserConfig'];
 
-        if($UserConfig == null)
-        {
-            return ['Error'=>'User Not Found!'];
-        }
         $response = ConfigStage::getShippingTags();
 
         return json_encode($response);
@@ -171,24 +162,14 @@ class ConfigController extends Controller
 
     public function paymentTags(Request $request)
     {
-        if(!$request->has('AuthorizationToken'))
-        {
-            return ['Error'=>'Invalid Request!'];
-        }
-
-        $token = $request->AuthorizationToken;
-        $result = ConfigStage::loadUserConfig($token);
-        
+        $result = $this->getUserConfig($request);
         if($result['Error'] != null)
         {
-            return ['Error'=>$result['Error']];
+            return $result['Error'];
         }
+        
         $UserConfig = $result['UserConfig'];
-
-        if($UserConfig == null)
-        {
-            return ['Error'=>'User Not Found!'];
-        }
+        
         $response = ConfigStage::getPaymentTags();
 
         return json_encode($response);
@@ -196,24 +177,13 @@ class ConfigController extends Controller
 
     public function deleted(Request $request)
     {
-        if(!$request->has('AuthorizationToken'))
-        {
-            return ['Error'=>'Invalid Request!'];
-        }
-
-        $token = $request->AuthorizationToken;
-        $result = ConfigStage::loadUserConfig($token);
-        
+        $result = $this->getUserConfig($request);
         if($result['Error'] != null)
         {
-            return ['Error'=>$result['Error']];
+            return $result['Error'];
         }
+        
         $UserConfig = $result['UserConfig'];
-
-        if($UserConfig == null)
-        {
-            return ['Error'=>'User Not Found!'];   
-        }
 
         $error = null;
 
@@ -231,24 +201,37 @@ class ConfigController extends Controller
 
     public function test(Request $request)
     {
-        if(!$request->has('AuthorizationToken'))
-        {
-            return ['Error'=>'Invalid Request!'];
-        }
-
-        $token = $request->AuthorizationToken;
-        $result = ConfigStage::loadUserConfig($token);
-        
+        $result = $this->getUserConfig($request);
         if($result['Error'] != null)
         {
-            return ['Error'=>$result['Error']];
+            return $result['Error'];
         }
+        
         $UserConfig = $result['UserConfig'];
 
-        if($UserConfig == null)
+        $error = null;
+
+        try
         {
-            return ['Error'=>'User Not Found!'];   
+            //Would normally do some test here
+
+            if($UserConfig->StepName == "UserConfig")
+            {
+                $error = null;
+            }
+            else
+            {
+                $error = 'Config Not Finished!';
+            }
+
+            //$error = 'User config does not exist';
         }
+        catch(Exception $ex)
+        {
+            $error = $ex->getMessage();
+        }
+        return ['Error'=>$error];
+
     }
 
     
