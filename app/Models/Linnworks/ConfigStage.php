@@ -9,6 +9,7 @@ use App\Models\Linnworks\ConfigStageNotUsed as ConfigStageNotUsed;
 
 use App\Models\Linnworks\UserConfigSetting as UserConfigSetting;
 use App\Models\Linnworks\ShippingTagSetting as ShippingTagSetting;
+use App\Models\Linnworks\PaymentTagSetting as PaymentTagSetting;
 
 class ConfigStage
 {
@@ -77,6 +78,44 @@ class ConfigStage
             $setting->ShippingTag =[
                 'Tag'=>'Purolator',
                 'FriendlyName'=>'Purolator',
+                'Site'=>''
+            ]
+
+            ]
+        ];
+        return $setting->response;
+    }
+
+    public static function getPaymentTags()
+    {
+        $setting = new PaymentTagSetting();
+
+        $setting->response = [
+            'Error' => null,
+            'PaymentTags'=>[
+            $setting->PaymentTag=[
+                'Tag'=>'paypal_verified',
+                'FriendlyName'=>'PayPal',
+                'Site'=>''
+            ],
+            $setting->PaymentTag =[
+                'Tag'=>'mastercard',
+                'FriendlyName'=>'Credit Card - Master Card',
+                'Site'=>''
+            ],
+            $setting->PaymentTag =[
+                'Tag'=>'visa_credit',
+                'FriendlyName'=>'Credit Card - Visa',
+                'Site'=>''
+            ],
+            $setting->PaymentTag =[
+                'Tag'=>'american_express',
+                'FriendlyName'=>'Credit Card - American Express',
+                'Site'=>''
+            ],
+            $setting->PaymentTag =[
+                'Tag'=>'bank',
+                'FriendlyName'=>'Bank payments',
                 'Site'=>''
             ]
 

@@ -2,20 +2,18 @@
 
 namespace App\Models\Linnworks;
 
-class ShippingTagSetting
+class PaymentTagSetting
 {
     public $response = [
         'Error'=>'',
-        'ShippingTags'=>[]
+        'PaymentTags'=>[]
     ];
 
-    public $ShippingTag=[
+    public $PaymentTag=[
         'Tag'=>'',
         'FriendlyName'=>'',
         'Site'=>''
     ];
 }
-
-
 
 

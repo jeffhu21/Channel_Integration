@@ -151,17 +151,32 @@ class ConfigController extends Controller
         return json_encode($response);
     }
 
-    public function paymentTags()
+    public function paymentTags(Request $request)
+    {
+        //
+        if(!$request->has('AuthorizationToken'))
+        {
+            return ['Error'=>'Invalid Request!'];
+        }
+
+        $token = $request->AuthorizationToken;
+        $UserConfig = ConfigStage::loadUserConfig($token);
+
+        if($UserConfig == null)
+        {
+            return ['Error'=>'User Not Found!'];
+        }
+        $response = ConfigStage::getPaymentTags();
+
+        return json_encode($response);
+    }
+
+    public function deleted(Request $request)
     {
         //
     }
 
-    public function deleted()
-    {
-        //
-    }
-
-    public function test()
+    public function test(Request $request)
     {
         //
     }
