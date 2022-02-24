@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserConfigsTable extends Migration
+class CreateUserInfosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateUserConfigsTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_configs', function (Blueprint $table) {
+        Schema::create('user_infos', function (Blueprint $table) {
             $table->id();
             $table->uuid('UserId');
             $table->string('Email');
@@ -38,6 +38,6 @@ class CreateUserConfigsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_configs');
+        Schema::dropIfExists('user_infos');
     }
 }

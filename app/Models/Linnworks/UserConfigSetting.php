@@ -4,7 +4,7 @@ namespace App\Models\Linnworks;
 
 class UserConfigSetting
 {
-    public $response = [
+    public $UserConfig = [
         'Error'=>'',
         'StepName'=>'',
         'WizardStepDescription'=>'',

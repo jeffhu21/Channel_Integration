@@ -5,11 +5,11 @@ namespace App\Models\Linnworks;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserConfig extends Model
+class UserInfo extends Model
 {
     use HasFactory;
 
-    protected $table = 'user_configs';
+    protected $table = 'user_infos';
 
     protected $fillable = [
         'UserId',
@@ -25,7 +25,4 @@ class UserConfig extends Model
         'IsPriceIncTax',
         'DownloadVirtualItems',
     ];
-
-    
-    
 }

@@ -2,10 +2,7 @@
 
 namespace App\Models\Linnworks;
 
-//use App\Models\Linnworks\ConfigItem as ConfigItem;
-use App\Models\Linnworks\UserConfig as UserConfig;
-//use App\Models\Linnworks\UserConfigResponse as UserConfigResponse;
-use App\Models\Linnworks\ConfigStageNotUsed as ConfigStageNotUsed;
+use App\Models\Linnworks\UserInfo as UserInfo;
 
 use App\Models\Linnworks\UserConfigSetting as UserConfigSetting;
 use App\Models\Linnworks\ShippingTagSetting as ShippingTagSetting;
@@ -14,38 +11,37 @@ use App\Models\Linnworks\PaymentTagSetting as PaymentTagSetting;
 class ConfigStage
 {
 
-    //Load UserConfig from UserConfig Model
-    public static function loadUserConfig($token)
+    //Load UserInfo from UserInfo Model
+    public static function loadUserInfo($token)
     {
         $error = null;
-        $UserConfig = null;
+        $user = null;
         
         try{
-            $UserConfig=UserConfig::where('AuthorizationToken',$token)->first();
-            //return $UserConfig;
+            $user=UserInfo::where('AuthorizationToken',$token)->first();
         }
         catch(Exception $ex)
         {
             $error = $ex->getMessage();
         }
-        return ['Error'=>$error,'UserConfig'=>$UserConfig];
+        return ['Error'=>$error,'User'=>$user];
     }
 
-    public static function ConfigSetUp($UserConfig,$action)
+    public static function ConfigSetUp($user,$action)
     {
         $result=null;
 
-        if($UserConfig->StepName == 'AddCredentials')
+        if($user->StepName == 'AddCredentials')
         {
-            $result = self::getApiCredentials($UserConfig);
+            $result = self::getApiCredentials($user);
         }
-        else if($UserConfig->StepName == 'OrderSetup')
+        else if($user->StepName == 'OrderSetup')
         {
-            $result = self::getOrderSetup($UserConfig);
+            $result = self::getOrderSetup($user);
         }
-        else if($UserConfig->StepName == 'UserConfig')
+        else if($user->StepName == 'UserConfig')
         {
-            $result = self::getConfigStep($UserConfig);
+            $result = self::getConfigStep($user);
         }
         else
         {
@@ -134,11 +130,11 @@ class ConfigStage
         return $setting->response;
     }
     
-    public static function getApiCredentials($userConfig)
+    public static function getApiCredentials($user)
     {
         $setting = new UserConfigSetting();
 
-        $setting->response = [
+        $setting->UserConfig = [
             'Error' => null,
             'StepName' => "AddCredentials",
             'WizardStepTitle' => "Add Credentials",
@@ -151,7 +147,7 @@ class ConfigStage
                     'MustBeSpecified' => true,
                     'Name' => "API Key",
                     'ReadOnly' => false,
-                    'SelectedValue' => $userConfig->ApiKey ?? '',
+                    'SelectedValue' => $user->ApiKey ?? '',
                     'SortOrder' => 1,
                     'ValueType' => 'PASSWORD',
                     'ListValues'=>[],
@@ -167,7 +163,7 @@ class ConfigStage
                     'MustBeSpecified' => true,
                     'Name' => "API Secret Key",
                     'ReadOnly' => false,
-                    'SelectedValue' => $userConfig->APISecretKey ?? '',
+                    'SelectedValue' => $user->APISecretKey ?? '',
                     'SortOrder' => 2,
                     'ValueType' => 'PASSWORD',
                     'ListValues'=>[],
@@ -182,7 +178,7 @@ class ConfigStage
                     'MustBeSpecified' => true,
                     'Name' => "Is Oauth",
                     'ReadOnly' => false,
-                    'SelectedValue' => ($userConfig->IsOauth==1) ? 'true' : 'false',
+                    'SelectedValue' => ($user->IsOauth==1) ? 'true' : 'false',
                     'SortOrder' => 3,
                     'ValueType' => 'BOOLEAN',
                     'ListValues'=>[],
@@ -191,14 +187,14 @@ class ConfigStage
                 ]
             ],      
         ];
-        return $setting->response;
+        return $setting->UserConfig;
     }
 
-    public static function getOrderSetup($userConfig)
+    public static function getOrderSetup($user)
     {
         $setting = new UserConfigSetting();
 
-        $setting->response= [
+        $setting->UserConfig= [
             'Error'=> null,
             'StepName'=> "OrderSetup",
             'WizardStepTitle'=> "Order Setup",
@@ -211,7 +207,7 @@ class ConfigStage
                     'MustBeSpecified'=> true,
                     'Name'=> "Price Includes Tax",
                     'ReadOnly'=> false,
-                    'SelectedValue'=> ($userConfig->IsPriceIncTax==1) ? 'true' : 'false',
+                    'SelectedValue'=> ($user->IsPriceIncTax==1) ? 'true' : 'false',
                     'SortOrder'=> 1,
                     'ValueType'=> 'BOOLEAN',
                     'ListValues'=>[],
@@ -226,7 +222,7 @@ class ConfigStage
                     'MustBeSpecified'=> false,
                     'Name'=> "Download Virtual Items",
                     'ReadOnly'=> false,
-                    'SelectedValue'=> ($userConfig->DownloadVirtualItems==1) ? 'true' : 'false',
+                    'SelectedValue'=> ($user->DownloadVirtualItems==1) ? 'true' : 'false',
                     'SortOrder'=> 2,
                     'ValueType'=> 'BOOLEAN',
                     'ListValues'=>[],
@@ -235,14 +231,14 @@ class ConfigStage
                 ]
             ],
         ];
-        return $setting->response;
+        return $setting->UserConfig;
     }
 
-    public static function getConfigStep($userConfig)
+    public static function getConfigStep($user)
     {
         $setting = new UserConfigSetting();
 
-        $setting->response= [
+        $setting->UserConfig= [
             'Error'=> null,
             'StepName'=> "UserConfig",
             'WizardStepTitle'=> "UserConfig",
@@ -255,7 +251,7 @@ class ConfigStage
                     'MustBeSpecified'=> true,
                     'Name'=> "Is Oauth",
                     'ReadOnly'=> false,
-                    'SelectedValue'=> ($userConfig->IsOauth==1) ? 'true' : 'false',
+                    'SelectedValue'=> ($user->IsOauth==1) ? 'true' : 'false',
                     'SortOrder'=> 1,
                     'ValueType'=> 'BOOLEAN',
                     'ListValues'=>[],
@@ -270,7 +266,7 @@ class ConfigStage
                     'MustBeSpecified'=> true,
                     'Name'=> "Price Includes Tax",
                     'ReadOnly'=> false,
-                    'SelectedValue'=> ($userConfig->IsPriceIncTax==1) ? 'true' : 'false',
+                    'SelectedValue'=> ($user->IsPriceIncTax==1) ? 'true' : 'false',
                     'SortOrder'=> 2,
                     'ValueType'=> 'BOOLEAN',
                     'ListValues'=>[],
@@ -285,7 +281,7 @@ class ConfigStage
                     'MustBeSpecified'=> false,
                     'Name'=> "Download Virtual Items",
                     'ReadOnly'=> false,
-                    'SelectedValue'=> ($userConfig->DownloadVirtualItems==1) ? 'true' : 'false',
+                    'SelectedValue'=> ($user->DownloadVirtualItems==1) ? 'true' : 'false',
                     'SortOrder'=> 3,
                     'ValueType'=> 'BOOLEAN',
                     'ListValues'=>[],
@@ -294,6 +290,6 @@ class ConfigStage
                 ],
             ],
         ];
-        return $setting->response;
+        return $setting->UserConfig;
     }
 }

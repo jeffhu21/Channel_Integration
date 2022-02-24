@@ -10,23 +10,24 @@ class ProductController extends Controller
     //
     public function products()
     {
-        return 'Products';
+        //return 'Products';
     }
 
     public function inventoryUpdate()
     {
 
-
+        /*
         return [
             
                 'Error Message',
                 'SKU Message',
             
         ];
+        */
     }
 
     public function priceUpdate()
     {
-        return 'Price Update';
+        //return 'Price Update';
     }
 }

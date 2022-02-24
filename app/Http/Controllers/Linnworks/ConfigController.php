@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 
-use App\Models\Linnworks\UserConfig as UserConfig;
+use App\Models\Linnworks\UserInfo as UserInfo;
 use App\Models\Linnworks\ConfigStage as ConfigStage;
 
 use Illuminate\Support\Facades\Validator;
@@ -16,35 +16,37 @@ use Illuminate\Support\Str;
 class ConfigController extends Controller
 {
 
-    public function getUserConfig(Request $request)
+    public function getUserInfo(Request $request)
     {
-        $UserConfig = null;
+        $user = null;
         
         if(!$request->has('AuthorizationToken'))
         {
-            return ['Error'=>'Invalid Request!','UserConfig'=>$UserConfig];
+            return ['Error'=>'Invalid Request!','User'=>$user];
         }
 
         $token = $request->AuthorizationToken;
-        $result = ConfigStage::loadUserConfig($token);
+        $result = ConfigStage::loadUserInfo($token);
         
         if($result['Error'] != null)
         {
-            return ['Error'=>$result['Error'],'UserConfig'=>$result['UserConfig']];
+            return ['Error'=>$result['Error'],'User'=>$result['User']];
         }
-        $UserConfig = $result['UserConfig'];
+        $user = $result['User'];
 
-        if($UserConfig == null)
+        if($user == null)
         {
-            return ['Error'=>'User Not Found!','UserConfig'=>$result['UserConfig']];   
+            return ['Error'=>'User Not Found!','User'=>$result['User']];   
         }
-        return ['Error' => null,'UserConfig'=>$UserConfig];
+        return ['Error' => null,'User'=>$user];
     }
 
     public function addNewUser(Request $request)
     {
         $error = null;
         $auth_token = null;
+
+        
 
         /*
         $validated=$request->validate([
@@ -56,9 +58,10 @@ class ConfigController extends Controller
 
         $validator=Validator::make($request->all(),[
             'LinnworksUniqueIdentifier' => 'required',
-            'Email' => 'required|string|email|max:255|unique:user_configs',
-            'AccountName' => 'required|string|unique:user_configs',
+            'Email' => 'required|string|email|max:255|unique:user_infos',
+            'AccountName' => 'required|string|unique:user_infos',
         ]);
+
 
         if($validator->fails())
         {
@@ -69,8 +72,7 @@ class ConfigController extends Controller
         else
         {
             $auth_token = Str::orderedUuid();
-
-            $user = UserConfig::create([
+            $user = UserInfo::create([
                 'UserId' => $request->LinnworksUniqueIdentifier,
                 'Email' => $request->Email,
                 'AccountName' => $request->AccountName,
@@ -88,15 +90,15 @@ class ConfigController extends Controller
 
     public function userConfig(Request $request)
     {
-        $result = $this->getUserConfig($request);
+        $result = $this->getUserInfo($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
         }
         
-        $UserConfig = $result['UserConfig'];
+        $user = $result['User'];
 
-        $response = ConfigStage::ConfigSetUp($UserConfig,'userConfig');
+        $response = ConfigStage::ConfigSetUp($user,'userConfig');
         //$collection = collect($response['ConfigItems'])->where('ConfigItemId',"APIKey")->first()['Description'];
         //dd($collection);
         return json_encode($response);
@@ -104,42 +106,42 @@ class ConfigController extends Controller
 
     public function saveConfig(Request $request)
     {
-        $result = $this->getUserConfig($request);
+        $result = $this->getUserInfo($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
         }
         
-        $UserConfig = $result['UserConfig'];
+        $user = $result['User'];
 
-        if($request->StepName != $UserConfig->StepName)
+        if($request->StepName != $user->StepName)
         {
-            return ['Error'=>'Invalid Step Name Expected ' . $UserConfig->StepName];
+            return ['Error'=>'Invalid Step Name Expected ' . $user->StepName];
         }
         
-        if ($UserConfig->StepName == "AddCredentials")
+        if ($user->StepName == "AddCredentials")
         {
-            $UserConfig->ApiKey = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APIKey")->SelectedValue;
-            $UserConfig->ApiSecretKey = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APISecretKey")->SelectedValue;
-            $UserConfig->IsOauth = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsOauth")->SelectedValue ? 1 : 0;
-            $UserConfig->StepName = "OrderSetup";
+            $user->ApiKey = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APIKey")->SelectedValue;
+            $user->ApiSecretKey = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APISecretKey")->SelectedValue;
+            $user->IsOauth = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsOauth")->SelectedValue ? 1 : 0;
+            $user->StepName = "OrderSetup";
         }
-        else if ($UserConfig->StepName == "OrderSetup")
+        else if ($user->StepName == "OrderSetup")
         {
-            $UserConfig->IsPriceIncTax = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"PriceIncTax")->SelectedValue ? 1 : 0;
-            $UserConfig->DownloadVirtualItems = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"DownloadVirtualItems")->SelectedValue ? 1 : 0;
-            $UserConfig->StepName = "UserConfig";
+            $user->IsPriceIncTax = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"PriceIncTax")->SelectedValue ? 1 : 0;
+            $user->DownloadVirtualItems = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"DownloadVirtualItems")->SelectedValue ? 1 : 0;
+            $user->StepName = "UserConfig";
         }
-        else if ($UserConfig->StepName == "UserConfig")
+        else if ($user->StepName == "UserConfig")
         {
-            $UserConfig->IsOauth = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsOauth")->SelectedValue ? 1 : 0;
-            $UserConfig->IsPriceIncTax = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"PriceIncTax")->SelectedValue ? 1 : 0;
-            $UserConfig->DownloadVirtualItems = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"DownloadVirtualItems")->SelectedValue ? 1 : 0;
+            $user->IsOauth = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsOauth")->SelectedValue ? 1 : 0;
+            $user->IsPriceIncTax = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"PriceIncTax")->SelectedValue ? 1 : 0;
+            $user->DownloadVirtualItems = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"DownloadVirtualItems")->SelectedValue ? 1 : 0;
         }
         
-        $UserConfig->save();
+        $user->save();
 
-        $response = ConfigStage::ConfigSetUp($UserConfig,'saveConfig');
+        $response = ConfigStage::ConfigSetUp($user,'saveConfig');
 
         return json_encode($response);
 
@@ -147,13 +149,13 @@ class ConfigController extends Controller
 
     public function shippingTags(Request $request)
     {
-        $result = $this->getUserConfig($request);
+        $result = $this->getUserInfo($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
         }
         
-        $UserConfig = $result['UserConfig'];
+        $user = $result['User'];
 
         $response = ConfigStage::getShippingTags();
 
@@ -162,13 +164,13 @@ class ConfigController extends Controller
 
     public function paymentTags(Request $request)
     {
-        $result = $this->getUserConfig($request);
+        $result = $this->getUserInfo($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
         }
         
-        $UserConfig = $result['UserConfig'];
+        $user = $result['User'];
         
         $response = ConfigStage::getPaymentTags();
 
@@ -177,19 +179,19 @@ class ConfigController extends Controller
 
     public function deleted(Request $request)
     {
-        $result = $this->getUserConfig($request);
+        $result = $this->getUserInfo($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
         }
         
-        $UserConfig = $result['UserConfig'];
+        $user = $result['User'];
 
         $error = null;
 
         try
         {
-            UserConfig::where('AuthorizationToken',$token)->delete();
+            UserInfo::where('AuthorizationToken',$token)->delete();
             $error = 'User config does not exist';
         }
         catch(Exception $ex)
@@ -201,13 +203,13 @@ class ConfigController extends Controller
 
     public function test(Request $request)
     {
-        $result = $this->getUserConfig($request);
+        $result = $this->getUserInfo($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
         }
         
-        $UserConfig = $result['UserConfig'];
+        $user = $result['User'];
 
         $error = null;
 
@@ -215,7 +217,7 @@ class ConfigController extends Controller
         {
             //Would normally do some test here
 
-            if($UserConfig->StepName == "UserConfig")
+            if($user->StepName == "UserConfig")
             {
                 $error = null;
             }

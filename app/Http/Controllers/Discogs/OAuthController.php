@@ -103,6 +103,7 @@ class OAuthController extends Controller
 
         if($res->getStatusCode()==200)
         {
+            //dd($oauth_token . ' and ' . $oauth_token_secret.'<br>');
             $msg = 'Successful!';
         }
         else
@@ -146,7 +147,8 @@ class OAuthController extends Controller
 
         //echo('OAuth Token: '.$oauth_token.' <br>');
         //echo('OAuth Token Secret: '.$oauth_token_secret.' <br>');
-        $this->saveToken($oauth_token,$oauth_token_secret);
+
+        //$this->saveToken($oauth_token,$oauth_token_secret);
 
         //shwSWYSutjiYqQChwPxIYeibaTDIfPzosUyUpEws 
     }

@@ -10,11 +10,11 @@ class OrderController extends Controller
     //
     public function orders()
     {
-        return 'Orders';
+        
     }
 
     public function despatch()
     {
-        return 'Despatch';
+        
     }
 }
