@@ -22,6 +22,7 @@ class UserConfigSetting
         'SelectedValue'=>'',
         'Sortorder'=>'',
         'ValueType'=>'',
+        //'ValueType'=>config('linnworksHelper.ConfigValueType.String'),
         'RegExValidation'=>'',
         'RegExError'=>'',
         'ListValues'=>[] //Array of ListItem

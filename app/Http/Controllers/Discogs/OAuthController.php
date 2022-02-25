@@ -169,5 +169,16 @@ class OAuthController extends Controller
     {
         //echo Config::get('discogsAuth.CONSUMER_KEY');
 
+        //$id=$request->
+        //echo('Order ID: '.$id.'<br>');
+
+        $dir = 'marketplace/orders/';
+        $data = $this->makingRequest($dir.$id);
+        $decoded_data=json_decode($data);
+
+        //echo('Data: '.$data.'<br>');
+
+        //echo('Resource URL: '.$decoded_data->resource_url.'<br>');
+
     }
 }

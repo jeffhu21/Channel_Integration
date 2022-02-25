@@ -4,15 +4,20 @@ namespace App\Models\Linnworks;
 
 class Order 
 {
-    public $order = [
+    public $order=[
+
         'BillingAddress'=>[],
         'DeliveryAddress'=>[],
         'OrderItems'=>[],
         'ExtendedProperties'=>[],
         'Notes'=>[],
+
+        
         'Site'=>'',
         'MatchPostalServiceTag'=>'',
         'MatchPaymentMethodTag'=>'',
+        
+
         'PaymentStatus'=>'',
         'ChannelBuyerName'=>'',
         'ReferenceNumber'=>'',
@@ -24,18 +29,17 @@ class Order
         'PaidOn'=>'',
         'PostalServiceCost'=>'',
         'PostalServiceTaxRate'=>'',
-
         //Please see the DiscountType enum for an explanation on how to use the DiscountType and Discount fields to apply a top-level discount to orders
-
-        
         'DiscountType'=>'',
         'Discount'=>'',
-        'MarketplaceTaxId '=>'',
+        'MarketplaceTaxId' =>'',
         'MarketplaceIoss'=>'',
-        
+
     ];
 
+    //Address
     public $address = [
+
         'FullName'=>'',
         'Company'=>'',
         'Address1'=>'',
@@ -48,30 +52,51 @@ class Order
         'CountryCode'=>'',
         'PhoneNumber'=>'',
         'EmailAddress'=>'',
-    ];
 
-    public $OrderItem = [
-        
-        'TaxCostInclusive'=>'',
-        'UseChannelTax'=>'',
-        'IsService'=>'',
-        
-        'OrderLineNumber'=>'',
-        'SKU'=>'',
-        'PricePerUnit'=>'',
-        'Qty'=>'',
-        'TaxRate'=>'',
-        'LinePercentDiscount'=>'',
-        'ItemTitle'=>'',
-        'Options'=>[],
-    ];
 
-    public $option = [
-        'Name'=>'',
-        'Value'=>''
     ];
 
     
+    //OrderItem
+    public $OrderItem=[
+
+    'TaxCostInclusive'=>'',
+    'UseChannelTax'=>'',
+    'IsService'=>'',
+
+    'OrderLineNumber'=>'',
+    'SKU'=>'',
+    'PricePerUnit'=>'',
+    'Qty'=>'',
+    'TaxRate'=>'',
+    'LinePercentDiscount'=>'',
+    'ItemTitle'=>'',
+    'Options'=>[],
+
+    ];
+
+    //OrderItemOption
+    public $OrderItemOption = [
+    'Name'=>'',
+    'Value'=>'',
+    ];
+
+    //OrderExtendedProperty
+    public $OrderExtendedProperty=[
+    'Name'=>'',
+    'Value'=>'',
+    'Type'=>'',
+    ];
+
+    //OrderNote
+    public $OrderNote=[
+    'Note'=>'',
+    'NoteEntryDate'=>'',
+    'NoteUserName'=>'',
+    'IsInternal'=>'',
+    ];
 
 }
+
+
 

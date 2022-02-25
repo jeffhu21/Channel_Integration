@@ -27,7 +27,8 @@ Route::get('/dashboard', function () {
 //Route::get('/test',[OAuthController::class,'test']);
 Route::get('/time',function()
 {
-    return Config::get('discogsAuth.CONSUMER_KEY');
+    //return Config::get('discogsAuth.CONSUMER_KEY');
+    return now();
 });
 
 //Route::get('/t0',[ConfigController::class,'addNewUser']);

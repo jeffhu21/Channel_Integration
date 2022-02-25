@@ -43,7 +43,8 @@ Route::controller(OrderController::class)->prefix('Order')->group(
 
     function()
     {  
-        Route::get('/Orders','orders');
+        Route::get('/Orders','SampleOrders');
+        //Route::get('/Orders','orders');
         Route::get('/Despatch','despatch');
     }
 

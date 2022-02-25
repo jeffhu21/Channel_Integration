@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Linnworks;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Linnworks\UserInfoAccess as UserInfoAccess;
 use Illuminate\Http\Request;
 
 
 use App\Models\Linnworks\UserInfo as UserInfo;
 use App\Models\Linnworks\ConfigStage as ConfigStage;
+
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
@@ -15,38 +17,10 @@ use Illuminate\Support\Str;
 
 class ConfigController extends Controller
 {
-
-    public function getUserInfo(Request $request)
-    {
-        $user = null;
-        
-        if(!$request->has('AuthorizationToken'))
-        {
-            return ['Error'=>'Invalid Request!','User'=>$user];
-        }
-
-        $token = $request->AuthorizationToken;
-        $result = ConfigStage::loadUserInfo($token);
-        
-        if($result['Error'] != null)
-        {
-            return ['Error'=>$result['Error'],'User'=>$result['User']];
-        }
-        $user = $result['User'];
-
-        if($user == null)
-        {
-            return ['Error'=>'User Not Found!','User'=>$result['User']];   
-        }
-        return ['Error' => null,'User'=>$user];
-    }
-
     public function addNewUser(Request $request)
     {
         $error = null;
         $auth_token = null;
-
-        
 
         /*
         $validated=$request->validate([
@@ -90,7 +64,7 @@ class ConfigController extends Controller
 
     public function userConfig(Request $request)
     {
-        $result = $this->getUserInfo($request);
+        $result = UserInfoAccess::getAuthToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -106,7 +80,7 @@ class ConfigController extends Controller
 
     public function saveConfig(Request $request)
     {
-        $result = $this->getUserInfo($request);
+        $result = UserInfoAccess::getAuthToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -149,7 +123,7 @@ class ConfigController extends Controller
 
     public function shippingTags(Request $request)
     {
-        $result = $this->getUserInfo($request);
+        $result = UserInfoAccess::getAuthToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -164,7 +138,7 @@ class ConfigController extends Controller
 
     public function paymentTags(Request $request)
     {
-        $result = $this->getUserInfo($request);
+        $result = UserInfoAccess::getAuthToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -179,7 +153,7 @@ class ConfigController extends Controller
 
     public function deleted(Request $request)
     {
-        $result = $this->getUserInfo($request);
+        $result = UserInfoAccess::getAuthToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -203,7 +177,7 @@ class ConfigController extends Controller
 
     public function test(Request $request)
     {
-        $result = $this->getUserInfo($request);
+        $result = UserInfoAccess::getAuthToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];

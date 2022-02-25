@@ -11,22 +11,6 @@ use App\Models\Linnworks\PaymentTagSetting as PaymentTagSetting;
 class ConfigStage
 {
 
-    //Load UserInfo from UserInfo Model
-    public static function loadUserInfo($token)
-    {
-        $error = null;
-        $user = null;
-        
-        try{
-            $user=UserInfo::where('AuthorizationToken',$token)->first();
-        }
-        catch(Exception $ex)
-        {
-            $error = $ex->getMessage();
-        }
-        return ['Error'=>$error,'User'=>$user];
-    }
-
     public static function ConfigSetUp($user,$action)
     {
         $result=null;
@@ -149,7 +133,7 @@ class ConfigStage
                     'ReadOnly' => false,
                     'SelectedValue' => $user->ApiKey ?? '',
                     'SortOrder' => 1,
-                    'ValueType' => 'PASSWORD',
+                    'ValueType' => config('linnworksHelper.ConfigValueType.Password'),
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
@@ -165,7 +149,7 @@ class ConfigStage
                     'ReadOnly' => false,
                     'SelectedValue' => $user->APISecretKey ?? '',
                     'SortOrder' => 2,
-                    'ValueType' => 'PASSWORD',
+                    'ValueType' => config('linnworksHelper.ConfigValueType.Password'),
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
@@ -180,7 +164,7 @@ class ConfigStage
                     'ReadOnly' => false,
                     'SelectedValue' => ($user->IsOauth==1) ? 'true' : 'false',
                     'SortOrder' => 3,
-                    'ValueType' => 'BOOLEAN',
+                    'ValueType' => config('linnworksHelper.ConfigValueType.Boolean'),
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
@@ -209,7 +193,7 @@ class ConfigStage
                     'ReadOnly'=> false,
                     'SelectedValue'=> ($user->IsPriceIncTax==1) ? 'true' : 'false',
                     'SortOrder'=> 1,
-                    'ValueType'=> 'BOOLEAN',
+                    'ValueType'=> config('linnworksHelper.ConfigValueType.Boolean'),
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
@@ -224,7 +208,7 @@ class ConfigStage
                     'ReadOnly'=> false,
                     'SelectedValue'=> ($user->DownloadVirtualItems==1) ? 'true' : 'false',
                     'SortOrder'=> 2,
-                    'ValueType'=> 'BOOLEAN',
+                    'ValueType'=> config('linnworksHelper.ConfigValueType.Boolean'),
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
@@ -253,7 +237,7 @@ class ConfigStage
                     'ReadOnly'=> false,
                     'SelectedValue'=> ($user->IsOauth==1) ? 'true' : 'false',
                     'SortOrder'=> 1,
-                    'ValueType'=> 'BOOLEAN',
+                    'ValueType'=> config('linnworksHelper.ConfigValueType.Boolean'),
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
@@ -268,7 +252,7 @@ class ConfigStage
                     'ReadOnly'=> false,
                     'SelectedValue'=> ($user->IsPriceIncTax==1) ? 'true' : 'false',
                     'SortOrder'=> 2,
-                    'ValueType'=> 'BOOLEAN',
+                    'ValueType'=> config('linnworksHelper.ConfigValueType.Boolean'),
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
@@ -283,7 +267,7 @@ class ConfigStage
                     'ReadOnly'=> false,
                     'SelectedValue'=> ($user->DownloadVirtualItems==1) ? 'true' : 'false',
                     'SortOrder'=> 3,
-                    'ValueType'=> 'BOOLEAN',
+                    'ValueType'=> config('linnworksHelper.ConfigValueType.Boolean'),
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
