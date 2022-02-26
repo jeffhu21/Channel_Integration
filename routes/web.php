@@ -43,10 +43,13 @@ Route::controller(OAuthController::class)->group(
         Route::post('/access_token','accessToken')->name('access_token');
 
         //Route::get('/save_token','saveToken');
+        //Route::get('/orders/{id}','getOrder');
+        //Route::get('/orders','getAllOrders');
     }
 );
 
-Route::get('/orders/{id}',[OrderController::class,'getOrder']);
+Route::get('/orders/{id}',[OrderController::class,'getOrderById']);
+Route::get('/list',[OrderController::class,'listOrders']);
 
 
 require __DIR__.'/auth.php';

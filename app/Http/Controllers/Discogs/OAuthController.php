@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
+use App\Http\Controllers\Discogs\RequestSent as RequestSent;
+
 use App\Models\OauthToken;
 
 /*
@@ -26,6 +28,7 @@ class OAuthController extends Controller
 {
     //public $oauth_token;
 
+    /*
     //Set the oauth content header
     public function contentHeader()
     {
@@ -82,24 +85,25 @@ class OAuthController extends Controller
         return $res;        
 
     }
+    */
 
     //Make request for request token
     public function requestToken()
     {
-        $res = $this->makingRequest('oauth/request_token');
+        $stream = RequestSent::makingRequest('oauth/request_token');
 
         //$data=$response;
-        $stream = Psr7\Query::parse($res->getBody()->getContents());
-        $oauth_token = $stream['oauth_token'];
-        $oauth_token_secret = $stream['oauth_token_secret'];
+        //$stream = Psr7\Query::parse($res->getBody()->getContents());
+        $oauth_token = $stream['oauth_token']; //Temporary Token
+        $oauth_token_secret = $stream['oauth_token_secret']; //Temporary Token Secret
 
-        /*
-        echo('OAuth Token: '.$oauth_token.' <br>');
-        echo('OAuth Token Secret: '.$oauth_token_secret.' <br>');
-        */
+        
+       // echo('OAuth Token: '.$oauth_token.' <br>');
+        //echo('OAuth Token Secret: '.$oauth_token_secret.' <br>');
+        
 
-        session(['oauth_token'=>$oauth_token]);
-        session(['oauth_token_secret'=>$oauth_token_secret]);
+        session(['oauth_token'=>$oauth_token]); //Save Temporary Token to Session
+        session(['oauth_token_secret'=>$oauth_token_secret]); //Save Temporary Token Secret to Session
 
         if($res->getStatusCode()==200)
         {
@@ -132,17 +136,17 @@ class OAuthController extends Controller
 
     public function accessToken(Request $request)
     {        
-        $oauth_token=$request->session()->get('oauth_token');
-        $oauth_token_secret=$request->session()->get('oauth_token_secret');
+        $oauth_token=$request->session()->get('oauth_token'); //Temporary Token
+        $oauth_token_secret=$request->session()->get('oauth_token_secret'); //Temporary Token Secret
         $oauth_verifier=$request->oauth_verifier;
 
         echo($oauth_verifier.'<br>');
 
-        $res = $this->makingRequest('oauth/access_token',$oauth_token,$oauth_token_secret,$oauth_verifier);
-        
+        $res = RequestSent::makingRequest('oauth/access_token',false,$oauth_token,$oauth_token_secret,$oauth_verifier);
+    
         $stream = Psr7\Query::parse($res->getBody()->getContents());
-        $oauth_token = $stream['oauth_token'];
-        $oauth_token_secret = $stream['oauth_token_secret'];
+        $oauth_token = $stream['oauth_token']; //Permanent Token
+        $oauth_token_secret = $stream['oauth_token_secret']; //Permanent Token Secret
 
 
         //echo('OAuth Token: '.$oauth_token.' <br>');
@@ -165,20 +169,5 @@ class OAuthController extends Controller
     }
     */
 
-    public function getOrder($id)
-    {
-        //echo Config::get('discogsAuth.CONSUMER_KEY');
-
-        //$id=$request->
-        //echo('Order ID: '.$id.'<br>');
-
-        $dir = 'marketplace/orders/';
-        $data = $this->makingRequest($dir.$id);
-        $decoded_data=json_decode($data);
-
-        //echo('Data: '.$data.'<br>');
-
-        //echo('Resource URL: '.$decoded_data->resource_url.'<br>');
-
-    }
+    
 }
