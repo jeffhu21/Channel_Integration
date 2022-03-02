@@ -4,7 +4,7 @@ namespace App\Models\Linnworks;
 
 class OrderDespatch 
 {
-    public $OrderDespatch=[
+    public $order=[
 
         'ReferenceNumber'=>'',
         'ShippingVendor'=>'',
@@ -16,7 +16,7 @@ class OrderDespatch
 
     ];
 
-    public $OrderDespatchItem=[
+    public $item=[
         'SKU'=>'',
         'OrderLineNumber'=>'',
         'DespatchedQuantity'=>0,

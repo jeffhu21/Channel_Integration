@@ -25,4 +25,11 @@ class UserInfo extends Model
         'IsPriceIncTax',
         'DownloadVirtualItems',
     ];
+
+    /*
+    public function OauthToken()
+    {
+        return $this->hasOne(App\Models\OauthToken::class);
+    }
+    */
 }

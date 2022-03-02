@@ -7,5 +7,6 @@ return [
 
     'TOKEN' => 'RrXYuynavgKzdyFfEhaAqxzYcVGZYxxsUpxYBlwr',
     'TOKEN_SECRET' => 'QKeHtndnSSfJqZcengjoUCdauBABtTCReFWBMAzg',
+    //'VERIFIER' => ''
     //'verifier' => $oauth_verifier
 ];

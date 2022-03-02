@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\discogs\OAuthController as OAuthController;
 use App\Http\Controllers\discogs\OrderController as OrderController;
 //use App\Http\Controllers\linnworks\ConfigController as ConfigController;
+
+use Carbon\Carbon;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,7 +30,10 @@ Route::get('/dashboard', function () {
 Route::get('/time',function()
 {
     //return Config::get('discogsAuth.CONSUMER_KEY');
-    return now();
+    return date('Y-m-d H:i:s',strtotime('2020-02-25T00:26:08.538899'.'+ 10 days'));
+    
+    //dd(date('Y-m-d H:i:s',strtotime('2020-02-25T00:26:08.538899'))->add(new DateInterval(P10D)));
+    //return now();
 });
 
 //Route::get('/t0',[ConfigController::class,'addNewUser']);
@@ -50,6 +55,8 @@ Route::controller(OAuthController::class)->group(
 
 Route::get('/orders/{id}',[OrderController::class,'getOrderById']);
 Route::get('/list',[OrderController::class,'listOrders']);
+
+Route::get('/Testing',[OrderController::class,'testing']); //Tester
 
 
 require __DIR__.'/auth.php';

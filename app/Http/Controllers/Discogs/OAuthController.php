@@ -28,72 +28,22 @@ class OAuthController extends Controller
 {
     //public $oauth_token;
 
-    /*
-    //Set the oauth content header
-    public function contentHeader()
-    {
-        $header = [
-            'content_type' => 'application/x-www-form-urlencoded',
-            'user_agent' => Config::get('discogsAuth.USER_AGENT'),
-        ];
-
-        return $header;
-    }
-
-    //Set the oauth authentication header
-    public function oauthHeader($oauth_token,$oauth_token_secret,$oauth_verifier)
-    {
-        $middleware = new Oauth1([
-
-            'consumer_key' => Config::get('discogsAuth.CONSUMER_KEY'),
-            'consumer_secret' => Config::get('discogsAuth.CONSUMER_SECRET'),
-
-            'nonce'=>uniqid('linnworks_'),
-
-            //'signature_method'=>"PLAINTEXT",
-            'signature_method'=>"HMAC-SHA1",
-            'timestamp'=>now()->format('YmdHis'),
-            'callback'=>"https://localhost:8080",
-
-            'token' => $oauth_token,
-            'token_secret' => $oauth_token_secret,
-            'verifier' => $oauth_verifier
-        ]);
-
-        return $middleware;
-
-    }
-
-    //Making request to outside domain Discogs
-    public function makingRequest($dir,$oauth_token='',$oauth_token_secret='',$oauth_verifier='')
-    {
-        $BASE_URL = 'https://api.discogs.com/';
-        $stack = HandlerStack::create(); 
-
-        $middleware = $this->oauthHeader($oauth_token,$oauth_token_secret,$oauth_verifier);
-
-        $stack->push($middleware);
-
-        $client = new Client([
-            'base_uri' => $BASE_URL,
-            'handler' => $stack,
-        ]);
-
-        $res = $client->request('GET',$dir,['auth' => 'oauth','header' => 
-                    $this->contentHeader()]);
-
-        return $res;        
-
-    }
-    */
-
     //Make request for request token
     public function requestToken()
     {
-        $stream = RequestSent::makingRequest('oauth/request_token');
+      
+        $res = RequestSent::httpGet('oauth/request_token');
 
-        //$data=$response;
-        //$stream = Psr7\Query::parse($res->getBody()->getContents());
+        $error=null;
+        $stream=null;
+        if($res['Error'] != null)
+        {
+            $error = $res['Error'];
+            return ["Error"=>$error,"Response"=>$stream];
+            //return null;
+        }
+        
+        $stream = Psr7\Query::parse($res['Response']->getBody()->getContents());
         $oauth_token = $stream['oauth_token']; //Temporary Token
         $oauth_token_secret = $stream['oauth_token_secret']; //Temporary Token Secret
 
@@ -105,6 +55,7 @@ class OAuthController extends Controller
         session(['oauth_token'=>$oauth_token]); //Save Temporary Token to Session
         session(['oauth_token_secret'=>$oauth_token_secret]); //Save Temporary Token Secret to Session
 
+        /*
         if($res->getStatusCode()==200)
         {
             //dd($oauth_token . ' and ' . $oauth_token_secret.'<br>');
@@ -114,15 +65,9 @@ class OAuthController extends Controller
         {
             $msg = 'Error!';
         }
+        */
 
-        return view('/home',['response'=>$msg]);
-
-        //$a_res=$this->oauthAuthorize($oauth_token);
-
-        //echo('Authorize: '.$a_res.' <br>');
-
-        //dd($a_res);
-        //return view('home',['response' => $a_res]);
+        return view('/home',['response'=>$error]);
 
     }
 
@@ -138,36 +83,46 @@ class OAuthController extends Controller
     {        
         $oauth_token=$request->session()->get('oauth_token'); //Temporary Token
         $oauth_token_secret=$request->session()->get('oauth_token_secret'); //Temporary Token Secret
-        $oauth_verifier=$request->oauth_verifier;
+        $oauth_verifier=$request->oauth_verifier;  //Verifier Authorized by User
 
         echo($oauth_verifier.'<br>');
 
-        $res = RequestSent::makingRequest('oauth/access_token',false,$oauth_token,$oauth_token_secret,$oauth_verifier);
+        $res = RequestSent::httpGet('oauth/access_token',false,$oauth_token,$oauth_token_secret,$oauth_verifier);
     
-        $stream = Psr7\Query::parse($res->getBody()->getContents());
+        $error=null;
+        $stream=null;
+        if($res['Error'] != null)
+        {
+            $error = $res['Error'];
+            return ["Error"=>$error,"Response"=>$stream];
+            //return null;
+        }
+
+        $stream = Psr7\Query::parse($res['Response']->getBody()->getContents());
         $oauth_token = $stream['oauth_token']; //Permanent Token
         $oauth_token_secret = $stream['oauth_token_secret']; //Permanent Token Secret
-
+        
 
         //echo('OAuth Token: '.$oauth_token.' <br>');
         //echo('OAuth Token Secret: '.$oauth_token_secret.' <br>');
 
-        //$this->saveToken($oauth_token,$oauth_token_secret);
+        $this->saveToken($oauth_token,$oauth_token_secret,$oauth_verifier);
 
         //shwSWYSutjiYqQChwPxIYeibaTDIfPzosUyUpEws 
     }
 
-    /*
-    public function saveToken($oauth_token,$oauth_token_secret)
+    
+    public function saveToken($oauth_token,$oauth_token_secret,$oauth_verifier)
     {
         $token=OauthToken::create([
             'consumer_key'=> env('CONSUMER_KEY'),
             'consumer_secret'=> env('CONSUMER_SECRET'),
             'oauth_token'=>$oauth_token,
-            'oauth_secret'=>$oauth_token_secret
+            'oauth_secret'=>$oauth_token_secret,
+            'oauth_verifier'=>$oauth_verifier
         ]);
     }
-    */
+    
 
     
 }

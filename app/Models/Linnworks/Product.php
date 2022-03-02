@@ -2,10 +2,15 @@
 
 namespace App\Models\Linnworks;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class Product extends Model
+class Product 
 {
-    use HasFactory;
+    public $product=[
+        'SKU'=>'',
+        'Title'=>'',
+        'Quantity'=>'',
+        'Price'=>'',
+        'Reference'=>''
+    ];
+
+
 }

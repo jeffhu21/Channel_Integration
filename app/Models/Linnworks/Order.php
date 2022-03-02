@@ -62,14 +62,14 @@ class Order
 
     'TaxCostInclusive'=>'',
     'UseChannelTax'=>'',
-    'IsService'=>'',
+    'IsService'=>false,
 
     'OrderLineNumber'=>'',
     'SKU'=>'',
     'PricePerUnit'=>'',
     'Qty'=>'',
     'TaxRate'=>'',
-    'LinePercentDiscount'=>'',
+    'LinePercentDiscount'=>0,
     'ItemTitle'=>'',
     'Options'=>[],
 

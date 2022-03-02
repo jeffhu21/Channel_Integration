@@ -13,6 +13,7 @@ class CreateUserInfosTable extends Migration
      */
     public function up()
     {
+        //Schema::enableForeignKeyConstraints();
         Schema::create('user_infos', function (Blueprint $table) {
             $table->id();
             $table->uuid('UserId');
@@ -28,6 +29,7 @@ class CreateUserInfosTable extends Migration
             $table->boolean('IsPriceIncTax')->default(false);
             $table->boolean('DownloadVirtualItems')->default(false);
             $table->timestamps();
+            
         });
     }
 
