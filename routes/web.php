@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\discogs\OAuthController as OAuthController;
 use App\Http\Controllers\discogs\OrderController as OrderController;
+use App\Http\Controllers\discogs\ProductController as ProductController;
 //use App\Http\Controllers\linnworks\ConfigController as ConfigController;
 
 use Carbon\Carbon;
@@ -46,6 +47,9 @@ Route::controller(OAuthController::class)->group(
         Route::get('/request_token','requestToken')->name('request_token');
         Route::get('/oauth_verifier','oauthAuthorize')->name('oauth_verifier');
         Route::post('/access_token','accessToken')->name('access_token');
+        /*
+        Route::get('/username','getUsername');
+        */
 
         //Route::get('/save_token','saveToken');
         //Route::get('/orders/{id}','getOrder');
@@ -55,6 +59,8 @@ Route::controller(OAuthController::class)->group(
 
 Route::get('/orders/{id}',[OrderController::class,'getOrderById']);
 Route::get('/list',[OrderController::class,'listOrders']);
+
+Route::get('/inventory/{PageNumber}',[ProductController::class,'getInventory']);
 
 Route::get('/Testing',[OrderController::class,'testing']); //Tester
 

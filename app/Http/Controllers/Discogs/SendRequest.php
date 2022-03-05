@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 
 //use App\Models\Linnworks\UserInfo as UserInfo;
 
-class RequestSent
+class SendRequest
 {
     //Set the oauth content header
     public static function contentHeader($authenticated=false)
@@ -82,8 +82,6 @@ class RequestSent
                 
                 $error=$res->getStatusCode()." and " .$res->getReasonPhrase();
                 
-                //dd("THE END");
-                //echo($error);
             }
         } 
         catch(RequestException $ex)
@@ -102,12 +100,12 @@ class RequestSent
         {
             if($error != null)
             {
-                echo($error."\n");
+                //echo($error."\n");
             }
         }
 
         return ["Error"=>$error,"Response"=>$res];
-        //return $res;      
+            
     }
 
     //Making request to outside domain Discogs
@@ -134,14 +132,11 @@ class RequestSent
         {
             $res = $client->request('POST',$dir,['auth' => 'oauth','header' => self::contentHeader($authenticated),'json'=>$q]);
 
-            //dd($res->getStatusCode());
             if($res->getStatusCode()!=200 && $res->getStatusCode()!=201 && $res != null)
             {
                 
                 $error=$res->getStatusCode()." and " .$res->getReasonPhrase();
-                
-                //dd("THE END");
-                //echo($error);
+            
             }
         
         }
@@ -161,17 +156,12 @@ class RequestSent
         {
             if($error != null)
             {
-                echo($error."\n");
+                //echo($error."\n");
             }
         }
         
-        
-        //dd($res . " and " .$error."<br>");
 
-        return ["Error"=>$error,"Response"=>$res];
-
-
-        //return $res;        
+        return ["Error"=>$error,"Response"=>$res];     
 
     }
 

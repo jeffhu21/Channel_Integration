@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
-use App\Http\Controllers\Discogs\RequestSent as RequestSent;
+use App\Http\Controllers\Discogs\SendRequest as SendRequest;
 
 use App\Models\OauthToken;
 
@@ -32,7 +32,7 @@ class OAuthController extends Controller
     public function requestToken()
     {
       
-        $res = RequestSent::httpGet('oauth/request_token');
+        $res = SendRequest::httpGet('oauth/request_token');
 
         $error=null;
         $stream=null;
@@ -87,7 +87,7 @@ class OAuthController extends Controller
 
         echo($oauth_verifier.'<br>');
 
-        $res = RequestSent::httpGet('oauth/access_token',false,$oauth_token,$oauth_token_secret,$oauth_verifier);
+        $res = SendRequest::httpGet('oauth/access_token',false,$oauth_token,$oauth_token_secret,$oauth_verifier);
     
         $error=null;
         $stream=null;
@@ -109,6 +109,33 @@ class OAuthController extends Controller
         $this->saveToken($oauth_token,$oauth_token_secret,$oauth_verifier);
 
         //shwSWYSutjiYqQChwPxIYeibaTDIfPzosUyUpEws 
+    }
+
+    public static function getUsername($token,$token_secret)
+    {
+        $dir = 'oauth/identity';
+
+        /*
+        $record = OauthToken::first();
+
+        $token = $record->oauth_token;
+        $token_secret = $record->oauth_secret;
+        */
+
+        $res = SendRequest::httpGet($dir,true,$token,$token_secret);
+
+        $error=null;
+        if($res['Error'] != null)
+        {
+            $error = $res['Error'];
+            return ["Error"=>$error,"Username"=>null];
+        }
+
+        $stream=json_decode($res['Response']->getBody()->getContents());
+
+        return ["Error"=>$error,"Username"=>$stream->username];
+        //return $stream->username;
+
     }
 
     

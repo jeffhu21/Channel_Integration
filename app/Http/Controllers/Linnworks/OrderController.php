@@ -8,6 +8,8 @@ use App\Http\Controllers\Linnworks\UserInfoAccess as UserInfoAccess;
 use App\Models\Linnworks\Order as Order;
 use App\Models\Linnworks\OrderDespatch as OrderDespatch;
 
+use App\Models\OauthToken as OauthToken;
+
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -20,7 +22,7 @@ class OrderController extends Controller
             return ['Error' => "Invalid page number"];
         }
 
-        $result = UserInfoAccess::getAuthToken($request);
+        $result = UserInfoAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -30,66 +32,59 @@ class OrderController extends Controller
 
         $error = null;
 
+
+
         $filter = 'created_after='.($request->UTCTimeFrom);//Could be converted to different time zone
         //dd($filter);
 
+        $record = OauthToken::first();
+        $token = $record->oauth_token;
+        $token_secret = $record->oauth_secret;
+
         //Retrieve Orders from Discogs
-        $res = DiscogsOrderController::listOrders($filter);
+        $res = DiscogsOrderController::listOrders($filter,$request->PageNumber,$token,$token_secret);
 
         if($res['Error'] != null)
         {
             $error = $res['Error'];
             return ['Error'=>$error];
         }
-        $stream = $res['Response'];
+        $stream = $res['Orders'];
 
         $PaymentStatus=config('linnworksHelper.PaymentStatus.Unpaid');//Set Default Status Unpaid
-        
-        /*
-        Push Orders to Linnworks
-        */
+
+        /**
+         * Push Orders to Linnworks
+         * @param orders - array of orders push to Linnworks
+         */
         $orders = [];
 
-        $orderCount = count($stream->orders);
-        
-        /*
-        if ($request->PageNumber == 11)
-        {
-            $orderCount = 22;
-        }
-        else if ($request->PageNumber > 11)
-        {
-            $orderCount = 0;
-        }
-        */
-
-        //echo($stream->orders[0]->shipping_address);
-
-        for ($i = 0; $i < $orderCount; $i++)
+        /**
+         * @param order - order from Discogs
+         */
+        foreach ($stream->orders as $order) 
         {
 
             //Set the payment status
-            if($stream->orders[$i]->status == 'Payment Received'||
-            $stream->orders[$i]->status == 'Shipped'||
-            $stream->orders[$i]->status == 'Invoice Sent')
+            if($order->status == 'Payment Received'||
+            $order->status == 'Shipped'||
+            $order->status == 'Invoice Sent')
             {
                 $PaymentStatus=config('linnworksHelper.PaymentStatus.Paid');
             }
-            else if(str_contains($stream->orders[$i]->status,'Cancelled'))
+            else if(str_contains($order->status,'Cancelled'))
             {
                 $PaymentStatus=config('linnworksHelper.PaymentStatus.Cancelled');
             }
 
-            //$interval=new DateInterval('P10D');
-
-            
-            //dd($stream->orders[$i]->created);
-            //dd(date('Y-m-d H:i:s',strtotime($stream->orders[$i]->created)));
-
             //Could be modified
+            /**
+             * @param obj - order pushing to Linnworks
+             */
             $obj = new Order();
 
-            $str = $stream->orders[$i]->shipping_address;
+            //Split the shipping address to full name, address and phone number
+            $str = $order->shipping_address;
 
             $pos = strpos($str,"\n");
             
@@ -123,95 +118,34 @@ class OrderController extends Controller
                     $other = substr($str,$pos);
                 }
 
-                //dd("Phone Number: " . $PhoneNumber);
             }
 
-            //$str=substr($FullName,$pos+1);
-
-            /*
-            $addr = [];
-
-            $pos = strpos($address,"\n");
-
-            //echo($address.'<br>');
-            
-            while ($pos!=false) 
-            {
-                //echo('Address: '.$address.'<br>');
-                $addr[$index]=substr($address,0,$pos);
-                $address=substr($address,$pos+1);
-                //echo('Address Index: '.$addr[$index].'<br>');
-                $index++;
-                $pos = strpos($address,"\n");
-
-            }
-            $addr[$index] = $address;
-
-            
-
-            for($k=0;$k<count($addr);$k++)
-            {
-                echo('Addr: '.$addr[$k].'<br>');
-            }
-
-            echo('THE END <br>');
-            */
-            
-
+            //Setting order pushing to Linnworks
             $obj->order = [
                 'DeliveryAddress' => [$obj->address=
                 [
-                    //'Address1' => $stream->orders[$i]->shipping_address,
-                    //'Address1' => str_replace("\n"," ",$stream->orders[$i]->shipping_address),
                     'Address1' => str_replace("\n"," ",$address),
                     'FullName' => $FullName,
                     'PhoneNumber' => $PhoneNumber,
-                    /*
-                    'Address2' => "",
-                    'Address3' => "",
-                    'Company' => "",
-                    'Country' => "",
-                    'CountryCode' => "",
-                    'EmailAddress' => "",
-                    'FullName' => "",
-                    'PhoneNumber' => "",
-                    'PostCode' => "",
-                    'Region' => "",
-                    'Town' => "",
-                    */
                     ],
                 ],
                 'BillingAddress' => [$obj->address=
                 [
                     'Address1' => str_replace("\n"," ",$other),
-                    /*
-                    'Address1' => "2-4 Southgate",
-                    'Address2' => "",
-                    'Address3' => "",
-                    'Company' => "Linn Systems Ltd",
-                    'Country' => "United Kingdom",
-                    'CountryCode' => "GB",
-                    'EmailAddress' => "test@test.com",
-                    'FullName' => "Mr Billing Billington",
-                    'PhoneNumber' => "00000000002",
-                    'PostCode' => "PO19 8DJ",
-                    'Region' => "West Sussex",
-                    'Town' => "Chichester",
-                    */
                     ],
                 ],
-                'ChannelBuyerName' => $stream->orders[$i]->buyer->username,
-                'Currency' => $stream->orders[$i]->total->currency,
-                'DispatchBy' => date('Y-m-d H:i:s',strtotime($stream->orders[$i]->created.'+ 10 days')),
+                'ChannelBuyerName' => $order->buyer->username,
+                'Currency' => $order->total->currency,
+                'DispatchBy' => date('Y-m-d H:i:s',strtotime($order->created.'+ 10 days')),
                 'ExternalReference' => "",
-                'ReferenceNumber' => $stream->orders[$i]->id,
+                'ReferenceNumber' => $order->id,
                 'MatchPaymentMethodTag' => "",
                 'MatchPostalServiceTag' => "",
-                'PaidOn' => $stream->orders[$i]->last_activity,
+                'PaidOn' => $order->last_activity,
                 'PaymentStatus' => $PaymentStatus,
-                'PostalServiceCost' => $stream->orders[$i]->shipping->value,
+                'PostalServiceCost' => $order->shipping->value,
                 'PostalServiceTaxRate' => "",
-                'ReceivedDate' => $stream->orders[$i]->last_activity,
+                'ReceivedDate' => $order->last_activity,
                 'Site' => '',
                 'Discount' => '',
                 'DiscountType' => '',
@@ -219,23 +153,26 @@ class OrderController extends Controller
                 'MarketplaceTaxId' => ""
             ];
 
-            $itemCount = count($stream->orders[$i]->items);
+            //$itemCount = count($order->items);
+            $j=0;
 
-            for ($j = 0; $j < $itemCount; $j++)
+            foreach($order->items as $item)
             {
                 $obj->OrderItem=[
                         //'IsService' => false,
-                        'ItemTitle' => $stream->orders[$i]->items[$j]->release->id,
-                        'SKU' => '',
+                        'ItemTitle' => "",
+                        'SKU' => $item->release->id,
                         'LinePercentDiscount' => 0,
-                        'PricePerUnit' => $stream->orders[$i]->items[$j]->price->value,
+                        'PricePerUnit' => $item->price->value,
                         'Qty' => 1,
-                        'OrderLineNumber' => $stream->orders[$i]->items[$j]->id,
+                        'OrderLineNumber' => $item->id,
                         'TaxCostInclusive' => true,
                         'TaxRate' => 13,
                         'UseChannelTax' => false
                 ];
                 $obj->order['OrderItems'][$j]=$obj->OrderItem;
+                //array_push($obj->order['OrderItems'][$j],$obj->OrderItem);
+                $j++;
             }
 
             $randProps = rand(0, 2);
@@ -266,9 +203,9 @@ class OrderController extends Controller
 
                 /*
                 $obj->OrderExtendedProperty=[
-                    'Name' => "Prop".$stream->orders[$i]->tracking->career, 
+                    'Name' => "Prop".$order->tracking->career, 
                     'Type' => "Tracking Number", 
-                    'Value' => $stream->orders[$i]->tracking->number
+                    'Value' => $order->tracking->number
                 ];
                 $obj->order['ExtendedProperties']=$obj->OrderExtendedProperty;
         
@@ -281,17 +218,15 @@ class OrderController extends Controller
                 $obj->order['Notes']=$obj->OrderNote;
                 */
             
-            $orders[$i]=$obj->order;
-
-            //echo(json_encode($orders));
-            //dd($orders);
+            //$orders[$i]=$obj->order;
+            array_push($orders,$obj->order);
             
         }
-        //dd($orders);
-        //echo(json_encode($orders));
-        return ['Error'=>$error,'HasMorePages'=>$request->PageNumber<11,'Orders'=>$orders];
+        return ['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Orders']->pagination->pages,'Orders'=>$orders];
         
     }
+
+    
 
     //
     public function SampleOrders(Request $request)
@@ -302,7 +237,7 @@ class OrderController extends Controller
             return ['Error' => "Invalid page number"];
         }
 
-        $result = UserInfoAccess::getAuthToken($request);
+        $result = UserInfoAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -444,30 +379,48 @@ class OrderController extends Controller
             return ['Error' => "Invalid page number"];
         }
         
-        $result = UserInfoAccess::getAuthToken($request);
+        $result = UserInfoAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
         }
         
         $user = $result['User'];
+        //$HasError = false;
+        $UpdateOrder = "";
+        $error=null;
+
+        $record = OauthToken::first();
+        $token = $record->oauth_token;
+        $token_secret = $record->oauth_secret;
+        $token_verifier=$record->oauth_verifier;
 
         //Push Updated Orders back to Discogs
-        for ($i=0; $i < count($request_orders); $i++) 
+        foreach ($request_orders as $order) 
+        //for ($i=0; $i < count($request_orders); $i++) 
         { 
+            /*
             $obj = new OrderDespatch();
-            $obj->order=$request_orders[$i];
-            //dd($request_orders[$i]);
+            $obj->order=$order;
             $UpdateOrder=DiscogsOrderController::updateOrder($obj);
+            */
+            $res=DiscogsOrderController::updateOrder($order,$token,$token_secret,$token_verifier);
             
-            if($UpdateOrder['Error'] != null)
+            if($res['Error'] != null)
             {
-                return $UpdateOrder;
+                //$HasError = true;
+                $error = $error.$res['Error']."\n";
+                $UpdateOrder = $UpdateOrder.$res["ReferenceNumber"].", ";
+
+
+                //return $UpdateOrder;
             }
             
             //dd($obj->order);
         }
-        return ["Error"=>null,"Orders"=>$UpdateOrder];
+        
+        return ["Error"=>null,"Orders"=>["Error"=>$error,"ReferenceNumber"=>$UpdateOrder]];
+        //return ["Error"=>null,"Orders"=>$res];
 
     }
 

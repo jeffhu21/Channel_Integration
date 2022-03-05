@@ -9,7 +9,7 @@ use App\Models\Linnworks\UserInfo as UserInfo;
 class UserInfoAccess
 {
     //Check Request with AuthorizationToken
-    public static function getAuthToken(Request $request)
+    public static function getUserByToken(Request $request)
     {
         $user = null;
         

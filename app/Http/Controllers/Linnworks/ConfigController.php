@@ -64,7 +64,7 @@ class ConfigController extends Controller
 
     public function userConfig(Request $request)
     {
-        $result = UserInfoAccess::getAuthToken($request);
+        $result = UserInfoAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -80,7 +80,7 @@ class ConfigController extends Controller
 
     public function saveConfig(Request $request)
     {
-        $result = UserInfoAccess::getAuthToken($request);
+        $result = UserInfoAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -123,7 +123,7 @@ class ConfigController extends Controller
 
     public function shippingTags(Request $request)
     {
-        $result = UserInfoAccess::getAuthToken($request);
+        $result = UserInfoAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -138,7 +138,7 @@ class ConfigController extends Controller
 
     public function paymentTags(Request $request)
     {
-        $result = UserInfoAccess::getAuthToken($request);
+        $result = UserInfoAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -153,7 +153,7 @@ class ConfigController extends Controller
 
     public function deleted(Request $request)
     {
-        $result = UserInfoAccess::getAuthToken($request);
+        $result = UserInfoAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -177,7 +177,7 @@ class ConfigController extends Controller
 
     public function test(Request $request)
     {
-        $result = UserInfoAccess::getAuthToken($request);
+        $result = UserInfoAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
