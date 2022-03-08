@@ -111,9 +111,7 @@ class ProductController extends Controller
             {
                 $error = $error.$res['Error']."\n";
                 $UpdateInventory = $UpdateInventory.$res["SKU"].", ";   
-            }
-
-            
+            }    
         }
         
         return ["Error"=>null,"Products"=>["Error"=>$error,"SKU"=>$UpdateInventory]];
@@ -123,6 +121,8 @@ class ProductController extends Controller
     public function priceUpdate(Request $request)
     {
         $request_products=json_decode($request->Products);
+
+        //dd($request->Products);
     
         if($request->Products == null || count($request_products) == 0)
         {

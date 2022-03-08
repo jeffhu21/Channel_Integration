@@ -32,7 +32,8 @@ class OAuthController extends Controller
     public function requestToken()
     {
       
-        $res = SendRequest::httpGet('oauth/request_token');
+        //$res = SendRequest::httpGet('oauth/request_token');
+        $res = SendRequest::httpRequest('GET','oauth/request_token');
 
         $error=null;
         $stream=null;
@@ -87,8 +88,9 @@ class OAuthController extends Controller
 
         echo($oauth_verifier.'<br>');
 
-        $res = SendRequest::httpGet('oauth/access_token',false,$oauth_token,$oauth_token_secret,$oauth_verifier);
-    
+        //$res = SendRequest::httpGet('oauth/access_token',false,$oauth_token,$oauth_token_secret,$oauth_verifier);
+        $res = SendRequest::httpRequest('GET','oauth/access_token',false,'',$oauth_token,$oauth_token_secret,$oauth_verifier);
+
         $error=null;
         $stream=null;
         if($res['Error'] != null)
@@ -122,7 +124,8 @@ class OAuthController extends Controller
         $token_secret = $record->oauth_secret;
         */
 
-        $res = SendRequest::httpGet($dir,true,$token,$token_secret);
+        //$res = SendRequest::httpGet($dir,true,$token,$token_secret);
+        $res = SendRequest::httpRequest('GET',$dir,true,'',$token,$token_secret);
 
         $error=null;
         if($res['Error'] != null)
@@ -136,6 +139,25 @@ class OAuthController extends Controller
         return ["Error"=>$error,"Username"=>$stream->username];
         //return $stream->username;
 
+    }
+
+    public static function getIdentity($token,$token_secret)
+    {
+        $dir = 'oauth/identity';
+
+        //$res = SendRequest::httpGet($dir,true,$token,$token_secret);
+        $res = SendRequest::httpRequest('GET',$dir,true,'',$token,$token_secret);
+
+        $error=null;
+        if($res['Error'] != null)
+        {
+            $error = $res['Error'];
+            return ["Error"=>$error,"Stream"=>null];
+        }
+
+        $stream=json_decode($res['Response']->getBody()->getContents());
+
+        return ["Error"=>$error,"Stream"=>$stream];
     }
 
     

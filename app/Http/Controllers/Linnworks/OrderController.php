@@ -373,7 +373,7 @@ class OrderController extends Controller
     public function despatch(Request $request)
     {
         $request_orders=json_decode($request->Orders);
-        //dd(count($request_orders));
+
         if($request->Orders == null || count($request_orders) == 0)
         {
             return ['Error' => "Invalid page number"];

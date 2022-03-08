@@ -35,7 +35,8 @@ class OrderController extends Controller
         $token_secret = Config::get('discogsAuth.TOKEN_SECRET'); //Permanent Token Secret
         */
 
-        $res = SendRequest::httpGet($dir.$id,true,$token,$token_secret);
+        //$res = SendRequest::httpGet($dir.$id,true,$token,$token_secret);
+        $res = SendRequest::httpRequest('GET',$dir.$id,true,'',$token,$token_secret);
 
         $error=null;
         $stream=null;
@@ -82,7 +83,8 @@ class OrderController extends Controller
         $token_secret = Config::get('discogsAuth.TOKEN_SECRET'); //Permanent Token Secret
         */
 
-        $res = SendRequest::httpGet($dir.$q,true,$token,$token_secret);
+        //$res = SendRequest::httpGet($dir.$q,true,$token,$token_secret);
+        $res = SendRequest::httpRequest('GET',$dir.$q,true,'',$token,$token_secret);
 
         $error=null;
         $stream=null;
@@ -124,8 +126,9 @@ class OrderController extends Controller
         //array_push($q,"'message'=>$msg");
         $q = ['order_id'=>$id,'status'=>'Payment Received','message'=>$msg,'tracking'=>$msg];
 
-        $res = SendRequest::httpPost($dir.$id.'/messages',true,$q,$token,$token_secret,$token_verifier);
-        
+        //$res = SendRequest::httpPost($dir.$id.'/messages',true,$q,$token,$token_secret,$token_verifier);
+        $res = SendRequest::httpRequest('POST',$dir.$id.'/messages',true,$q,$token,$token_secret);
+
         if($res['Error'] != null)
         {
             $error = $res['Error'];
@@ -157,7 +160,8 @@ class OrderController extends Controller
         //array_push($q,"'message'=>$msg");
         $q = ['order_id'=>$id,'status'=>'Payment Received','message'=>$msg,'tracking'=>$msg];
 
-        $res = SendRequest::httpPost($dir.$id.'/messages',true,$q,$token,$token_secret,$token_verifier);
+        //$res = SendRequest::httpPost($dir.$id.'/messages',true,$q,$token,$token_secret,$token_verifier);
+        $res = SendRequest::httpRequest('POST',$dir.$id.'/messages',true,$q,$token,$token_secret);
         //dd($res);
         /*
         if($res->getStatusCode()!=200)

@@ -37,7 +37,14 @@ return [
         'PostageThenItems'=>'PostageThenItems'
     
 
-    ]
+    ],
+
+    
+    'ListingUpdateType'=>[
+        'Create'=>0,
+        'Update'=>1
+    ],
+    
 
     
     

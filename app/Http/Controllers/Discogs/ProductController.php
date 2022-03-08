@@ -17,6 +17,7 @@ use App\Http\Controllers\Discogs\OAuthController as OAuthController;
 use App\Http\Controllers\Discogs\SendRequest as SendRequest;
 
 use App\Models\OauthToken as OauthToken;
+use App\Models\Discogs\Listing as Listing;
 
 class ProductController extends Controller
 {
@@ -29,20 +30,21 @@ class ProductController extends Controller
         */
 
         $username = null;
-        $result = OAuthController::getUsername($token,$token_secret);
+        $result = OAuthController::getIdentity($token,$token_secret);
         //$username = OAuthController::getUsername()['Username'];
 
-        if($result['Username'] == null)
+        if($result['Error'] != null)
         {
             return ["Error"=>$result['Error']];
         }
 
-        $username = $result['Username'];
+        $username = $result['Stream']->username;
         $q="?page=".$PageNumber;
         $dir = 'users/'.$username.'/inventory'.$q;
         //$dir = 'users/'.$username.'/inventory';
 
-        $res = SendRequest::httpGet($dir,true,$token,$token_secret);
+        //$res = SendRequest::httpGet($dir,true,$token,$token_secret);
+        $res = SendRequest::httpRequest('GET',$dir,true,'',$token,$token_secret);
 
         $error=null;
         $stream=null;
@@ -76,8 +78,9 @@ class ProductController extends Controller
 
         $q = ['release_id'=>$release_id,'format_quantity'=>$product->Quantity];
 
-        $res = SendRequest::httpPost($dir.$listing_id,true,$q,$token,$token_secret,$token_verifier);
-        
+        //$res = SendRequest::httpPost($dir.$listing_id,true,$q,$token,$token_secret,$token_verifier);
+        $res = SendRequest::httpRequest('POST',$dir.$listing_id,true,$q,$token,$token_secret);
+
         if($res['Error'] != null)
         {
             $error = $res['Error'];
@@ -97,8 +100,9 @@ class ProductController extends Controller
 
         $q = ['release_id'=>$release_id,'price'=>$product->Price];
 
-        $res = SendRequest::httpPost($dir.$listing_id,true,$q,$token,$token_secret,$token_verifier);
-        
+        //$res = SendRequest::httpPost($dir.$listing_id,true,$q,$token,$token_secret,$token_verifier);
+        $res = SendRequest::httpRequest('POST',$dir.$listing_id,true,$q,$token,$token_secret);
+
         if($res['Error'] != null)
         {
             $error = $res['Error'];
@@ -107,5 +111,61 @@ class ProductController extends Controller
         return ["Error"=>$error,"SKU"=>$release_id];
     }
 
+    public static function createList($listing,$token,$token_secret,$token_verifier)
+    {
+        $error = null;
+        $dir ='marketplace/listings';
+
+        //$q = ['release_id'=>$release_id,'price'=>$product->Price];
+
+        //dd($listing['status']);
+
+        //$res = SendRequest::httpPost($dir,true,$listing,$token,$token_secret,$token_verifier);
+        $res = SendRequest::httpRequest('POST',$dir,true,$listing,$token,$token_secret);
+
+        //dd($res['Response']->getBody()->getContents());
+
+        /*
+        if($res['Error'] != null)
+        {
+            $error = $res['Error'];
+        }
+        */
+
+        return $res;
+        //return ['listing_id'=>$listing];
+    }
+
+    public static function updateListing($listing,$token,$token_secret,$token_verifier)
+    {
+        $error = null;
+        $dir = 'marketplace/listings/';
+        $listing_id = $listing['listing_id'];
+
+        //$res = SendRequest::httpPost($dir.$listing_id,true,$listing,$token,$token_secret,$token_verifier);
+        $res = SendRequest::httpRequest('POST',$dir.$listing_id,true,$listing,$token,$token_secret);
+
+        return $res;
+    }
+    
+    public static function deleteListing($listing,$token,$token_secret,$token_verifier)
+    {
+        $res = null;
+        $error = null;
+        $dir = 'marketplace/listings/';
+
+        //if(isset($listing['listing_id']))
+        //{
+            $listing_id = $listing->ExternalListingId;
+            $res = SendRequest::httpRequest('DELETE',$dir.$listing_id,true,'',$token,$token_secret,$token_verifier);
+            
+        //}
+        //else
+        //{
+        //    $error = 'Id Not Found';
+        //}
+        
+        return $res;
+    }
 
 }
