@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Discogs\ProductController as DiscogsProductController;
 
 use App\Http\Controllers\Linnworks\UserInfoAccess as UserInfoAccess;
+use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 use App\Models\Linnworks\Product as Product;
 
 use App\Models\OauthToken as OauthToken;
@@ -74,7 +75,8 @@ class ProductController extends Controller
         }
         */
 
-        return ['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Products']->pagination->pages,'Products'=>$products];
+        //return ['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Products']->pagination->pages,'Products'=>$products];
+        return SendResponse::httpResponse(['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Products']->pagination->pages,'Products'=>$products]);
     }
 
     public function inventoryUpdate(Request $request)
@@ -114,8 +116,8 @@ class ProductController extends Controller
             }    
         }
         
-        return ["Error"=>null,"Products"=>["Error"=>$error,"SKU"=>$UpdateInventory]];
-        
+        //return ["Error"=>null,"Products"=>["Error"=>$error,"SKU"=>$UpdateInventory]];
+        return SendResponse::httpResponse(["Error"=>null,"Products"=>["Error"=>$error,"SKU"=>$UpdateInventory]]);
     }
 
     public function priceUpdate(Request $request)
@@ -158,7 +160,7 @@ class ProductController extends Controller
             
         }
         
-        return ["Error"=>null,"Products"=>["Error"=>$error,"SKU"=>$UpdatePrice]];
-
+        //return ["Error"=>null,"Products"=>["Error"=>$error,"SKU"=>$UpdatePrice]];
+        return SendResponse::httpResponse(["Error"=>null,"Products"=>["Error"=>$error,"SKU"=>$UpdatePrice]]);
     }
 }

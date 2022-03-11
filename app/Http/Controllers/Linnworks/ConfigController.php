@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Linnworks;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Linnworks\UserInfoAccess as UserInfoAccess;
+use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 use Illuminate\Http\Request;
 
 
@@ -57,9 +58,13 @@ class ConfigController extends Controller
 
             //return ['Error'=>null,'AuthorizationToken'=>$auth_token];
         }
-        return ['Error'=>$error,'AuthorizationToken'=>$auth_token];
+        //dd(response()->json(['Error'=>$error,'AuthorizationToken'=>$auth_token]));
+        //dd(strlen(json_encode(['Error'=>$error,'AuthorizationToken'=>$auth_token])));
+        
+        return SendResponse::httpResponse(['Error'=>$error,'AuthorizationToken'=>$auth_token]);
+
+
         //dd($request);
-        //return 'Add New User';
     }
 
     public function userConfig(Request $request)
@@ -75,7 +80,9 @@ class ConfigController extends Controller
         $response = ConfigStage::ConfigSetUp($user,'userConfig');
         //$collection = collect($response['ConfigItems'])->where('ConfigItemId',"APIKey")->first()['Description'];
         //dd($collection);
-        return json_encode($response);
+
+        //return json_encode($response);
+        return SendResponse::httpResponse($response);
     }
 
     public function saveConfig(Request $request)
@@ -117,7 +124,8 @@ class ConfigController extends Controller
 
         $response = ConfigStage::ConfigSetUp($user,'saveConfig');
 
-        return json_encode($response);
+        //return json_encode($response);
+        return SendResponse::httpResponse($response);
 
     }
 
@@ -133,7 +141,8 @@ class ConfigController extends Controller
 
         $response = ConfigStage::getShippingTags();
 
-        return json_encode($response);
+        //return json_encode($response);
+        return SendResponse::httpResponse($response);
     }
 
     public function paymentTags(Request $request)
@@ -148,7 +157,8 @@ class ConfigController extends Controller
         
         $response = ConfigStage::getPaymentTags();
 
-        return json_encode($response);
+        //return json_encode($response);
+        return SendResponse::httpResponse($response);
     }
 
     public function deleted(Request $request)
@@ -172,7 +182,8 @@ class ConfigController extends Controller
         {
             $error = $ex->getMessage();
         }
-        return ['Error'=>$error];
+        //return ['Error'=>$error];
+        return SendResponse::httpResponse(['Error'=>$error]);
     }
 
     public function test(Request $request)
@@ -206,8 +217,8 @@ class ConfigController extends Controller
         {
             $error = $ex->getMessage();
         }
-        return ['Error'=>$error];
-
+        //return ['Error'=>$error];
+        return SendResponse::httpResponse(['Error'=>$error]);
     }
 
     

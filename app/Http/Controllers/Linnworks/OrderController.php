@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Linnworks;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Discogs\OrderController as DiscogsOrderController;
 use App\Http\Controllers\Linnworks\UserInfoAccess as UserInfoAccess;
+use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 use App\Models\Linnworks\Order as Order;
 use App\Models\Linnworks\OrderDespatch as OrderDespatch;
 
@@ -222,8 +223,8 @@ class OrderController extends Controller
             array_push($orders,$obj->order);
             
         }
-        return ['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Orders']->pagination->pages,'Orders'=>$orders];
-        
+        //return ['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Orders']->pagination->pages,'Orders'=>$orders];
+        return SendResponse::httpResponse(['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Orders']->pagination->pages,'Orders'=>$orders]);
     }
 
     
@@ -419,9 +420,9 @@ class OrderController extends Controller
             //dd($obj->order);
         }
         
-        return ["Error"=>null,"Orders"=>["Error"=>$error,"ReferenceNumber"=>$UpdateOrder]];
+        //return ["Error"=>null,"Orders"=>["Error"=>$error,"ReferenceNumber"=>$UpdateOrder]];
         //return ["Error"=>null,"Orders"=>$res];
-
+        return SendResponse::httpResponse(["Error"=>null,"Orders"=>["Error"=>$error,"ReferenceNumber"=>$UpdateOrder]]);
     }
 
 }

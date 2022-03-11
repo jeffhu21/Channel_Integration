@@ -8,6 +8,7 @@ use App\Http\Controllers\Discogs\OAuthController as OAuthController;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Linnworks\UserInfoAccess as UserInfoAccess;
+use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 use App\Models\Linnworks\ProductsListings as ProductsListingsRequest;
 
 use App\Models\OauthToken as OauthToken;
@@ -16,25 +17,43 @@ use App\Models\Discogs\Listing as Listing;
 class ListingController extends Controller
 {
     //
+    public function postSaleOptions(Request $request)
+    {
+        $result = UserInfoAccess::getUserByToken($request);
+        if($result['Error'] != null)
+        {
+            return $result['Error'];
+        }
+
+        
+
+        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
+    }
 
     public function getConfiguratorSettings()
     {
-        
+
+
+        //return ["Error"=>null,"Response"=>null];
+        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
     }
 
     public function getCategories()
     {
-        
+        //return ["Error"=>null,"Response"=>null];
+        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
     }
 
     public function getAttributesByCategory()
     {
-        
+        //return ["Error"=>null,"Response"=>null];
+        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
     }
 
     public function getVariationsByCategory()
     {
-        
+        //return ["Error"=>null,"Response"=>null];
+        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
     }
 
     public function listingUpdate(Request $request) //ProductsListingsRequest
@@ -163,7 +182,8 @@ class ListingController extends Controller
                 //$UpdateInventory = $UpdateInventory.$res["SKU"].", ";   
             }  
                 
-            return ['ChannelFeedId'=>json_decode($res['Response']->getBody()->getContents())->listing_id,"Error"=>null];
+            //return ['ChannelFeedId'=>json_decode($res['Response']->getBody()->getContents())->listing_id,"Error"=>null];
+            return SendResponse::httpResponse(['ChannelFeedId'=>json_decode($res['Response']->getBody()->getContents())->listing_id,"Error"=>null]);
         }    
     }
 
@@ -194,16 +214,19 @@ class ListingController extends Controller
 
             $res = DiscogsProductController::deleteListing($data,$token,$token_secret,$token_verifier);
             //dd($res);
-            return ['ChannelFeedId'=>$data->ExternalListingId,"Error"=>null];
+            //return ['ChannelFeedId'=>$data->ExternalListingId,"Error"=>null];
+            return SendResponse::httpResponse(['ChannelFeedId'=>$data->ExternalListingId,"Error"=>null]);
         }
 
     }
 
     public function checkFeed()
     {
-        
+        //return ["Error"=>null,"Response"=>null];
+        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
     }
 
+    /*
     public function listingUpdate1(Request $request) //ProductsListingsRequest
     {
 
@@ -364,4 +387,5 @@ class ListingController extends Controller
         
         
     }
+    */
 }

@@ -219,6 +219,8 @@ class SendRequest
                 //echo($error."\n");
             }
         }
+        //dd($res->getBody());
+        //dd(response()->json(["Error"=>$error,"Response"=>$res]));
         return ["Error"=>$error,"Response"=>$res];
     }
 
