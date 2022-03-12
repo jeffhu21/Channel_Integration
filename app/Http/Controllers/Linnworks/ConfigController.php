@@ -87,6 +87,8 @@ class ConfigController extends Controller
 
     public function saveConfig(Request $request)
     {
+        dd(json_decode($request->query()['ConfigItems']));
+        //dd('SaveConfig: '.json_encode($request->query()['ConfigItems']));
         $result = UserInfoAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
@@ -105,6 +107,8 @@ class ConfigController extends Controller
             $user->ApiKey = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APIKey")->SelectedValue;
             $user->ApiSecretKey = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APISecretKey")->SelectedValue;
             $user->IsOauth = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsOauth")->SelectedValue ? 1 : 0;
+            
+            //dd("APIKey: ".$user->ApiKey.", APISecretKey: ".$user->ApiSecretKey.", IsOauth: ".$user->IsOauth);
             $user->StepName = "OrderSetup";
         }
         else if ($user->StepName == "OrderSetup")

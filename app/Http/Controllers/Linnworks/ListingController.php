@@ -11,8 +11,10 @@ use App\Http\Controllers\Linnworks\UserInfoAccess as UserInfoAccess;
 use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 use App\Models\Linnworks\ProductsListings as ProductsListingsRequest;
 
+use App\Models\Linnworks\PostSaleOptions as PostSaleOptions;
 use App\Models\OauthToken as OauthToken;
 use App\Models\Discogs\Listing as Listing;
+
 
 class ListingController extends Controller
 {
@@ -25,36 +27,28 @@ class ListingController extends Controller
             return $result['Error'];
         }
 
-        
+        $postSaleOption = new PostSaleOptions();
 
-        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
+        $postSaleOption->postsale=[
+            "Error"=>null,
+            "CanCancel"=> true,
+            "CanCancelOrderLines"=> true,
+            "CanCancelOrderLinesPartially"=> true,
+            "AutomaticRefundOnCancel"=> false,
+            "CanRefund"=> true,
+            "CanAttachRefundToItem"=> true,
+            "CanAttachRefundToService"=> false,
+            "RefundShippingTypes"=> $postSaleOption->Type['NotSupported'],
+            "CanRefundAdditionally"=> false,
+            "CanReturn"=> false
+        ];
+
+        //dd($postSaleOption->postsale);
+
+        return SendResponse::httpResponse($postSaleOption->postsale);
     }
 
-    public function getConfiguratorSettings()
-    {
-
-
-        //return ["Error"=>null,"Response"=>null];
-        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
-    }
-
-    public function getCategories()
-    {
-        //return ["Error"=>null,"Response"=>null];
-        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
-    }
-
-    public function getAttributesByCategory()
-    {
-        //return ["Error"=>null,"Response"=>null];
-        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
-    }
-
-    public function getVariationsByCategory()
-    {
-        //return ["Error"=>null,"Response"=>null];
-        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
-    }
+    
 
     public function listingUpdate(Request $request) //ProductsListingsRequest
     {
@@ -220,11 +214,7 @@ class ListingController extends Controller
 
     }
 
-    public function checkFeed()
-    {
-        //return ["Error"=>null,"Response"=>null];
-        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
-    }
+    
 
     /*
     public function listingUpdate1(Request $request) //ProductsListingsRequest

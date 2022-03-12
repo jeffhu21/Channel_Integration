@@ -94,7 +94,7 @@ class ProductController extends Controller
             return $result['Error'];
         }
         
-        $user = $result['User'];
+        //$user = $result['User'];
         //$HasError = false;
         $UpdateInventory = "";
         $error=null;
@@ -104,20 +104,33 @@ class ProductController extends Controller
         $token_secret = $record->oauth_secret;
         $token_verifier=$record->oauth_verifier;
 
+        
+        $inventory_product = [
+            'Error'=>'',
+            'SKU'=>''
+        ];
+        
+        $products = [];
+
         foreach ($request_products as $product) 
         {
             
             $res=DiscogsProductController::updateInventory($product,$token,$token_secret,$token_verifier);
 
+            /*
             if($res['Error'] != null)
             {
                 $error = $error.$res['Error']."\n";
                 $UpdateInventory = $UpdateInventory.$res["SKU"].", ";   
             }    
+            */
+            $inventory_product['Error'] = $res['Error'];
+            $inventory_product['SKU'] = $res['SKU'];
+            array_push($products,$inventory_product);
         }
         
         //return ["Error"=>null,"Products"=>["Error"=>$error,"SKU"=>$UpdateInventory]];
-        return SendResponse::httpResponse(["Error"=>null,"Products"=>["Error"=>$error,"SKU"=>$UpdateInventory]]);
+        return SendResponse::httpResponse(["Error"=>null,"Products"=>$products]);
     }
 
     public function priceUpdate(Request $request)
@@ -137,7 +150,7 @@ class ProductController extends Controller
             return $result['Error'];
         }
         
-        $user = $result['User'];
+        //$user = $result['User'];
 
         $UpdatePrice = "";
         $error=null;
@@ -147,20 +160,33 @@ class ProductController extends Controller
         $token_secret = $record->oauth_secret;
         $token_verifier=$record->oauth_verifier;
 
+        $inventory_product = [
+            'Error'=>'',
+            'SKU'=>''
+        ];
+        
+        $products = [];
+
         foreach ($request_products as $product) 
         {
             
             $res=DiscogsProductController::updatePrice($product,$token,$token_secret,$token_verifier);
 
+            /*
             if($res['Error'] != null)
             {
                 $error = $error.$res['Error']."\n";
                 $UpdatePrice = $UpdatePrice.$res["SKU"].", ";   
             }
+            */
+
+            $inventory_product['Error'] = $res['Error'];
+            $inventory_product['SKU'] = $res['SKU'];
+            array_push($products,$inventory_product);
             
         }
         
         //return ["Error"=>null,"Products"=>["Error"=>$error,"SKU"=>$UpdatePrice]];
-        return SendResponse::httpResponse(["Error"=>null,"Products"=>["Error"=>$error,"SKU"=>$UpdatePrice]]);
+        return SendResponse::httpResponse(["Error"=>null,"Products"=>$products]);
     }
 }

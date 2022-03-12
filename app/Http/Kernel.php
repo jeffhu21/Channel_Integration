@@ -44,7 +44,7 @@ class Kernel extends HttpKernel
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             //Added access control allowed methods
-            \App\Http\Middleware\CorsMiddleware::class
+            //\App\Http\Middleware\CorsMiddleware::class
         ],
     ];
 

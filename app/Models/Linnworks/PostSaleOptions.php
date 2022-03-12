@@ -5,6 +5,7 @@ namespace App\Models\Linnworks;
 class PostSaleOptions
 {
     public $postsale=[
+        "Error"=>null,
         'CanCancel'=>'',
         'CanCancelOrderLines'=>'',
         'CanCancelOrderLinesPartially'=>'',
