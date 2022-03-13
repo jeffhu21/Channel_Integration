@@ -128,10 +128,11 @@ class ConfigStage
                     'ConfigItemId' => "APIKey",
                     'Description' => "Website API Key",
                     'GroupName' => "API Credentials",
-                    //'MustBeSpecified' => true,
-                    'MustBeSpecified' => false,
+                    'MustBeSpecified' => true,
+                    //'MustBeSpecified' => false,
                     'Name' => "API Key",
                     'ReadOnly' => false,
+                    //'SelectedValue'=> '1111',
                     'SelectedValue' => $user->ApiKey ?? '',
                     'SortOrder' => 1,
                     'ValueType' => config('linnworksHelper.ConfigValueType.Password'),
@@ -145,10 +146,11 @@ class ConfigStage
                     'ConfigItemId' => "APISecretKey",
                     'Description' => "Website API Secret Key",
                     'GroupName' => "API Credentials",
-                    //'MustBeSpecified' => true,
-                    'MustBeSpecified' => false,
+                    'MustBeSpecified' => true,
+                    //'MustBeSpecified' => false,
                     'Name' => "API Secret Key",
                     'ReadOnly' => false,
+                    //'SelectedValue'=> '2222',
                     'SelectedValue' => $user->APISecretKey ?? '',
                     'SortOrder' => 2,
                     'ValueType' => config('linnworksHelper.ConfigValueType.Password'),
@@ -161,14 +163,48 @@ class ConfigStage
                     'ConfigItemId' => "IsOauth",
                     'Description' => "Defines if the authentication type is Oauth",
                     'GroupName' => "API Settings",
-                    //'MustBeSpecified' => true,
-                    'MustBeSpecified' => false,
+                    'MustBeSpecified' => true,
+                    //'MustBeSpecified' => false,
                     'Name' => "Is Oauth",
                     'ReadOnly' => false,
+                    //'SelectedValue'=> 'true',
                     'SelectedValue' => ($user->IsOauth==1) ? 'true' : 'false',
                     'SortOrder' => 3,
                     'ValueType' => config('linnworksHelper.ConfigValueType.Boolean'),
                     'ListValues'=>[],
+                    'RegExValidation'=>null,
+                    'RegExError'=>null
+                ],
+                $setting->ConfigItem =
+                [
+                    'ConfigItemId' => "Version",
+                    'Description' => "Version of the API",
+                    'GroupName' => "API Settings",
+                    'MustBeSpecified' => true,
+                    //'MustBeSpecified' => false,
+                    'Name' => "Is Oauth",
+                    'ReadOnly' => false,
+                    'SelectedValue' => ($user->IsOauth==1) ? 'true' : 'false',
+                    'SortOrder' => 3,
+                    'ValueType' => config('linnworksHelper.ConfigValueType.List'),
+                    'ListValues'=>[
+                        $setting->ListValue =
+                        [
+                            'Display'=>'Version 1.1',
+                            'Value' => '1.1'
+                        ],
+                        $setting->ListValue =
+                        [
+                            'Display'=>'Version 1.2',
+                            'Value' => '1.2'
+                        ],
+                        $setting->ListValue =
+                        [
+                            'Display'=>'Version 1.3',
+                            'Value' => '1.3'
+                        ],
+
+                    ],
                     'RegExValidation'=>null,
                     'RegExError'=>null
                 ]

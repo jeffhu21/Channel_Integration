@@ -29,7 +29,7 @@ Route::controller(ConfigController::class)->prefix('Config')->group(
 
     function()
     {
-        /*
+        
         Route::get('/AddNewUser','addNewUser');
         Route::get('/UserConfig','userConfig');
         Route::get('/SaveUserConfig','saveConfig');
@@ -37,7 +37,7 @@ Route::controller(ConfigController::class)->prefix('Config')->group(
         Route::get('/PaymentTags','paymentTags');
         Route::get('/ConfigDeleted','deleted');
         Route::get('/ConfigTest','test');
-        */
+        
 
         
         Route::post('/AddNewUser','addNewUser');
@@ -57,10 +57,10 @@ Route::controller(OrderController::class)->prefix('Order')->group(
     function()
     {  
         //Route::get('/Orders','SampleOrders');
-        /*
+        
         Route::get('/Orders','orders');
         Route::get('/Despatch','despatch');
-        */
+        
         
         Route::post('/Orders','orders');
         Route::post('/Despatch','despatch');
@@ -74,11 +74,11 @@ Route::controller(ProductController::class)->prefix('Product')->group(
 
     function()
     {
-        /*
+        
         Route::get('/Products','products');
         Route::get('/InventoryUpdate','inventoryUpdate');
         Route::get('/PriceUpdate','priceUpdate');
-        */
+        
         
         Route::post('/Products','products');
         Route::post('/InventoryUpdate','inventoryUpdate');
@@ -92,7 +92,7 @@ Route::controller(ListingController::class)->prefix('Listing')->group(
 
     function()
     { 
-        //Route::get('/PostSaleOptions','postSaleOptions');
+        Route::get('/PostSaleOptions','postSaleOptions');
 
         /*
         Route::get('/GetConfiguratorSettings','getConfiguratorSettings');
@@ -100,10 +100,10 @@ Route::controller(ListingController::class)->prefix('Listing')->group(
         Route::get('/GetAttributesByCategory','getAttributesByCategory');
         Route::get('/GetVariationsByCategory','getVariationsByCategory');
         */
-        /*
+        
         Route::get('/ListingUpdate','listingUpdate');
         Route::get('/ListingDelete','listingDelete');
-        */
+        
         //Route::get('/CheckFeed','checkFeed');
         
         /*
@@ -126,14 +126,14 @@ Route::controller(ConfiguratorSettings::class)->prefix('Setting')->group(
 
     function()
     {
-        /*
+        
         Route::get('/GetConfiguratorSettings','getConfiguratorSettings');
         Route::get('/GetCategories','getCategories');
         Route::get('/GetAttributesByCategory','getAttributesByCategory');
         Route::get('/GetVariationsByCategory','getVariationsByCategory');
         
         Route::get('/CheckFeed','checkFeed');
-        */
+        
 
         
         Route::post('/GetConfiguratorSettings','getConfiguratorSettings');

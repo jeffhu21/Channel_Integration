@@ -31,79 +31,79 @@
                 },
                 {
                     "name": "AddNewUserEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Config/AddNewUser"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Config/AddNewUser"
                 },
                 {
                     "name": "UserConfigEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Config/UserConfig"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Config/UserConfig"
                 },
                 {
                     "name": "SaveConfigEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Config/SaveUserConfig"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Config/SaveUserConfig"
                 },
                 {
                     "name": "ShippingTagsEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Config/ShippingTags"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Config/ShippingTags"
                 },
                 {
                     "name": "PaymentTagsEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Config/PaymentTags"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Config/PaymentTags"
                 },
                 {
                     "name": "ConfigDeletedEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Config/ConfigDeleted"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Config/ConfigDeleted"
                 },
                 {
                     "name": "ConfigTestEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Config/ConfigTest"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Config/ConfigTest"
                 },
                 {
                     "name": "OrdersEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Order/Orders"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Order/Orders"
                 },
                 {
                     "name": "DespatchEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Order/Despatch"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Order/Despatch"
                 },
                 {
                     "name": "ProductsEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Products/Products"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Products/Products"
                 },
                 {
                     "name": "InventoryUpdateEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Products/InventoryUpdate"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Products/InventoryUpdate"
                 },
                 {
                     "name": "PriceUpdateEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Products/PriceUpdate"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Products/PriceUpdate"
                 },
                 {
                     "name": "GetConfiguratorSettingsEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Listing/GetConfiguratorSettings"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Listing/GetConfiguratorSettings"
                 },
                 {
                     "name": "GetCategoriesEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Listing/GetCategories"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Listing/GetCategories"
                 },
                 {
                     "name": "GetAttributesByCategoryEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Listing/GetAttributesByCategory"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Listing/GetAttributesByCategory"
                 },
                 {
                     "name": "GetVariationsByCategoryEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Listing/GetVariationsByCategory"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Listing/GetVariationsByCategory"
                 },
                 {
                     "name": "ListingUpdateEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Listing/ListingUpdate"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Listing/ListingUpdate"
                 },
                 {
                     "name": "ListingDeleteEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Listing/ListingDelete"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Listing/ListingDelete"
                 },
                 {
                     "name": "CheckFeedEndpoint",
-                    "value": "http://9e6d-2607-fea8-3d20-20-e8df-72b5-f9d7-f86c.ngrok.io/api/Listing/CheckFeed"
+                    "value": "http://bf76-2607-fea8-3d20-20-c144-9552-2426-392a.ngrok.io/api/Listing/CheckFeed"
                 },
                 {
                     "name": "IsListingSupported",

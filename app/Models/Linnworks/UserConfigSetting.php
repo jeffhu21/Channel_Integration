@@ -25,10 +25,10 @@ class UserConfigSetting
         //'ValueType'=>config('linnworksHelper.ConfigValueType.String'),
         'RegExValidation'=>'',
         'RegExError'=>'',
-        'ListValues'=>[] //Array of ListItem
+        'ListValues'=>[] //Array of ListValue
     ];
 
-    public $ListItem =[
+    public $ListValue =[
         'Display'=>'',
         'Value'=>''
     ];

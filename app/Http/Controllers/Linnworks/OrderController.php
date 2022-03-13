@@ -29,11 +29,9 @@ class OrderController extends Controller
             return $result['Error'];
         }
         
-        $user = $result['User'];
+        //$user = $result['User'];
 
         $error = null;
-
-
 
         $filter = 'created_after='.($request->UTCTimeFrom);//Could be converted to different time zone
         //dd($filter);
@@ -230,6 +228,7 @@ class OrderController extends Controller
     
 
     //
+    /*
     public function SampleOrders(Request $request)
     {
         
@@ -368,7 +367,7 @@ class OrderController extends Controller
         return ['Error'=>$error,'HasMorePages'=>$request->PageNumber<11,'Orders'=>$orders];
         
     }
-
+    */
     
 
     public function despatch(Request $request)
