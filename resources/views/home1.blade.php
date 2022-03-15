@@ -22,7 +22,9 @@
     </head>
     <body class="antialiased">
 
-    <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
+        
+
+        <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
             @if (Route::has('login'))
                 <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
                     @auth
@@ -36,10 +38,59 @@
                     @endauth
                 </div>
             @endif
-        
-                Welcome to Linnworks Discogs Integration!
-                
-        </div>
 
+            
+            
+            <!--<a href=''>Get Access Token</a>-->
+            
+            <div>
+
+                <div>
+                    
+                        <h1>Step 1</h1>
+                        <div class=" text-center mt-4"><a class=" text-green-600 hover:text-gray-800" href='{{route("request_token")}}'>Get Request Token</a></div>
+
+                        <div class=" text-center mt-4">
+                            {{isset($response)?$response:''}}
+                        </div>
+
+                        <h1 class="mt-4">Step 2</h1>
+
+                        
+
+                        <div class=" text-center mt-4"><a class=" text-green-600 hover:text-gray-800" href='{{route("oauth_verifier")}}'>Authorize</a></div>
+                    
+                </div>
+
+                <form method="POST" action="{{ route('access_token') }}">
+
+                    @csrf
+                    <!--
+                    <div>
+                        <x-label for="oauth_token" :value="__('OAuth Token')" />
+
+                        <x-input id="oauth_token" class="block mt-1 w-full" type="text" name="oauth_token" />
+                    </div>
+                    <div>
+                        <x-label for="oauth_token_secret" :value="__('OAuth Token Secret')" />
+
+                        <x-input id="oauth_token_secret" class="block mt-1 w-full" type="text" name="oauth_token_secret" />
+                    </div>
+                    -->
+                    <div class=" mt-4">
+                        <x-label for="oauth_verifier" :value="__('Access Token')" />
+
+                        <x-input id="oauth_verifier" class="block mt-1 w-full" type="text" name="oauth_verifier" />
+                    </div>
+                    <div class="flex items-center justify-end mt-4">
+                        <x-button class="ml-4">
+                            {{ __('Send') }}
+                        </x-button>
+                    </div>
+                </form>
+            </div>
+        
+        </div>
+        
     </body>
 </html>

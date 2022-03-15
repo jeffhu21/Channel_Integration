@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\discogs\OAuthController as OAuthController;
 use App\Http\Controllers\linnworks\AuthController as AuthController;
 use App\Http\Controllers\linnworks\ConfigController as ConfigController;
 use App\Http\Controllers\linnworks\OrderController as OrderController;
@@ -21,6 +22,15 @@ use App\Http\Controllers\linnworks\ConfiguratorSettings as ConfiguratorSettings;
 |
 */
 
+//Added
+Route::controller(OAuthController::class)->group(
+
+    function()
+    {
+        Route::get('/postback', 'saveLinnworksAuthToken');
+    }
+);
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -29,7 +39,7 @@ Route::controller(ConfigController::class)->prefix('Config')->group(
 
     function()
     {
-        
+        /*
         Route::get('/AddNewUser','addNewUser');
         Route::get('/UserConfig','userConfig');
         Route::get('/SaveUserConfig','saveConfig');
@@ -37,7 +47,7 @@ Route::controller(ConfigController::class)->prefix('Config')->group(
         Route::get('/PaymentTags','paymentTags');
         Route::get('/ConfigDeleted','deleted');
         Route::get('/ConfigTest','test');
-        
+        */
 
         
         Route::post('/AddNewUser','addNewUser');
@@ -57,10 +67,10 @@ Route::controller(OrderController::class)->prefix('Order')->group(
     function()
     {  
         //Route::get('/Orders','SampleOrders');
-        
+        /*
         Route::get('/Orders','orders');
         Route::get('/Despatch','despatch');
-        
+        */
         
         Route::post('/Orders','orders');
         Route::post('/Despatch','despatch');
@@ -74,11 +84,11 @@ Route::controller(ProductController::class)->prefix('Product')->group(
 
     function()
     {
-        
+        /*
         Route::get('/Products','products');
         Route::get('/InventoryUpdate','inventoryUpdate');
         Route::get('/PriceUpdate','priceUpdate');
-        
+        */
         
         Route::post('/Products','products');
         Route::post('/InventoryUpdate','inventoryUpdate');
@@ -92,26 +102,25 @@ Route::controller(ListingController::class)->prefix('Listing')->group(
 
     function()
     { 
-        Route::get('/PostSaleOptions','postSaleOptions');
+        //Route::get('/PostSaleOptions','postSaleOptions');
 
+<<<<<<< HEAD
+        
+=======
         /*
         Route::get('/GetConfiguratorSettings','getConfiguratorSettings');
         Route::get('/GetCategories','getCategories');
         Route::get('/GetAttributesByCategory','getAttributesByCategory');
         Route::get('/GetVariationsByCategory','getVariationsByCategory');
         */
-        
+>>>>>>> parent of 18acd11 (Modify User Config)
+        /*
         Route::get('/ListingUpdate','listingUpdate');
         Route::get('/ListingDelete','listingDelete');
-        
+        */
         //Route::get('/CheckFeed','checkFeed');
         
-        /*
-        Route::post('/GetConfiguratorSettings','getConfiguratorSettings');
-        Route::post('/GetCategories','getCategories');
-        Route::post('/GetAttributesByCategory','getAttributesByCategory');
-        Route::post('/GetVariationsByCategory','getVariationsByCategory');
-        */
+        
         
         Route::post('/ListingUpdate','listingUpdate');
         Route::post('/ListingDelete','listingDelete');
@@ -126,14 +135,14 @@ Route::controller(ConfiguratorSettings::class)->prefix('Setting')->group(
 
     function()
     {
-        
+        /*
         Route::get('/GetConfiguratorSettings','getConfiguratorSettings');
         Route::get('/GetCategories','getCategories');
         Route::get('/GetAttributesByCategory','getAttributesByCategory');
         Route::get('/GetVariationsByCategory','getVariationsByCategory');
         
         Route::get('/CheckFeed','checkFeed');
-        
+        */
 
         
         Route::post('/GetConfiguratorSettings','getConfiguratorSettings');

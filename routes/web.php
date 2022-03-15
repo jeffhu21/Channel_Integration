@@ -19,8 +19,10 @@ use Carbon\Carbon;
 |
 */
 
+
+
 Route::get('/', function () {
-    return view('home');
+    return view('home1');
 });
 
 Route::get('/dashboard', function () {
@@ -44,7 +46,10 @@ Route::controller(OAuthController::class)->group(
 
     function()
     {
-        Route::get('/request_token','requestToken')->name('request_token');
+        //Route::get('/postback', 'saveLinnworksAuthToken');
+
+        //Route::get('/request_token','requestToken')->name('request_token');
+        Route::post('/request_token','requestToken')->name('request_token');
         Route::get('/oauth_verifier','oauthAuthorize')->name('oauth_verifier');
         Route::post('/access_token','accessToken')->name('access_token');
         /*

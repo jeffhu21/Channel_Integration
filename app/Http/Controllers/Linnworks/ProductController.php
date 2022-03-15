@@ -30,7 +30,7 @@ class ProductController extends Controller
             return $result['Error'];
         }
         
-        $user = $result['User'];
+        //$user = $result['User'];
         $error=null;
 
         $record = OauthToken::first();

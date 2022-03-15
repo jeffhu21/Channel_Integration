@@ -87,7 +87,7 @@ class ConfigController extends Controller
 
     public function saveConfig(Request $request)
     {
-        //dd(json_decode($request->query()['ConfigItems']));
+        dd(json_decode($request->query()['ConfigItems']));
         //dd('SaveConfig: '.json_encode($request->query()['ConfigItems']));
         $result = UserInfoAccess::getUserByToken($request);
         if($result['Error'] != null)
@@ -97,66 +97,36 @@ class ConfigController extends Controller
         
         $user = $result['User'];
 
-        //Test
-        //$user->StepName = $request->ConfigItems[0]->Name;
-
         if($request->StepName != $user->StepName)
         {
             return ['Error'=>'Invalid Step Name Expected ' . $user->StepName];
         }
         
-        
         if ($user->StepName == "AddCredentials")
         {
-
-            /*
             $user->ApiKey = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APIKey")->SelectedValue;
             $user->ApiSecretKey = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APISecretKey")->SelectedValue;
             $user->IsOauth = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsOauth")->SelectedValue ? 1 : 0;
-            */
-
-            $user->ApiKey = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId','APIKey')['SelectedValue'];
-            $user->ApiSecretKey = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"APISecretKey")['SelectedValue'];
-            $user->IsOauth = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"IsOauth")['SelectedValue'] ? 1 : 0;
-
+            
             //dd("APIKey: ".$user->ApiKey.", APISecretKey: ".$user->ApiSecretKey.", IsOauth: ".$user->IsOauth);
-            
             $user->StepName = "OrderSetup";
-            
         }
         else if ($user->StepName == "OrderSetup")
         {
-            /*
             $user->IsPriceIncTax = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"PriceIncTax")->SelectedValue ? 1 : 0;
             $user->DownloadVirtualItems = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"DownloadVirtualItems")->SelectedValue ? 1 : 0;
-            */
-            $user->IsPriceIncTax = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"PriceIncTax")['SelectedValue'] ? 1 : 0;
-            $user->DownloadVirtualItems = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"DownloadVirtualItems")['SelectedValue'] ? 1 : 0;
-
             $user->StepName = "UserConfig";
         }
         else if ($user->StepName == "UserConfig")
         {
-            /*
             $user->IsOauth = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsOauth")->SelectedValue ? 1 : 0;
             $user->IsPriceIncTax = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"PriceIncTax")->SelectedValue ? 1 : 0;
             $user->DownloadVirtualItems = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"DownloadVirtualItems")->SelectedValue ? 1 : 0;
-            */
-            $user->IsOauth = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"IsOauth")['SelectedValue'] ? 1 : 0;
-            $user->IsPriceIncTax = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"PriceIncTax")['SelectedValue'] ? 1 : 0;
-            $user->DownloadVirtualItems = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"DownloadVirtualItems")['SelectedValue'] ? 1 : 0;
         }
         
         $user->save();
 
         $response = ConfigStage::ConfigSetUp($user,'saveConfig');
-
-        //Testing
-
-        //$user->StepName = 'Alan';
-        //$user->save();
-        
-        //End of Testing
 
         //return json_encode($response);
         return SendResponse::httpResponse($response);
@@ -197,8 +167,6 @@ class ConfigController extends Controller
 
     public function deleted(Request $request)
     {
-        //if($request->AuthorizationToken)
-
         $result = UserInfoAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
@@ -211,8 +179,7 @@ class ConfigController extends Controller
 
         try
         {
-            
-            UserInfo::where('AuthorizationToken',$request->AuthorizationToken)->delete();
+            UserInfo::where('AuthorizationToken',$token)->delete();
             $error = 'User config does not exist';
         }
         catch(Exception $ex)

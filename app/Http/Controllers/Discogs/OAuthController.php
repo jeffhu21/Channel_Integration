@@ -18,6 +18,9 @@ use App\Http\Controllers\Discogs\SendRequest as SendRequest;
 
 use App\Models\OauthToken;
 
+use App\Models\DiscogsApplication;
+use App\Models\LinnworksApplication;
+
 /*
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -29,8 +32,9 @@ class OAuthController extends Controller
     //public $oauth_token;
 
     //Make request for request token
-    public function requestToken()
+    public function requestToken(Request $request)
     {
+        //dd($request);
       
         //$res = SendRequest::httpGet('oauth/request_token');
         $res = SendRequest::httpRequest('GET','oauth/request_token');
@@ -172,6 +176,29 @@ class OAuthController extends Controller
         ]);
     }
     
+    //Added function
+    public function saveLinnworksAuthToken(Request $request)
+    {
+        //var_dump($token);
+
+        if(!$request->has('token'))
+        {
+            return 'Error';
+        }
+
+        $token = $request->token;
+
+        $record=LinnworksApplication::create([
+            'application_id'=>'',
+            'application_secret'=>'',
+            'token'=>$token
+        ]);
+
+        //echo('Record: '.$record."\n");
+        
+        return 'Hello!';
+        
+    }
 
     
 }

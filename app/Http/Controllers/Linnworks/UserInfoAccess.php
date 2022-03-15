@@ -40,8 +40,7 @@ class UserInfoAccess
         $error = null;
         $user = null;
         
-        try
-        {
+        try{
             $user=UserInfo::where('AuthorizationToken',$token)->first();
         }
         catch(Exception $ex)

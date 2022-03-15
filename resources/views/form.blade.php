@@ -1,6 +1,5 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
+<html>
+<head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -20,26 +19,60 @@
             }
         </style>
     </head>
+
     <body class="antialiased">
 
-    <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
-            @if (Route::has('login'))
-                <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
-                    @auth
-                        <a href="{{ url('/dashboard') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Dashboard</a>
-                    @else
-                        <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Log in</a>
+    <div>
 
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">Register</a>
-                        @endif
-                    @endauth
-                </div>
-            @endif
-        
-                Welcome to Linnworks Discogs Integration!
+                <div>
+                <form method="POST" action='{{route("request_token")}}'>
+
+                    @csrf
+                    <div class="flex justify-center">
+                        <x-label for="consumer_key" :value="__('Consumer Key')" />
+
+                        <x-input id="consumer_key" class="block mt-1 w-full" type="text" name="consumer_key" />
+                    </div>
+                    <div class="flex justify-center mt-6">
+                        <x-label for="consumer_secret" :value="__('Consumer Secret')" />
+
+                        <x-input id="consumer_secret" class="block mt-1 w-full" type="text" name="consumer_secret" />
+                    </div>
+                    <div class="flex justify-center mt-6">
+                        <x-label for="callback_url" :value="__('Callback URL')" />
+
+                        <x-input id="callback_url" class="block mt-1 w-full" type="text" name="callback_url" />
+                    </div>
+                    <div class="flex items-center justify-end mt-4">
+                        <x-button class="ml-4">
+                            {{ __('Next') }}
+                        </x-button>
+                    </div>
+                </form>
+
+                <hr class=" mt-6">
+
                 
-        </div>
+                <form method="POST" action="" class="mt-6">
+                    @csrf
+                    <div class="flex justify-center">
+                        <x-label for="consumer_verifier" :value="__('Verifier')" />
+
+                        <x-input id="consumer_verifier" class="block mt-1 w-full" type="text" name="consumer_verifier" />
+                    </div>
+                    <div class="flex items-center justify-end mt-4">
+                        <x-button class="ml-4">
+                            {{ __('Submit') }}
+                        </x-button>
+                    </div>
+                </form>
+
+                
+
+                </div>
+
+            </div>
 
     </body>
+
 </html>
