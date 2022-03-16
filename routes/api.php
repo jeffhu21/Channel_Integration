@@ -28,6 +28,8 @@ Route::controller(OAuthController::class)->group(
     function()
     {
         Route::get('/postback/{token}', 'saveLinnworksAuthToken');
+        Route::get('/application/{id}/{secret}/{token}','saveLinnworksApplication');
+        Route::get('/DiscogsSetting','discogsSetting');
     }
 );
 

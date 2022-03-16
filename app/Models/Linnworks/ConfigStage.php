@@ -171,7 +171,7 @@ class ConfigStage
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
-<<<<<<< HEAD
+
                 ],
                 $setting->ConfigItem =
                 [
@@ -240,8 +240,7 @@ class ConfigStage
                     ],
                     'RegExValidation'=>null,
                     'RegExError'=>null
-=======
->>>>>>> parent of 18acd11 (Modify User Config)
+
                 ]
             ],      
         ];

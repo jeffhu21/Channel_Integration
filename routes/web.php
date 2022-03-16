@@ -19,8 +19,10 @@ use Carbon\Carbon;
 |
 */
 
-Route::get('/',function(){
-    return view('home');
+Route::post('/{token?}',function(){
+    //return view('home');
+    //return view('form');
+    return "my ui";
 });
 
 

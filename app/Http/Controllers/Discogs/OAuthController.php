@@ -200,6 +200,26 @@ class OAuthController extends Controller
         return 'Hello!';
         
     }
+    
+    //Added function
+    public function saveLinnworksApplication($id,$secret,$token)
+    {
+        $record=LinnworksApplication::create([
+            'application_id'=>$id,
+            'application_secret'=>$secret,
+            'token'=>$token
+        ]);
 
+        //echo('Record: '.$record."\n");
+        
+        return 'Hello!';
+    }
+
+    //Added function
+    public function discogsSetting()
+    {
+        //dd('Discogs Setting');
+        return view('form');
+    }
     
 }

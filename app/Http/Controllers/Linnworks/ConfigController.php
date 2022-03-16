@@ -87,7 +87,7 @@ class ConfigController extends Controller
 
     public function saveConfig(Request $request)
     {
-        dd(json_decode($request->query()['ConfigItems']));
+        //dd(json_decode($request->query()['ConfigItems']));
         //dd('SaveConfig: '.json_encode($request->query()['ConfigItems']));
         $result = UserInfoAccess::getUserByToken($request);
         if($result['Error'] != null)
@@ -104,24 +104,24 @@ class ConfigController extends Controller
         
         if ($user->StepName == "AddCredentials")
         {
-            $user->ApiKey = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APIKey")->SelectedValue;
-            $user->ApiSecretKey = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"APISecretKey")->SelectedValue;
-            $user->IsOauth = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsOauth")->SelectedValue ? 1 : 0;
+            $user->ApiKey = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId','APIKey')['SelectedValue'];
+             $user->ApiSecretKey = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"APISecretKey")['SelectedValue'];
+             $user->IsOauth = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"IsOauth")['SelectedValue'] ? 1 : 0;
             
             //dd("APIKey: ".$user->ApiKey.", APISecretKey: ".$user->ApiSecretKey.", IsOauth: ".$user->IsOauth);
             $user->StepName = "OrderSetup";
         }
         else if ($user->StepName == "OrderSetup")
         {
-            $user->IsPriceIncTax = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"PriceIncTax")->SelectedValue ? 1 : 0;
-            $user->DownloadVirtualItems = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"DownloadVirtualItems")->SelectedValue ? 1 : 0;
+            $user->IsPriceIncTax = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"PriceIncTax")['SelectedValue'] ? 1 : 0;
+             $user->DownloadVirtualItems = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"DownloadVirtualItems")['SelectedValue'] ? 1 : 0;
             $user->StepName = "UserConfig";
         }
         else if ($user->StepName == "UserConfig")
         {
-            $user->IsOauth = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"IsOauth")->SelectedValue ? 1 : 0;
-            $user->IsPriceIncTax = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"PriceIncTax")->SelectedValue ? 1 : 0;
-            $user->DownloadVirtualItems = collect(json_decode($request->ConfigItems))->firstWhere('ConfigItemId',"DownloadVirtualItems")->SelectedValue ? 1 : 0;
+            $user->IsOauth = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"IsOauth")['SelectedValue'] ? 1 : 0;
+             $user->IsPriceIncTax = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"PriceIncTax")['SelectedValue'] ? 1 : 0;
+             $user->DownloadVirtualItems = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"DownloadVirtualItems")['SelectedValue'] ? 1 : 0;
         }
         
         $user->save();
