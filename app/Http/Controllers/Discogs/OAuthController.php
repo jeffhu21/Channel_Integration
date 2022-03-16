@@ -177,16 +177,17 @@ class OAuthController extends Controller
     }
     
     //Added function
-    public function saveLinnworksAuthToken(Request $request)
+    public function saveLinnworksAuthToken($token)
     {
-        //var_dump($token);
 
+        /*
         if(!$request->has('token'))
         {
             return 'Error';
         }
 
         $token = $request->token;
+        */
 
         $record=LinnworksApplication::create([
             'application_id'=>'',

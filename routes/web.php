@@ -19,34 +19,19 @@ use Carbon\Carbon;
 |
 */
 
-
-
-Route::get('/', function () {
-    return view('home1');
+Route::get('/',function(){
+    return view('home');
 });
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-//Route::get('/test',[OAuthController::class,'test']);
-Route::get('/time',function()
-{
-    //return Config::get('discogsAuth.CONSUMER_KEY');
-    return date('Y-m-d H:i:s',strtotime('2020-02-25T00:26:08.538899'.'+ 10 days'));
-    
-    //dd(date('Y-m-d H:i:s',strtotime('2020-02-25T00:26:08.538899'))->add(new DateInterval(P10D)));
-    //return now();
-});
-
-//Route::get('/t0',[ConfigController::class,'addNewUser']);
-//Route::get('/t1',[ConfigController::class,'UserConfig']);
-
 Route::controller(OAuthController::class)->group(
 
     function()
     {
-        //Route::get('/postback', 'saveLinnworksAuthToken');
 
         //Route::get('/request_token','requestToken')->name('request_token');
         Route::post('/request_token','requestToken')->name('request_token');
@@ -76,6 +61,7 @@ Route::get('/oauth')->missing(function(Request $request){
     echo('Message');
 });
 
+/*
 Route::fallback(
     function(Request $request)
     {
@@ -83,3 +69,4 @@ Route::fallback(
         //echo($request->getURL());
     }
 );
+*/

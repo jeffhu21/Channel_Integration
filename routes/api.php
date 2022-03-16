@@ -27,7 +27,7 @@ Route::controller(OAuthController::class)->group(
 
     function()
     {
-        Route::get('/postback', 'saveLinnworksAuthToken');
+        Route::get('/postback/{token}', 'saveLinnworksAuthToken');
     }
 );
 
@@ -104,16 +104,14 @@ Route::controller(ListingController::class)->prefix('Listing')->group(
     { 
         //Route::get('/PostSaleOptions','postSaleOptions');
 
-<<<<<<< HEAD
-        
-=======
+
         /*
         Route::get('/GetConfiguratorSettings','getConfiguratorSettings');
         Route::get('/GetCategories','getCategories');
         Route::get('/GetAttributesByCategory','getAttributesByCategory');
         Route::get('/GetVariationsByCategory','getVariationsByCategory');
         */
->>>>>>> parent of 18acd11 (Modify User Config)
+
         /*
         Route::get('/ListingUpdate','listingUpdate');
         Route::get('/ListingDelete','listingDelete');
@@ -157,14 +155,5 @@ Route::controller(ConfiguratorSettings::class)->prefix('Setting')->group(
 
 );
 
-Route::controller(AuthController::class)->prefix('linnworks')->group(
-
-    function()
-    {
-        Route::get('/postback/{token}','postBack');
-        Route::get('/token/{token}','token');
-    }
-
-);
 
 

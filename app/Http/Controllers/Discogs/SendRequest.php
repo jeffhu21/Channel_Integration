@@ -54,111 +54,7 @@ class SendRequest
 
     }
 
-    //Making request to outside domain Discogs
-    //Return [Error,Response]
-
-    /*
-    public static function httpGet($dir,$authenticated=false,$oauth_token='',$oauth_token_secret='',$oauth_verifier='')
-    {
-        $BASE_URL = 'https://api.discogs.com/';
-        $stack = HandlerStack::create(); 
-
-        $middleware = self::oauthHeader($oauth_token,$oauth_token_secret,$oauth_verifier);
-
-        $stack->push($middleware);
-
-        $client = new Client([
-            'base_uri' => $BASE_URL,
-            'handler' => $stack,
-        ]);
-
-        $error=null;
-        $res=null;
-
-        try 
-        {
-            $res = $client->request('GET',$dir,['auth' => 'oauth','header' => self::contentHeader($authenticated)]);
-        
-            if($res->getStatusCode()!=200 && $res->getStatusCode()!=201 && $res != null)
-            {
-                $error=$res->getStatusCode()." and " .$res->getReasonPhrase();
-            }
-        } 
-        catch(RequestException $ex)
-        {
-            $error = $ex->getMessage();
-        }
-        catch(ServerException $ex)
-        {
-            $error = $ex->getMessage();
-        }
-        catch(ClientException $ex)
-        {
-            $error = $ex->getMessage();
-        }
-        finally
-        {
-            if($error != null)
-            {
-                //echo($error."\n");
-            }
-        }
-        return ["Error"=>$error,"Response"=>$res];   
-    }
-
-    //Making request to outside domain Discogs
-    public static function httpPost($dir,$authenticated=false,$q='',$oauth_token='',$oauth_token_secret='',$oauth_verifier='')
-    {
-        $BASE_URL = 'https://api.discogs.com/';
-        $stack = HandlerStack::create(); 
-
-        $middleware = self::oauthHeader($oauth_token,$oauth_token_secret,$oauth_verifier);
-
-        $stack->push($middleware);
-
-        $client = new Client([
-            'base_uri' => $BASE_URL,
-            'handler' => $stack,
-        ]);
-
-        //$res = $client->request('POST',$dir,['auth' => 'oauth','header' => self::contentHeader($authenticated),'form_params'=>$q]);
-
-        $error = null;
-        $res = null;
-
-        try
-        {
-            $res = $client->request('POST',$dir,['auth' => 'oauth','header' => self::contentHeader($authenticated),'json'=>$q]);
-            //$res = $client->request('POST',$dir,['auth' => 'oauth','header' => self::contentHeader($authenticated),'query'=>$q]);
-
-            if($res->getStatusCode()!=200 && $res->getStatusCode()!=201 && $res != null)
-            {
-                $error=$res->getStatusCode()." and " .$res->getReasonPhrase();
-            }
-        
-        }
-        catch(RequestException $ex)
-        {
-            $error = $ex->getMessage();
-        }
-        catch(ServerException $ex)
-        {
-            $error = $ex->getMessage();
-        }
-        catch(ClientException $ex)
-        {
-            $error = $ex->getMessage();
-        }
-        finally
-        {
-            if($error != null)
-            {
-                //echo($error."\n");
-            }
-        }
-        return ["Error"=>$error,"Response"=>$res];
-    }
-    */
+    
 
     public static function httpRequest($method,$dir,$authenticated=false,$q='',$oauth_token='',$oauth_token_secret='',$oauth_verifier='')
     {
@@ -224,29 +120,6 @@ class SendRequest
         return ["Error"=>$error,"Response"=>$res];
     }
 
-    /*
-    public static function testing()
-    {
-        $BASE_URL = 'https://jsonplaceholder.typicode.com/';
-        $stack = HandlerStack::create(); 
-
-        $middleware = self::oauthHeader('','','');
-
-        $stack->push($middleware);
-
-        $client = new Client([
-            'base_uri' => $BASE_URL,
-            'handler' => $stack,
-        ]);
-
-        $q=['id'=>2,'title'=>'Harry Potter!'];
-
-        $res = $client->request('GET','posts/1',['header' => self::contentHeader(true)])->getBody()->getContents();
-
-        dd($res);
-
-        return $res;  
-    }
-    */
+    
 
 }
