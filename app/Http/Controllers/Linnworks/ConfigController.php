@@ -179,7 +179,7 @@ class ConfigController extends Controller
 
         try
         {
-            UserInfo::where('AuthorizationToken',$token)->delete();
+            UserInfo::where('AuthorizationToken',$request->AuthorizationToken)->delete();
             $error = 'User config does not exist';
         }
         catch(Exception $ex)
