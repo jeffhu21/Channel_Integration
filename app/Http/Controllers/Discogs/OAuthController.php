@@ -37,6 +37,11 @@ class OAuthController extends Controller
         //dd($request);
       
         //$res = SendRequest::httpGet('oauth/request_token');
+
+        $consumer_key=$request['consumer_key'];
+        $consumer_secret=$request['consumer_secret'];
+        $callback_url=$request['callback_url'];
+
         $res = SendRequest::httpRequest('GET','oauth/request_token');
 
         $error=null;
@@ -197,7 +202,9 @@ class OAuthController extends Controller
 
         //echo('Record: '.$record."\n");
         
-        return 'Hello!';
+        //return 'Hello!';
+
+        return view('form');
         
     }
     

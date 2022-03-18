@@ -19,10 +19,19 @@ use Carbon\Carbon;
 |
 */
 
-Route::post('/{token?}',function(){
-    //return view('home');
+
+Route::get('/DiscogsSetting/{token?}',function(){
+    return view('home');
     //return view('form');
-    return "my ui";
+    //return "my ui";
+})->name('home');
+
+Route::get('/form',function(){
+    return view('form');
+})->middleware('auth')->name('form');
+
+Route::get('/DiscogsAuth',function(){
+    return view('home1');
 });
 
 

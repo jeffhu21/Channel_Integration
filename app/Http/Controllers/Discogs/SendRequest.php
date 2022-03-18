@@ -56,7 +56,7 @@ class SendRequest
 
     
 
-    public static function httpRequest($method,$dir,$authenticated=false,$q='',$oauth_token='',$oauth_token_secret='',$oauth_verifier='')
+    public static function httpRequest($method,$dir,$authenticated=false,$q='',$oauth_token='',$oauth_token_secret='',$oauth_verifier='',$consumer_key='',$consumer_secret='')
     {
         $BASE_URL = 'https://api.discogs.com/';
         $stack = HandlerStack::create(); 

@@ -236,6 +236,31 @@ class ConfigStage
                             'Display'=>'Version 2.5',
                             'Value' => '2.5'
                         ],
+                        $setting->ListValue =
+                        [
+                            'Display'=>'Version 3.1',
+                            'Value' => '3.1'
+                        ],
+                        $setting->ListValue =
+                        [
+                            'Display'=>'Version 3.2',
+                            'Value' => '3.2'
+                        ],
+                        $setting->ListValue =
+                        [
+                            'Display'=>'Version 3.3',
+                            'Value' => '3.3'
+                        ],
+                        $setting->ListValue =
+                        [
+                            'Display'=>'Version 3.4',
+                            'Value' => '3.4'
+                        ],
+                        $setting->ListValue =
+                        [
+                            'Display'=>'Version 3.5',
+                            'Value' => '3.5'
+                        ],
                         
                     ],
                     'RegExValidation'=>null,
