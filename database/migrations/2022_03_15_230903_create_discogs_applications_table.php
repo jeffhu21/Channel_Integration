@@ -14,7 +14,8 @@ class CreateDiscogsApplicationsTable extends Migration
     public function up()
     {
         Schema::create('discogs_applications', function (Blueprint $table) {
-            $table->id();
+            //$table->id();
+            $table->unsignedBigInteger('user_id');
             $table->string('consumer_key')->nullable();
             $table->string('consumer_secret')->nullable();
             $table->string('oauth_token')->nullable();
@@ -23,6 +24,8 @@ class CreateDiscogsApplicationsTable extends Migration
             $table->string('user_agent')->nullable();
             $table->string('callback_url')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

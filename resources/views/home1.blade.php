@@ -22,75 +22,27 @@
     </head>
     <body class="antialiased">
 
-        
+    
 
-        <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
-            @if (Route::has('login'))
-                <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
-                    @auth
-                        <a href="{{ url('/dashboard') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Dashboard</a>
-                    @else
-                        <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Log in</a>
+                
 
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">Register</a>
-                        @endif
-                    @endauth
-                </div>
-            @endif
+                <iframe src="{{ route('DiscogsOauth') }}" frameborder="0" class=" w-full" height="800"></iframe>
 
-            
-            
-            <!--<a href=''>Get Access Token</a>-->
-            
-            <div>
+                <!--
+                <div class="flex items-center justify-end mt-4">
 
-                <div>
-                    
-                        <h1>Step 1</h1>
-                        <div class=" text-center mt-4"><a class=" text-green-600 hover:text-gray-800" href='{{route("request_token")}}'>Get Request Token</a></div>
-
-                        <div class=" text-center mt-4">
-                            {{isset($response)?$response:''}}
-                        </div>
-
-                        <h1 class="mt-4">Step 2</h1>
-
+                
                         
-
-                        <div class=" text-center mt-4"><a class=" text-green-600 hover:text-gray-800" href='{{route("oauth_verifier")}}'>Authorize</a></div>
-                    
-                </div>
-
-                <form method="POST" action="{{ route('access_token') }}">
-
-                    @csrf
-                    <!--
-                    <div>
-                        <x-label for="oauth_token" :value="__('OAuth Token')" />
-
-                        <x-input id="oauth_token" class="block mt-1 w-full" type="text" name="oauth_token" />
-                    </div>
-                    <div>
-                        <x-label for="oauth_token_secret" :value="__('OAuth Token Secret')" />
-
-                        <x-input id="oauth_token_secret" class="block mt-1 w-full" type="text" name="oauth_token_secret" />
-                    </div>
-                    -->
-                    <div class=" mt-4">
-                        <x-label for="oauth_verifier" :value="__('Access Token')" />
-
-                        <x-input id="oauth_verifier" class="block mt-1 w-full" type="text" name="oauth_verifier" />
-                    </div>
-                    <div class="flex items-center justify-end mt-4">
                         <x-button class="ml-4">
-                            {{ __('Send') }}
+                            <a href="{{ route('DiscogsOauth') }}">
+                            {{ __('Authentication') }}
+                            </a>
                         </x-button>
-                    </div>
-                </form>
-            </div>
+                         
+                </div>
+                -->
+                
         
-        </div>
-        
+
     </body>
 </html>

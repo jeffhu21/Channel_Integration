@@ -14,10 +14,13 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
+use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\Discogs\SendRequest as SendRequest;
 
 use App\Models\OauthToken;
 
+use App\Models\User;
 use App\Models\DiscogsApplication;
 use App\Models\LinnworksApplication;
 
@@ -34,23 +37,28 @@ class OAuthController extends Controller
     //Make request for request token
     public function requestToken(Request $request)
     {
-        //dd($request);
-      
-        //$res = SendRequest::httpGet('oauth/request_token');
-
+        
         $consumer_key=$request['consumer_key'];
         $consumer_secret=$request['consumer_secret'];
-        $callback_url=$request['callback_url'];
+        $callback_url=$request['callback_url'].'/oauth_verifier';
+        //$callback_url=$request['callback_url'];
+
+        $app=Auth::user()->discogsApplication()->create([
+            //'user_id',
+            'consumer_key'=> $consumer_key,
+            'consumer_secret'=> $consumer_secret,
+            'callback_url'=>$callback_url
+        ]);
+
 
         $res = SendRequest::httpRequest('GET','oauth/request_token');
 
-        $error=null;
+        $msg=null;
         $stream=null;
         if($res['Error'] != null)
         {
-            $error = $res['Error'];
-            return ["Error"=>$error,"Response"=>$stream];
-            //return null;
+            $msg = $res['Error'];
+            return ["Error"=>$msg,"Response"=>$stream];
         }
         
         $stream = Psr7\Query::parse($res['Response']->getBody()->getContents());
@@ -58,28 +66,18 @@ class OAuthController extends Controller
         $oauth_token_secret = $stream['oauth_token_secret']; //Temporary Token Secret
 
         
-       // echo('OAuth Token: '.$oauth_token.' <br>');
-        //echo('OAuth Token Secret: '.$oauth_token_secret.' <br>');
-        
+        $this->updateToken($oauth_token,$oauth_token_secret);
 
+        
         session(['oauth_token'=>$oauth_token]); //Save Temporary Token to Session
         session(['oauth_token_secret'=>$oauth_token_secret]); //Save Temporary Token Secret to Session
+        
+        $msg = 'Successful!';
 
-        /*
-        if($res->getStatusCode()==200)
-        {
-            //dd($oauth_token . ' and ' . $oauth_token_secret.'<br>');
-            $msg = 'Successful!';
-        }
-        else
-        {
-            $msg = 'Error!';
-        }
-        */
-
-        return view('/home',['response'=>$error]);
+        return view('/DiscogsOauth',['next_step'=>'Authorize','message'=>$msg]);
 
     }
+
 
     //Redirect to outside domain(Discogs) to get the authorization from Linnworks
     public function oauthAuthorize(Request $request)
@@ -89,13 +87,29 @@ class OAuthController extends Controller
         return redirect()->away($dir);
     }
 
-    public function accessToken(Request $request)
-    {        
-        $oauth_token=$request->session()->get('oauth_token'); //Temporary Token
-        $oauth_token_secret=$request->session()->get('oauth_token_secret'); //Temporary Token Secret
+    public function getVerifier(Request $request)
+    {
+
         $oauth_verifier=$request->oauth_verifier;  //Verifier Authorized by User
 
-        echo($oauth_verifier.'<br>');
+        session(['oauth_verifier'=>$oauth_verifier]);
+        
+        return view('/DiscogsOauth',['next_step'=>'Access Token','message'=>'Successful!']);
+    }
+
+    public function accessToken(Request $request)
+    {        
+        $app = DiscogsApplication::firstWhere('user_id',Auth::user()->id);
+
+        /*
+        $oauth_token=$request->session()->get('oauth_token'); //Temporary Token
+        $oauth_token_secret=$request->session()->get('oauth_token_secret'); //Temporary Token Secret
+        */
+
+        $oauth_token=$app->oauth_token; //Temporary Token
+        $oauth_token_secret=$app->oauth_secret; //Temporary Token Secret
+
+        $oauth_verifier=$request->session()->get('oauth_verifier');  //Verifier Authorized by User
 
         //$res = SendRequest::httpGet('oauth/access_token',false,$oauth_token,$oauth_token_secret,$oauth_verifier);
         $res = SendRequest::httpRequest('GET','oauth/access_token',false,'',$oauth_token,$oauth_token_secret,$oauth_verifier);
@@ -114,12 +128,10 @@ class OAuthController extends Controller
         $oauth_token_secret = $stream['oauth_token_secret']; //Permanent Token Secret
         
 
-        //echo('OAuth Token: '.$oauth_token.' <br>');
-        //echo('OAuth Token Secret: '.$oauth_token_secret.' <br>');
+        $this->updateToken($oauth_token,$oauth_token_secret);
 
-        $this->saveToken($oauth_token,$oauth_token_secret,$oauth_verifier);
+        //$this->saveToken($oauth_token,$oauth_token_secret,$oauth_verifier);
 
-        //shwSWYSutjiYqQChwPxIYeibaTDIfPzosUyUpEws 
     }
 
     public static function getUsername($token,$token_secret)
@@ -169,7 +181,16 @@ class OAuthController extends Controller
         return ["Error"=>$error,"Stream"=>$stream];
     }
 
+    public function updateToken($oauth_token,$oauth_token_secret,$oauth_verifier='')
+    {
+        $app=Auth::user()->discogsApplication()->where('user_id', Auth::user()->id)->update([
+            'oauth_token'=>$oauth_token,
+            'oauth_secret'=>$oauth_token_secret,
+            'oauth_verifier'=>$oauth_verifier
+        ]);
+    }
     
+    /*
     public function saveToken($oauth_token,$oauth_token_secret,$oauth_verifier)
     {
         $token=OauthToken::create([
@@ -180,6 +201,7 @@ class OAuthController extends Controller
             'oauth_verifier'=>$oauth_verifier
         ]);
     }
+    */
     
     //Added function
     public function saveLinnworksAuthToken($token)
@@ -203,8 +225,6 @@ class OAuthController extends Controller
         //echo('Record: '.$record."\n");
         
         //return 'Hello!';
-
-        return view('form');
         
     }
     
@@ -220,13 +240,6 @@ class OAuthController extends Controller
         //echo('Record: '.$record."\n");
         
         return 'Hello!';
-    }
-
-    //Added function
-    public function discogsSetting()
-    {
-        //dd('Discogs Setting');
-        return view('form');
     }
     
 }

@@ -20,41 +20,39 @@ use Carbon\Carbon;
 */
 
 
+/*
 Route::get('/DiscogsSetting/{token?}',function(){
     return view('home');
-    //return view('form');
-    //return "my ui";
 })->name('home');
+*/
 
-Route::get('/form',function(){
-    return view('form');
-})->middleware('auth')->name('form');
 
-Route::get('/DiscogsAuth',function(){
-    return view('home1');
+Route::get('/',function(){
+    return view('home');
 });
 
+
+Route::get('/DiscogsOauth',function(){
+    return view('DiscogsOauth');
+})->middleware('auth')->name('DiscogsOauth');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-Route::controller(OAuthController::class)->group(
+Route::get('/oauth_verifier',[OAuthController::class,'getVerifier']);
+
+Route::controller(OAuthController::class)->middleware(['auth'])->group(
 
     function()
     {
-
+        
         //Route::get('/request_token','requestToken')->name('request_token');
         Route::post('/request_token','requestToken')->name('request_token');
-        Route::get('/oauth_verifier','oauthAuthorize')->name('oauth_verifier');
-        Route::post('/access_token','accessToken')->name('access_token');
-        /*
-        Route::get('/username','getUsername');
-        */
-
-        //Route::get('/save_token','saveToken');
-        //Route::get('/orders/{id}','getOrder');
-        //Route::get('/orders','getAllOrders');
+        Route::get('/authorize','oauthAuthorize')->name('authorize');
+        Route::get('/access_token','accessToken')->name('access_token');
+        //Route::post('/access_token','accessToken')->name('access_token');
+        
     }
 );
 

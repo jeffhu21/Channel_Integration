@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
+use Illuminate\Support\Facades\Auth;
+
+use App\Models\DiscogsApplication;
+
 //use App\Models\Linnworks\UserInfo as UserInfo;
 
 class SendRequest
@@ -33,17 +37,28 @@ class SendRequest
     //Set the oauth authentication header
     public static function oauthHeader($oauth_token,$oauth_token_secret,$oauth_verifier)
     {
+        //dd(Auth::user()->id);
+        //$user_id=Auth::user()->id;
+        $app = DiscogsApplication::firstWhere('user_id',Auth::user()->id);
+
+        //dd($app->consumer_key);
+
         $middleware = new Oauth1([
 
-            'consumer_key' => Config::get('discogsAuth.CONSUMER_KEY'),
-            'consumer_secret' => Config::get('discogsAuth.CONSUMER_SECRET'),
+            'consumer_key' => $app->consumer_key,
+            'consumer_secret' => $app->consumer_secret,
+
+            //'consumer_key' => Config::get('discogsAuth.CONSUMER_KEY'),
+            //'consumer_secret' => Config::get('discogsAuth.CONSUMER_SECRET'),
 
             'nonce'=>uniqid('linnworks_'),
 
             //'signature_method'=>"PLAINTEXT",
             'signature_method'=>"HMAC-SHA1",
             'timestamp'=>now()->format('YmdHis'),
-            'callback'=>"https://localhost:8080",
+            //'callback'=>"https://localhost:8080",
+
+            'callback'=>$app->callback_url,
 
             'token' => $oauth_token,
             'token_secret' => $oauth_token_secret,
@@ -56,7 +71,7 @@ class SendRequest
 
     
 
-    public static function httpRequest($method,$dir,$authenticated=false,$q='',$oauth_token='',$oauth_token_secret='',$oauth_verifier='',$consumer_key='',$consumer_secret='')
+    public static function httpRequest($method,$dir,$authenticated=false,$q='',$oauth_token='',$oauth_token_secret='',$oauth_verifier='')
     {
         $BASE_URL = 'https://api.discogs.com/';
         $stack = HandlerStack::create(); 

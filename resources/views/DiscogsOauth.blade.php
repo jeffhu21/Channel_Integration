@@ -20,7 +20,60 @@
         </style>
     </head>
 
-    <body class="antialiased">
+    @if(empty($next_step))
+    
+    
+    <body class="antialiased" onload="pageLoad('Request Token')">
+    
+
+    @else
+        
+    <body class="antialiased" onload="pageLoad('{{$next_step}}')">
+
+    @endif
+
+    <!--
+        <body class="antialiased">
+            -->
+
+    <script>
+        
+        /*
+            pxvTtclSSYamXqdapHmd
+            GOLdMOLlkoqIGhmdPCXsZrchRyfiwmzq
+            http://0bf4-2607-fea8-3d1f-6450-4cc9-b80a-c22e-88af.ngrok.io
+        */
+
+        function pageLoad($next_step)
+        {
+            if($next_step === 'Request Token')
+            {
+                document.getElementById('field1').disabled = false;
+                document.getElementById('step1').disabled = false;
+                document.getElementById('step2').disabled = true;
+                document.getElementById('step3').disabled = true;
+
+            }
+            if($next_step === 'Authorize')
+            {
+                
+                document.getElementById('field1').disabled = true;
+                document.getElementById('step1').disabled = true;
+                document.getElementById('step2').disabled = false;
+                document.getElementById('step3').disabled = true;
+            }
+            if($next_step === 'Access Token')
+            {
+                document.getElementById('field1').disabled = true;
+                document.getElementById('step1').disabled = true;
+                document.getElementById('step2').disabled = true;
+                document.getElementById('step3').disabled = false;
+            }
+        }
+
+        
+        
+    </script>
 
     <x-guest-layout>
     <x-auth-card>
@@ -34,46 +87,59 @@
         </x-slot>
 
             <div>
-                <form method="POST" action='{{route("request_token")}}'>
-
-                    @csrf
-                    <div class="flex justify-center">
-                        <x-label for="consumer_key" :value="__('Consumer Key')" />
-
-                        <x-input id="consumer_key" class="block mt-1 w-full" type="text" name="consumer_key" />
-                    </div>
-                    <div class="flex justify-center mt-6">
-                        <x-label for="consumer_secret" :value="__('Consumer Secret')" />
-
-                        <x-input id="consumer_secret" class="block mt-1 w-full" type="text" name="consumer_secret" />
-                    </div>
-                    <div class="flex justify-center mt-6">
-                        <x-label for="callback_url" :value="__('Callback URL')" />
-
-                        <x-input id="callback_url" class="block mt-1 w-full" type="text" name="callback_url" />
-                    </div>
-                    <div class="flex items-center justify-end mt-4">
-                        <x-button class="ml-4">
-                            {{ __('Next') }}
-                        </x-button>
-                    </div>
-                </form>
-
-                <hr class=" mt-6">
                 
-                <form method="POST" action="{{ route('access_token') }}" class="mt-6">
-                    @csrf
-                    <div class="flex justify-center">
-                        <x-label for="oauth_verifier" :value="__('Oauth Verifier')" />
+                <form method="POST" action='{{route("request_token")}}' id="form1">
 
-                        <x-input id="oauth_verifier" class="block mt-1 w-full" type="text" name="oauth_verifier" />
-                    </div>
-                    <div class="flex items-center justify-end mt-4">
-                        <x-button class="ml-4">
-                            {{ __('Submit') }}
-                        </x-button>
-                    </div>
+                    <fieldset id="field1">
+
+                        <legend class=" text-center text-lg">Discogs Oauth</legend>
+                        
+                        @csrf
+                        <div class="flex justify-center mt-6">
+                            <x-label for="consumer_key" :value="__('Consumer Key')" />
+
+                            <x-input id="consumer_key" class="block mt-1 w-full" type="text" name="consumer_key" />
+                        </div>
+                        <div class="flex justify-center mt-6">
+                            <x-label for="consumer_secret" :value="__('Consumer Secret')" />
+
+                            <x-input id="consumer_secret" class="block mt-1 w-full" type="text" name="consumer_secret" />
+                        </div>
+                        
+                        <div class="flex justify-center mt-6">
+                            <x-label for="callback_url" :value="__('Callback URL')" />
+
+                            <x-input id="callback_url" class="block mt-1 w-full" type="text" name="callback_url" value="localhost:8080"/>
+                        </div>
+                        
+                        
+                    </fieldset>
+
                 </form>
+
+                <div class="flex justify-center mt-6">
+                    {{(isset($message)&&isset($next_step))?$message.' Please go to next step and click '.$next_step.'.':''}}
+                </div>
+
+                <div class="flex items-center justify-end mt-4">
+
+                        <x-button class="ml-4 h-10" id="step1" type="submit" form="form1">
+                            {{ __('Request Token') }}
+                        </x-button>
+
+                        <a href='{{route("authorize")}}'>
+                            <x-button class="ml-4 h-10" id="step2" type="button">
+                            {{ __('Authorize') }}
+                            </x-button> 
+                        </a>
+
+                        <a href='{{route("access_token")}}'>
+                            <x-button class="ml-4 h-10" id="step3" type="button">
+                                {{ __('Access Token') }}
+                            </x-button>
+                        </a>
+                </div>
+                
 
             </div>
         

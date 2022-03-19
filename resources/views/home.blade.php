@@ -22,27 +22,49 @@
     </head>
     <body class="antialiased">
 
-    
+    <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
+            @if (Route::has('login'))
+                <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
+                    @auth
+                        <a href="{{ url('/dashboard') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Dashboard</a>
+                    @else
+                        <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Log in</a>
 
-                <!--<iframe src="{{ route('form') }}" frameborder="0"></iframe>-->
-
-                <iframe src="{{ route('form') }}" frameborder="0" class=" w-full" height="800"></iframe>
-
-                <!--
-                <div class="flex items-center justify-end mt-4">
-
-                
-                        
-                        <x-button class="ml-4">
-                            <a href="{{ route('form') }}">
-                            {{ __('Authentication') }}
-                            </a>
-                        </x-button>
-                         
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">Register</a>
+                        @endif
+                    @endauth
                 </div>
-                -->
-                
+            @endif
         
+                <div>
+                    <h1 class=" text-center text-xl uppercase">Linnworks Discogs Integration</h1>
+
+                    <div class=" bg-indigo-50  items-center justify-center mt-8 px-6 py-6">
+
+                        <h2 class=" text-lg text-center font-semibold uppercase mb-4">Discogs Oauth</h2>
+                        
+                            <p>1. REGISTER IN DISCOGS. <a href="http://www.discogs.com"><span>http://www.discogs.com</span></a></p>
+
+                            <p>2. OBTAIN CONSUMER KEY AND CONSUMER SECRET FROM DEVELOPER SETTINGS</p>
+
+                            <p>3. AUTHENTICATION</p>
+
+                    </div>
+                    
+                        <div class="flex items-center justify-center mt-4">
+
+                        
+                                
+                                <x-button class="ml-4">
+                                    <a href="{{ route('DiscogsOauth') }}">
+                                    {{ __('Authentication') }}
+                                    </a>
+                                </x-button>
+                                
+                        </div>
+                </div>
+        </div>
 
     </body>
 </html>

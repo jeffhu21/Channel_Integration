@@ -41,4 +41,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    //Added Function
+    public function discogsApplication()
+    {
+        return $this->hasOne(DiscogsApplication::class);
+    }
 }
