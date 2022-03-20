@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserInfosTable extends Migration
+class CreateAppUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class CreateUserInfosTable extends Migration
      */
     public function up()
     {
-        //Schema::enableForeignKeyConstraints();
-        Schema::create('user_infos', function (Blueprint $table) {
+        Schema::enableForeignKeyConstraints();
+        Schema::create('app_users', function (Blueprint $table) {
             $table->id();
             $table->uuid('UserId');
             $table->string('Email');
@@ -40,6 +40,6 @@ class CreateUserInfosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_infos');
+        Schema::dropIfExists('app_users');
     }
 }

@@ -28,9 +28,14 @@ Route::get('/DiscogsSetting/{token?}',function(){
 
 
 Route::get('/',function(){
-    return view('home');
+    return view('home1');
 });
 
+/*
+Route::get('/AppKey',function(){
+    return view('AppKey');
+})->middleware('auth')->name('AppKey');
+*/
 
 Route::get('/DiscogsOauth',function(){
     return view('DiscogsOauth');
@@ -46,7 +51,10 @@ Route::controller(OAuthController::class)->middleware(['auth'])->group(
 
     function()
     {
-        
+        Route::get('/AppKey',function(){
+            return view('AppKey');
+        })->name('AppKey');
+        Route::post('/AppKey','saveAppKey')->name('save_app_key');
         //Route::get('/request_token','requestToken')->name('request_token');
         Route::post('/request_token','requestToken')->name('request_token');
         Route::get('/authorize','oauthAuthorize')->name('authorize');

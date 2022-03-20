@@ -21,6 +21,7 @@ use App\Http\Controllers\Discogs\SendRequest as SendRequest;
 use App\Models\OauthToken;
 
 use App\Models\User;
+use App\Models\AppKey;
 use App\Models\DiscogsApplication;
 use App\Models\LinnworksApplication;
 
@@ -132,6 +133,36 @@ class OAuthController extends Controller
 
         //$this->saveToken($oauth_token,$oauth_token_secret,$oauth_verifier);
 
+    }
+
+    public function saveAppKey(Request $request)
+    {
+        $user_id = AppKey::firstWhere('user_id',Auth::user()->id);
+
+        if($user_id == null)
+        {
+            $app=Auth::user()->appKey()->create([
+                //'user_id',
+                'discogs_consumer_key'=> $request['consumer_key'],
+                'discogs_consumer_secret'=> $request['consumer_secret'],
+                'linnworks_application_id'=>$request['application_id'],
+                'linnworks_application_secret'=> $request['application_secret'],
+                'callback_url'=>$request['callback_url'].'/oauth_verifier'
+            ]);
+        }
+        else
+        {
+            $app=Auth::user()->appKey()->update([
+                //'user_id',
+                'discogs_consumer_key'=> $request['consumer_key'],
+                'discogs_consumer_secret'=> $request['consumer_secret'],
+                'linnworks_application_id'=>$request['application_id'],
+                'linnworks_application_secret'=> $request['application_secret'],
+                'callback_url'=>$request['callback_url'].'/oauth_verifier'
+            ]);
+        }
+
+        return view('home1');
     }
 
     public static function getUsername($token,$token_secret)

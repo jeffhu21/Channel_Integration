@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <iframe src="{{ route('DiscogsOauth') }}" frameborder="0" class=" w-full" height="400"></iframe>
+        <iframe src="{{ route('AppKey') }}" frameborder="0" class=" w-full" height="400"></iframe>
         </div>
     </div>
 

@@ -43,8 +43,8 @@ class User extends Authenticatable
     ];
 
     //Added Function
-    public function discogsApplication()
+    public function appKey()
     {
-        return $this->hasOne(DiscogsApplication::class);
+        return $this->hasOne(AppKey::class);
     }
 }

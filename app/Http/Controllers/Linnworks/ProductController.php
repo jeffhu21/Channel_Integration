@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Linnworks;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Discogs\ProductController as DiscogsProductController;
 
-use App\Http\Controllers\Linnworks\UserInfoAccess as UserInfoAccess;
+use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
 use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 use App\Models\Linnworks\Product as Product;
 
@@ -23,7 +23,7 @@ class ProductController extends Controller
             return ['Error' => "Invalid page number"];
         }
 
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
 
         if($result['Error'] != null)
         {
@@ -88,7 +88,7 @@ class ProductController extends Controller
             return ['Error' => "Products not supplied"];
         }
         
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -144,7 +144,7 @@ class ProductController extends Controller
             return ['Error' => "Products not supplied"];
         }
         
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];

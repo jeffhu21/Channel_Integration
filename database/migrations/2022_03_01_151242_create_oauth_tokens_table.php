@@ -13,17 +13,19 @@ class CreateOauthTokensTable extends Migration
      */
     public function up()
     {
+        //Schema::enableForeignKeyConstraints();//Added
         Schema::create('oauth_tokens', function (Blueprint $table) {
             $table->id();
             //$table->unsignedBigInteger('UserId');
-            $table->string('consumer_key')->nullable();
-            $table->string('consumer_secret')->nullable();
+            $table->unsignedBigInteger('app_user_id')->unique();
+            $table->unsignedBigInteger('app_keys_id')->unique();
             $table->string('oauth_token')->nullable();
             $table->string('oauth_secret')->nullable();
             $table->string('oauth_verifier')->nullable();
             $table->timestamps();
 
-            //$table->foreign('UserId')->references('id')->on('user_infos')->onDelete('cascade');
+            $table->foreign('app_user_id')->references('id')->on('app_users')->onDelete('cascade');
+            $table->foreign('app_keys_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

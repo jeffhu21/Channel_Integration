@@ -13,18 +13,22 @@ class OauthToken extends Model
 
     protected $fillable = [
         //'UserId',
-        'consumer_key',
-        'consumer_secret',
+
+        'app_user_id',
+        'app_keys_id',
         'oauth_token',
         'oauth_secret',
         'oauth_verifier'
     ];
 
-    /*
-    public function UserInfo()
+    
+    public function appUser()
     {
-        return $this->belongsTo(App\Models\Linnworks\UserInfo::class);
+        return $this->belongsTo(AppUser::class);
     }
-    */
 
+    public function appKey()
+    {
+        return $this->belongsTo(AppKey::class);
+    }
 }

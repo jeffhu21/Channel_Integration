@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Linnworks;
 
 use Illuminate\Http\Request;
 
-use App\Models\Linnworks\UserInfo as UserInfo;
+use App\Models\Linnworks\AppUser as AppUser;
 
-class UserInfoAccess
+class AppUserAccess
 {
     //Check Request with AuthorizationToken
     public static function getUserByToken(Request $request)
@@ -19,7 +19,7 @@ class UserInfoAccess
         }
 
         $token = $request->AuthorizationToken;
-        $result = self::loadUserInfo($token);
+        $result = self::loadAppUser($token);
         
         if($result['Error'] != null)
         {
@@ -34,14 +34,14 @@ class UserInfoAccess
         return ['Error' => null,'User'=>$user];
     }
 
-    //Load UserInfo from UserInfo Model
-    public static function loadUserInfo($token)
+    //Load AppUser from AppUser Model
+    public static function loadAppUser($token)
     {
         $error = null;
         $user = null;
         
         try{
-            $user=UserInfo::where('AuthorizationToken',$token)->first();
+            $user=AppUser::where('AuthorizationToken',$token)->first();
         }
         catch(Exception $ex)
         {

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Linnworks;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Discogs\OrderController as DiscogsOrderController;
-use App\Http\Controllers\Linnworks\UserInfoAccess as UserInfoAccess;
+use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
 use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 use App\Models\Linnworks\Order as Order;
 use App\Models\Linnworks\OrderDespatch as OrderDespatch;
@@ -23,7 +23,7 @@ class OrderController extends Controller
             return ['Error' => "Invalid page number"];
         }
 
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -238,7 +238,7 @@ class OrderController extends Controller
             return ['Error' => "Invalid page number"];
         }
 
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -380,7 +380,7 @@ class OrderController extends Controller
             return ['Error' => "Invalid page number"];
         }
         
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];

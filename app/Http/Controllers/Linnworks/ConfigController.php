@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Linnworks;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Linnworks\UserInfoAccess as UserInfoAccess;
+use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
 use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 use Illuminate\Http\Request;
 
 
-use App\Models\Linnworks\UserInfo as UserInfo;
+use App\Models\Linnworks\AppUser as AppUser;
 use App\Models\Linnworks\ConfigStage as ConfigStage;
 
 
@@ -47,7 +47,7 @@ class ConfigController extends Controller
         else
         {
             $auth_token = Str::orderedUuid();
-            $user = UserInfo::create([
+            $user = AppUser::create([
                 'UserId' => $request->LinnworksUniqueIdentifier,
                 'Email' => $request->Email,
                 'AccountName' => $request->AccountName,
@@ -69,7 +69,7 @@ class ConfigController extends Controller
 
     public function userConfig(Request $request)
     {
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -89,7 +89,7 @@ class ConfigController extends Controller
     {
         //dd(json_decode($request->query()['ConfigItems']));
         //dd('SaveConfig: '.json_encode($request->query()['ConfigItems']));
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -135,7 +135,7 @@ class ConfigController extends Controller
 
     public function shippingTags(Request $request)
     {
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -151,7 +151,7 @@ class ConfigController extends Controller
 
     public function paymentTags(Request $request)
     {
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -167,7 +167,7 @@ class ConfigController extends Controller
 
     public function deleted(Request $request)
     {
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -179,7 +179,7 @@ class ConfigController extends Controller
 
         try
         {
-            UserInfo::where('AuthorizationToken',$request->AuthorizationToken)->delete();
+            AppUser::where('AuthorizationToken',$request->AuthorizationToken)->delete();
             $error = 'User config does not exist';
         }
         catch(Exception $ex)
@@ -192,7 +192,7 @@ class ConfigController extends Controller
 
     public function test(Request $request)
     {
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];

@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\DiscogsApplication;
 
-//use App\Models\Linnworks\UserInfo as UserInfo;
+//use App\Models\Linnworks\AppUser as AppUser;
 
 class SendRequest
 {

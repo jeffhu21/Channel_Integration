@@ -7,7 +7,7 @@ use App\Http\Controllers\Discogs\ProductController as DiscogsProductController;
 use App\Http\Controllers\Discogs\OAuthController as OAuthController;
 use Illuminate\Http\Request;
 
-use App\Http\Controllers\Linnworks\UserInfoAccess as UserInfoAccess;
+use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
 use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 use App\Models\Linnworks\ProductsListings as ProductsListingsRequest;
 
@@ -21,7 +21,7 @@ class ListingController extends Controller
     //
     public function postSaleOptions(Request $request)
     {
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -61,7 +61,7 @@ class ListingController extends Controller
             return ['Error' => "Listings Not Found"];
         }
         
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -192,7 +192,7 @@ class ListingController extends Controller
             return ['Error' => "External Listing Ids Not Found"];
         }
         
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -228,7 +228,7 @@ class ListingController extends Controller
             return ['Error' => "Listings Not Found"];
         }
         
-        $result = UserInfoAccess::getUserByToken($request);
+        $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
             return $result['Error'];

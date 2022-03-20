@@ -5,11 +5,11 @@ namespace App\Models\Linnworks;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserInfo extends Model
+class AppUser extends Model
 {
     use HasFactory;
 
-    protected $table = 'user_infos';
+    protected $table = 'app_users';
 
     protected $fillable = [
         'UserId',

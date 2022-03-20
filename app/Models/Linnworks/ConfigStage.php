@@ -2,7 +2,7 @@
 
 namespace App\Models\Linnworks;
 
-use App\Models\Linnworks\UserInfo as UserInfo;
+use App\Models\Linnworks\AppUser as AppUser;
 
 use App\Models\Linnworks\UserConfigSetting as UserConfigSetting;
 use App\Models\Linnworks\ShippingTagSetting as ShippingTagSetting;
