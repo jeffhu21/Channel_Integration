@@ -17,15 +17,15 @@ class CreateOauthTokensTable extends Migration
         Schema::create('oauth_tokens', function (Blueprint $table) {
             $table->id();
             //$table->unsignedBigInteger('UserId');
-            $table->unsignedBigInteger('app_user_id')->unique();
-            $table->unsignedBigInteger('app_keys_id')->unique();
+            $table->unsignedBigInteger('app_user_id')->unique();//Seller User ID
+            $table->unsignedBigInteger('app_owner_id')->unique();//Admin User ID
             $table->string('oauth_token')->nullable();
             $table->string('oauth_secret')->nullable();
             $table->string('oauth_verifier')->nullable();
             $table->timestamps();
 
             $table->foreign('app_user_id')->references('id')->on('app_users')->onDelete('cascade');
-            $table->foreign('app_keys_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('app_owner_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

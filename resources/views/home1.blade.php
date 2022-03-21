@@ -48,7 +48,7 @@
 
                             <p>2. OBTAIN CONSUMER KEY AND CONSUMER SECRET FROM CREATING APPLICATION</p>
 
-                            <p>3. COPY CONSUMER KEY AND CONSUMER SECRET TO ADD</p>
+                            <p>3. COPY CONSUMER KEY AND CONSUMER SECRET TO SAVE</p>
                     </div>
 
                     <div class=" bg-indigo-50  items-center justify-center mt-8 px-6 py-6">
@@ -59,7 +59,7 @@
 
                             <p>2. OBTAIN APPLICATION ID AND APPLICATION SECRET FROM CREATING APPLICATION</p>
 
-                            <p>3. COPY APPLICATION ID AND APPLICATION SECRET TO ADD</p>
+                            <p>3. COPY APPLICATION ID AND APPLICATION SECRET TO SAVE</p>
                     </div>
                     
                         <div class="flex items-center justify-center mt-4">
@@ -68,7 +68,7 @@
                                 
                                 <x-button class="ml-4">
                                     <a href="{{ route('AppKey') }}">
-                                    {{ __('Add App Key') }}
+                                    {{ __('Save App Keys') }}
                                     </a>
                                 </x-button>
                                 

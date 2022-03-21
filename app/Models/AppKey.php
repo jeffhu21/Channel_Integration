@@ -20,10 +20,7 @@ class AppKey extends Model
         'callback_url'
     ];
 
-    public function oauthToken()
-    {
-        return $this->hasOne(OauthToken::class);
-    }
+    
 
     public function user()
     {

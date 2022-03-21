@@ -15,7 +15,7 @@ class OauthToken extends Model
         //'UserId',
 
         'app_user_id',
-        'app_keys_id',
+        'app_owner_id',
         'oauth_token',
         'oauth_secret',
         'oauth_verifier'
@@ -27,8 +27,8 @@ class OauthToken extends Model
         return $this->belongsTo(AppUser::class);
     }
 
-    public function appKey()
+    public function user()
     {
-        return $this->belongsTo(AppKey::class);
+        return $this->belongsTo(User::class);
     }
 }

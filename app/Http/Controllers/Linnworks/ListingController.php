@@ -67,12 +67,14 @@ class ListingController extends Controller
             return $result['Error'];
         }
         
-        //$user = $result['User'];
+        $user = $result['User'];
 
+        /*
         $record = OauthToken::first();
         $token = $record->oauth_token;
         $token_secret = $record->oauth_secret;
         $token_verifier=$record->oauth_verifier;
+        */
 
         $row = OAuthController::getIdentity($token,$token_secret);
         if($row['Error'] != null)
@@ -197,6 +199,8 @@ class ListingController extends Controller
         {
             return $result['Error'];
         }
+
+        $user = $result['User'];
 
         $record = OauthToken::first();
         $token = $record->oauth_token;

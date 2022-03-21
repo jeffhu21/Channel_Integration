@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Linnworks;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,10 +26,10 @@ class AppUser extends Model
         'DownloadVirtualItems',
     ];
 
-    /*
+    
     public function OauthToken()
     {
-        return $this->hasOne(App\Models\OauthToken::class);
+        return $this->hasOne(OauthToken::class);
     }
-    */
+    
 }

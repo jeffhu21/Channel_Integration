@@ -32,22 +32,26 @@ use Psr\Http\Message\UriInterface;
 
 class OAuthController extends Controller
 {
+    //public $oauth_token;
 
     //Make request for request token
-    public static function requestToken($app_user_id)
+    public function requestToken(Request $request)
     {
-        $dir = 'oauth/request_token';
-        
-        //Get Consumer Key
-        $app_keys = AppKey::first();
-        
-        //Add Owner ID and App User Id in Oauth Token Table
-        $app=OauthToken::create([
-            'app_user_id'=>$app_user_id,
-            'app_owner_id'=>$app_keys->user_id
-        ]);
+        /*
+        $consumer_key=$request['consumer_key'];
+        $consumer_secret=$request['consumer_secret'];
+        $callback_url=$request['callback_url'].'/oauth_verifier';
+        //$callback_url=$request['callback_url'];
 
-        $res = SendRequest::httpRequest('GET',$dir,false,'',$app_user_id);
+        $app=Auth::user()->appKey()->create([
+            //'user_id',
+            'consumer_key'=> $consumer_key,
+            'consumer_secret'=> $consumer_secret,
+            'callback_url'=>$callback_url
+        ]);
+        */
+
+        $res = SendRequest::httpRequest('GET','oauth/request_token');
 
         $msg=null;
         $stream=null;
@@ -61,55 +65,54 @@ class OAuthController extends Controller
         $oauth_token = $stream['oauth_token']; //Temporary Token
         $oauth_token_secret = $stream['oauth_token_secret']; //Temporary Token Secret
 
-        $this->saveOauthToken($app_user_id,$oauth_token,$oauth_token_secret); //Save Temporary Token
+        $this->saveToken($oauth_token,$oauth_token_secret);
 
-       // $msg = 'Successful!';
+        session(['oauth_token'=>$oauth_token]); //Save Temporary Token to Session
+        session(['oauth_token_secret'=>$oauth_token_secret]); //Save Temporary Token Secret to Session
+        
+        $msg = 'Successful!';
 
-       // return view('/DiscogsOauth',['next_step'=>'Authorize','message'=>$msg]);
+        return view('/DiscogsOauth',['next_step'=>'Authorize','message'=>$msg]);
 
     }
 
 
     //Redirect to outside domain(Discogs) to get the authorization from Linnworks
-    public static function oauthAuthorize($app_user_id)
+    public function oauthAuthorize(Request $request)
     {
-        $app = OauthToken::where('app_user_id', $app_user_id)->first();
-
-        $dir = 'https://www.discogs.com/oauth/authorize?oauth_token=' . $app->oauth_token; 
+        $dir = 'https://www.discogs.com/oauth/authorize?oauth_token=' . $request->session()->get('oauth_token'); 
         
         return redirect()->away($dir);
     }
 
-    public static function getVerifier(Request $request)
+    public function getVerifier(Request $request)
     {
-        dd($request);
+
         $oauth_verifier=$request->oauth_verifier;  //Verifier Authorized by User
-        $app=OauthToken::where('app_user_id', $app_user_id)->update([
-            'oauth_verifier'=>$oauth_verifier
-        ]); 
-        //$this->saveOauthToken($app_user_id,$oauth_token,$oauth_token_secret);
+
+        session(['oauth_verifier'=>$oauth_verifier]);
+        
+        return view('/DiscogsOauth',['next_step'=>'Access Token','message'=>'Successful!']);
     }
 
-    public static function accessToken($app_user_id)
-    {       
-        
-        
-        //$app = OauthToken::where('app_user_id', $app_user_id)->first();
+    public function accessToken(Request $request)
+    {        
+        $app = DiscogsApplication::firstWhere('user_id',Auth::user()->id);
 
         /*
         $oauth_token=$request->session()->get('oauth_token'); //Temporary Token
         $oauth_token_secret=$request->session()->get('oauth_token_secret'); //Temporary Token Secret
         */
 
-        //$oauth_token=$app->oauth_token; //Temporary Token
-        //$oauth_token_secret=$app->oauth_secret; //Temporary Token Secret
+        $oauth_token=$app->oauth_token; //Temporary Token
+        $oauth_token_secret=$app->oauth_secret; //Temporary Token Secret
 
-        //$oauth_verifier=$oauth_verifier;  //Verifier Authorized by User
+        $oauth_verifier=$request->session()->get('oauth_verifier');  //Verifier Authorized by User
 
         //$res = SendRequest::httpGet('oauth/access_token',false,$oauth_token,$oauth_token_secret,$oauth_verifier);
 
         //$res = SendRequest::httpRequest('GET','oauth/access_token',false,'',$oauth_token,$oauth_token_secret,$oauth_verifier);
-        $res = SendRequest::httpRequest('GET','oauth/access_token',false,'',$app_user_id);
+        $res = SendRequest::httpRequest('GET','oauth/access_token');
 
         $error=null;
         $stream=null;
@@ -125,9 +128,9 @@ class OAuthController extends Controller
         $oauth_token_secret = $stream['oauth_token_secret']; //Permanent Token Secret
         
 
-        $this->saveOauthToken($oauth_token,$oauth_token_secret);
+        $this->saveToken($oauth_token,$oauth_token_secret);
 
-        //$this->saveOauthToken2($oauth_token,$oauth_token_secret,$oauth_verifier);
+        //$this->saveToken2($oauth_token,$oauth_token_secret,$oauth_verifier);
 
     }
 
@@ -138,6 +141,7 @@ class OAuthController extends Controller
         if($user_id == null)
         {
             $app=Auth::user()->appKey()->create([
+                //'user_id',
                 'discogs_consumer_key'=> $request['consumer_key'],
                 'discogs_consumer_secret'=> $request['consumer_secret'],
                 'linnworks_application_id'=>$request['application_id'],
@@ -163,11 +167,34 @@ class OAuthController extends Controller
     
     public static function DiscogsOauth($app_user_id)
     {
-        self::requestToken($app_user_id);
+        $app_key = AppKey->first();//Find Consumer Key
+
+        $user_id = $app_key->user_id;
         
-        self::oauthAuthorize($app_user_id);
+        if($app_key != null)
+        {
+            $app=OauthToken::create([
+                //'user_id',
+                'user_id'=>$user_id,
+                'app_user_id'=>$app_user_id
+            ]);
+
+        $res = SendRequest::httpRequest('GET','oauth/request_token');
+
+        $stream=null;
+        if($res['Error'] != null)
+        {
+            $msg = $res['Error'];
+            return ["Error"=>$msg,"Response"=>$stream];
+        }
+        
+        $stream = Psr7\Query::parse($res['Response']->getBody()->getContents());
+        $oauth_token = $stream['oauth_token']; //Temporary Token
+        $oauth_token_secret = $stream['oauth_token_secret']; //Temporary Token Secret
 
         
+        $this->saveToken($oauth_token,$oauth_token_secret);
+        }
     }
     
     //public static function getUsername($token,$token_secret)
@@ -219,17 +246,65 @@ class OAuthController extends Controller
         return ["Error"=>$error,"Stream"=>$stream];
     }
 
-    public function saveOauthToken($app_user_id,$oauth_token,$oauth_token_secret,$oauth_verifier='')
+    public function saveToken($oauth_token,$oauth_token_secret,$oauth_verifier='')
     {
-        $app=OauthToken::where('app_user_id', $app_user_id)->update([
+        $app=Auth::user()->oauthToken()->where('user_id', Auth::user()->id)->update([
             'oauth_token'=>$oauth_token,
             'oauth_secret'=>$oauth_token_secret,
             'oauth_verifier'=>$oauth_verifier
         ]);
     }
     
+    /*
+    public function saveToken2($oauth_token,$oauth_token_secret,$oauth_verifier)
+    {
+        $token=OauthToken::create([
+            'consumer_key'=> env('CONSUMER_KEY'),
+            'consumer_secret'=> env('CONSUMER_SECRET'),
+            'oauth_token'=>$oauth_token,
+            'oauth_secret'=>$oauth_token_secret,
+            'oauth_verifier'=>$oauth_verifier
+        ]);
+    }
+    */
     
+    //Added function
+    public function saveLinnworksAuthToken($token)
+    {
+
+        /*
+        if(!$request->has('token'))
+        {
+            return 'Error';
+        }
+
+        $token = $request->token;
+        */
+
+        $record=LinnworksApplication::create([
+            'application_id'=>'',
+            'application_secret'=>'',
+            'token'=>$token
+        ]);
+
+        //echo('Record: '.$record."\n");
+        
+        //return 'Hello!';
+        
+    }
     
-    
+    //Added function
+    public function saveLinnworksApplication($id,$secret,$token)
+    {
+        $record=LinnworksApplication::create([
+            'application_id'=>$id,
+            'application_secret'=>$secret,
+            'token'=>$token
+        ]);
+
+        //echo('Record: '.$record."\n");
+        
+        return 'Hello!';
+    }
     
 }

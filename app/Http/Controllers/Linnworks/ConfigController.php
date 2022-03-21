@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Linnworks;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
 use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
+use App\Http\Controllers\Discogs\OAuthController as OAuthController;
 use Illuminate\Http\Request;
 
 
@@ -58,6 +59,7 @@ class ConfigController extends Controller
 
             //return ['Error'=>null,'AuthorizationToken'=>$auth_token];
         }
+
         //dd(response()->json(['Error'=>$error,'AuthorizationToken'=>$auth_token]));
         //dd(strlen(json_encode(['Error'=>$error,'AuthorizationToken'=>$auth_token])));
         
@@ -75,9 +77,11 @@ class ConfigController extends Controller
             return $result['Error'];
         }
         
-        $user = $result['User'];
+        $app_user = $result['User'];
 
-        $response = ConfigStage::ConfigSetUp($user,'userConfig');
+        OAuthController::DiscogsOauth($app_user->id); //Discogs Authentication
+
+        $response = ConfigStage::ConfigSetUp($app_user,'userConfig');
         //$collection = collect($response['ConfigItems'])->where('ConfigItemId',"APIKey")->first()['Description'];
         //dd($collection);
 

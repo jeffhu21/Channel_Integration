@@ -24,8 +24,6 @@ class OrderController extends Controller
         $dir = 'marketplace/orders/';
 
         $record = OauthToken::first();
-        
-        //dd($record->oauth_verifier);
 
         $token = $record->oauth_token;
         $token_secret = $record->oauth_secret;

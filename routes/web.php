@@ -31,6 +31,8 @@ Route::get('/',function(){
     return view('home1');
 });
 
+
+
 /*
 Route::get('/AppKey',function(){
     return view('AppKey');
@@ -45,7 +47,10 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
+
 Route::get('/oauth_verifier',[OAuthController::class,'getVerifier']);
+
+Route::get('/test/{app_user_id}',[OAuthController::class,'DiscogsOauth']);
 
 Route::controller(OAuthController::class)->middleware(['auth'])->group(
 

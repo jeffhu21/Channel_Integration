@@ -21,7 +21,8 @@ use App\Models\Discogs\Listing as Listing;
 
 class ProductController extends Controller
 {
-    public static function getInventory($PageNumber,$token,$token_secret)
+    //public static function getInventory($PageNumber,$token,$token_secret)
+    public static function getInventory($PageNumber,$app_user_id)
     {
         /*
         $record = OauthToken::first();
@@ -30,7 +31,8 @@ class ProductController extends Controller
         */
 
         $username = null;
-        $result = OAuthController::getIdentity($token,$token_secret);
+        //$result = OAuthController::getIdentity($token,$token_secret);
+        $result = OAuthController::getIdentity($app_user_id);
         //$username = OAuthController::getUsername()['Username'];
 
         if($result['Error'] != null)
@@ -44,7 +46,7 @@ class ProductController extends Controller
         //$dir = 'users/'.$username.'/inventory';
 
         //$res = SendRequest::httpGet($dir,true,$token,$token_secret);
-        $res = SendRequest::httpRequest('GET',$dir,true,'',$token,$token_secret);
+        $res = SendRequest::httpRequest('GET',$dir,true,'',$app_user_id);
 
         $error=null;
         $stream=null;
@@ -61,7 +63,7 @@ class ProductController extends Controller
         return ["Error"=>$error,"Products"=>$stream];
     }
 
-    public static function updateInventory($product,$token,$token_secret,$token_verifier)
+    public static function updateInventory($product,$app_user_id)
     {
         $error = null;
         $dir = 'marketplace/listings/';
@@ -79,7 +81,7 @@ class ProductController extends Controller
         $q = ['release_id'=>$release_id,'format_quantity'=>$product->Quantity];
 
         //$res = SendRequest::httpPost($dir.$listing_id,true,$q,$token,$token_secret,$token_verifier);
-        $res = SendRequest::httpRequest('POST',$dir.$listing_id,true,$q,$token,$token_secret);
+        $res = SendRequest::httpRequest('POST',$dir.$listing_id,true,$q,$app_user_id);
 
         if($res['Error'] != null)
         {
@@ -90,7 +92,7 @@ class ProductController extends Controller
 
     }
 
-    public static function updatePrice($product,$token,$token_secret,$token_verifier)
+    public static function updatePrice($product,$app_user_id)
     {
         $error = null;
         $dir = 'marketplace/listings/';
@@ -101,7 +103,7 @@ class ProductController extends Controller
         $q = ['release_id'=>$release_id,'price'=>$product->Price];
 
         //$res = SendRequest::httpPost($dir.$listing_id,true,$q,$token,$token_secret,$token_verifier);
-        $res = SendRequest::httpRequest('POST',$dir.$listing_id,true,$q,$token,$token_secret);
+        $res = SendRequest::httpRequest('POST',$dir.$listing_id,true,$q,$app_user_id);
 
         if($res['Error'] != null)
         {
@@ -111,7 +113,7 @@ class ProductController extends Controller
         return ["Error"=>$error,"SKU"=>$release_id];
     }
 
-    public static function createList($listing,$token,$token_secret,$token_verifier)
+    public static function createList($listing,$app_user_id)
     {
         $error = null;
         $dir ='marketplace/listings';
@@ -121,7 +123,7 @@ class ProductController extends Controller
         //dd($listing['status']);
 
         //$res = SendRequest::httpPost($dir,true,$listing,$token,$token_secret,$token_verifier);
-        $res = SendRequest::httpRequest('POST',$dir,true,$listing,$token,$token_secret);
+        $res = SendRequest::httpRequest('POST',$dir,true,$listing,$app_user_id);
 
         //dd($res['Response']->getBody()->getContents());
 
@@ -136,19 +138,19 @@ class ProductController extends Controller
         //return ['listing_id'=>$listing];
     }
 
-    public static function updateListing($listing,$token,$token_secret,$token_verifier)
+    public static function updateListing($listing,$app_user_id)
     {
         $error = null;
         $dir = 'marketplace/listings/';
         $listing_id = $listing['listing_id'];
 
         //$res = SendRequest::httpPost($dir.$listing_id,true,$listing,$token,$token_secret,$token_verifier);
-        $res = SendRequest::httpRequest('POST',$dir.$listing_id,true,$listing,$token,$token_secret);
+        $res = SendRequest::httpRequest('POST',$dir.$listing_id,true,$listing,$app_user_id);
 
         return $res;
     }
     
-    public static function deleteListing($listing,$token,$token_secret,$token_verifier)
+    public static function deleteListing($listing,$token,$app_user_id)
     {
         $res = null;
         $error = null;
@@ -157,7 +159,7 @@ class ProductController extends Controller
         //if(isset($listing['listing_id']))
         //{
             $listing_id = $listing->ExternalListingId;
-            $res = SendRequest::httpRequest('DELETE',$dir.$listing_id,true,'',$token,$token_secret,$token_verifier);
+            $res = SendRequest::httpRequest('DELETE',$dir.$listing_id,true,'',$app_user_id);
             
         //}
         //else

@@ -30,16 +30,22 @@ class ProductController extends Controller
             return $result['Error'];
         }
         
-        //$user = $result['User'];
+        $user = $result['User'];
         $error=null;
 
+        /*
         $record = OauthToken::first();
         $token = $record->oauth_token;
         $token_secret = $record->oauth_secret;
+        */
+
+
 
         //Get Product from Discogs
 
-        $res=DiscogsProductController::getInventory($request->PageNumber,$token,$token_secret);
+        //$res=DiscogsProductController::getInventory($request->PageNumber,$token,$token_secret);
+
+        $res=DiscogsProductController::getInventory($request->PageNumber,$user->UserId);
 
         if($res['Error'] != null)
         {
@@ -94,17 +100,18 @@ class ProductController extends Controller
             return $result['Error'];
         }
         
-        //$user = $result['User'];
+        $user = $result['User'];
         //$HasError = false;
         $UpdateInventory = "";
         $error=null;
 
+        /*
         $record = OauthToken::first();
         $token = $record->oauth_token;
         $token_secret = $record->oauth_secret;
         $token_verifier=$record->oauth_verifier;
+        */
 
-        
         $inventory_product = [
             'Error'=>'',
             'SKU'=>''
@@ -115,7 +122,7 @@ class ProductController extends Controller
         foreach ($request_products as $product) 
         {
             
-            $res=DiscogsProductController::updateInventory($product,$token,$token_secret,$token_verifier);
+            $res=DiscogsProductController::updateInventory($product,$user->UserId);
 
             /*
             if($res['Error'] != null)
@@ -150,15 +157,17 @@ class ProductController extends Controller
             return $result['Error'];
         }
         
-        //$user = $result['User'];
+        $user = $result['User'];
 
         $UpdatePrice = "";
         $error=null;
 
+        /*
         $record = OauthToken::first();
         $token = $record->oauth_token;
         $token_secret = $record->oauth_secret;
         $token_verifier=$record->oauth_verifier;
+        */
 
         $inventory_product = [
             'Error'=>'',
@@ -170,7 +179,7 @@ class ProductController extends Controller
         foreach ($request_products as $product) 
         {
             
-            $res=DiscogsProductController::updatePrice($product,$token,$token_secret,$token_verifier);
+            $res=DiscogsProductController::updatePrice($product,$user->UserId);
 
             /*
             if($res['Error'] != null)
