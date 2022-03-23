@@ -30,22 +30,15 @@ class ProductController extends Controller
             return $result['Error'];
         }
         
-        $user = $result['User'];
+        $app_user = $result['User'];
         $error=null;
-
-        /*
-        $record = OauthToken::first();
-        $token = $record->oauth_token;
-        $token_secret = $record->oauth_secret;
-        */
-
 
 
         //Get Product from Discogs
 
         //$res=DiscogsProductController::getInventory($request->PageNumber,$token,$token_secret);
 
-        $res=DiscogsProductController::getInventory($request->PageNumber,$user->UserId);
+        $res=DiscogsProductController::getInventory($request->PageNumber,$app_user->id);
 
         if($res['Error'] != null)
         {
@@ -54,8 +47,6 @@ class ProductController extends Controller
         }
         $products = [];
         //Could be changed with pagination
-
-        
 
         //$productsCount = count($res['Products']->listings);
         
@@ -100,17 +91,10 @@ class ProductController extends Controller
             return $result['Error'];
         }
         
-        $user = $result['User'];
+        $app_user = $result['User'];
         //$HasError = false;
         $UpdateInventory = "";
         $error=null;
-
-        /*
-        $record = OauthToken::first();
-        $token = $record->oauth_token;
-        $token_secret = $record->oauth_secret;
-        $token_verifier=$record->oauth_verifier;
-        */
 
         $inventory_product = [
             'Error'=>'',
@@ -122,7 +106,7 @@ class ProductController extends Controller
         foreach ($request_products as $product) 
         {
             
-            $res=DiscogsProductController::updateInventory($product,$user->UserId);
+            $res=DiscogsProductController::updateInventory($product,$app_user->id);
 
             /*
             if($res['Error'] != null)
@@ -157,7 +141,7 @@ class ProductController extends Controller
             return $result['Error'];
         }
         
-        $user = $result['User'];
+        $app_user = $result['User'];
 
         $UpdatePrice = "";
         $error=null;
@@ -179,7 +163,7 @@ class ProductController extends Controller
         foreach ($request_products as $product) 
         {
             
-            $res=DiscogsProductController::updatePrice($product,$user->UserId);
+            $res=DiscogsProductController::updatePrice($product,$app_user->id);
 
             /*
             if($res['Error'] != null)

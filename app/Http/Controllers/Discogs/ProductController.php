@@ -150,7 +150,7 @@ class ProductController extends Controller
         return $res;
     }
     
-    public static function deleteListing($listing,$token,$app_user_id)
+    public static function deleteListing($listing,$app_user_id)
     {
         $res = null;
         $error = null;

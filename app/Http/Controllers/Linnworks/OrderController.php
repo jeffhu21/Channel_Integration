@@ -29,21 +29,14 @@ class OrderController extends Controller
             return $result['Error'];
         }
         
-        $user = $result['User'];
+        $app_user = $result['User'];
 
         $error = null;
 
-
-
         $filter = 'created_after='.($request->UTCTimeFrom);//Could be converted to different time zone
-        //dd($filter);
-
-        $record = OauthToken::first();
-        $token = $record->oauth_token;
-        $token_secret = $record->oauth_secret;
 
         //Retrieve Orders from Discogs
-        $res = DiscogsOrderController::listOrders($filter,$request->PageNumber,$token,$token_secret);
+        $res = DiscogsOrderController::listOrders($filter,$request->PageNumber,$app_user->id);
 
         if($res['Error'] != null)
         {
@@ -223,13 +216,13 @@ class OrderController extends Controller
             array_push($orders,$obj->order);
             
         }
-        //return ['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Orders']->pagination->pages,'Orders'=>$orders];
         return SendResponse::httpResponse(['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Orders']->pagination->pages,'Orders'=>$orders]);
     }
 
     
 
     //
+    /*
     public function SampleOrders(Request $request)
     {
         
@@ -366,11 +359,9 @@ class OrderController extends Controller
         }
 
         return ['Error'=>$error,'HasMorePages'=>$request->PageNumber<11,'Orders'=>$orders];
-        
     }
-
+    */
     
-
     public function despatch(Request $request)
     {
         $request_orders=json_decode($request->Orders);
@@ -386,15 +377,10 @@ class OrderController extends Controller
             return $result['Error'];
         }
         
-        $user = $result['User'];
+        $app_user = $result['User'];
         //$HasError = false;
         $UpdateOrder = "";
         $error=null;
-
-        $record = OauthToken::first();
-        $token = $record->oauth_token;
-        $token_secret = $record->oauth_secret;
-        $token_verifier=$record->oauth_verifier;
 
         //Push Updated Orders back to Discogs
         foreach ($request_orders as $order) 
@@ -405,7 +391,7 @@ class OrderController extends Controller
             $obj->order=$order;
             $UpdateOrder=DiscogsOrderController::updateOrder($obj);
             */
-            $res=DiscogsOrderController::updateOrder($order,$token,$token_secret,$token_verifier);
+            $res=DiscogsOrderController::updateOrder($order,$app_user->id);
             
             if($res['Error'] != null)
             {
@@ -416,12 +402,8 @@ class OrderController extends Controller
 
                 //return $UpdateOrder;
             }
-            
-            //dd($obj->order);
         }
         
-        //return ["Error"=>null,"Orders"=>["Error"=>$error,"ReferenceNumber"=>$UpdateOrder]];
-        //return ["Error"=>null,"Orders"=>$res];
         return SendResponse::httpResponse(["Error"=>null,"Orders"=>["Error"=>$error,"ReferenceNumber"=>$UpdateOrder]]);
     }
 

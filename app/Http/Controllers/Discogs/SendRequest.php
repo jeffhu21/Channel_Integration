@@ -18,7 +18,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\OauthToken;
-use App\Models\DiscogsApplication;
 use App\Models\AppKey;
 
 //use App\Models\AppUser as AppUser;

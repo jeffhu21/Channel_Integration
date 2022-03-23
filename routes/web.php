@@ -59,7 +59,7 @@ Route::controller(OAuthController::class)->group(
         Route::get('/AppKey',function(){
             return view('AppKey');
         })->name('AppKey');
-        Route::post('/AppKey','saveAppKey')->name('save_app_key');
+        Route::post('/AppKey','saveAppKey')->middleware('auth')->name('save_app_key');
         Route::get('/request_token/{id?}','requestToken')->name('request_token');
         //Route::post('/request_token','requestToken')->name('request_token');
         //Route::get('/authorize','oauthAuthorize')->name('authorize');

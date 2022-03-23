@@ -24,14 +24,6 @@ class ConfigController extends Controller
         $error = null;
         $auth_token = null;
 
-        /*
-        $validated=$request->validate([
-            'LinnworksUniqueIdentifier' => ['required'],
-            'Email' => ['required', 'string', 'email', 'max:255', 'unique:linnworks_users'],
-            'AccountName' => ['required', 'string'],
-        ]);
-        */
-
         $validator=Validator::make($request->all(),[
             'LinnworksUniqueIdentifier' => 'required',
             'Email' => 'required|string|email|max:255|unique:app_users',
@@ -41,8 +33,6 @@ class ConfigController extends Controller
         if($validator->fails())
         {
             $error = 'Required Field is Empty or Duplicated Email or Account Name!';
-            //return $error;
-            //return ['Error'=>$error];
         }
         else
         {
@@ -56,16 +46,9 @@ class ConfigController extends Controller
                 'StepName'=>'AddCredentials',
             ]);
 
-            //return ['Error'=>null,'AuthorizationToken'=>$auth_token];
         }
 
-        //dd(response()->json(['Error'=>$error,'AuthorizationToken'=>$auth_token]));
-        //dd(strlen(json_encode(['Error'=>$error,'AuthorizationToken'=>$auth_token])));
-        
         return SendResponse::httpResponse(['Error'=>$error,'AuthorizationToken'=>$auth_token]);
-
-
-        //dd($request);
     }
 
     public function userConfig(Request $request)
@@ -78,20 +61,18 @@ class ConfigController extends Controller
         
         $app_user = $result['User'];
 
+        //redirect('test/'.$app_user->id); //Discogs Authentication
+
         //OAuthController::DiscogsOauth($app_user->id); //Discogs Authentication
 
         $response = ConfigStage::ConfigSetUp($app_user,'userConfig');
-        //$collection = collect($response['ConfigItems'])->where('ConfigItemId',"APIKey")->first()['Description'];
-        //dd($collection);
-
-        //return json_encode($response);
+      
         return SendResponse::httpResponse($response);
     }
 
     public function saveConfig(Request $request)
     {
-        //dd(json_decode($request->query()['ConfigItems']));
-        //dd('SaveConfig: '.json_encode($request->query()['ConfigItems']));
+        
         $result = AppUserAccess::getUserByToken($request);
         if($result['Error'] != null)
         {
@@ -108,30 +89,30 @@ class ConfigController extends Controller
         if ($user->StepName == "AddCredentials")
         {
             $user->ApiKey = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId','APIKey')['SelectedValue'];
-             $user->ApiSecretKey = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"APISecretKey")['SelectedValue'];
-             $user->IsOauth = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"IsOauth")['SelectedValue'] ? 1 : 0;
+            $user->ApiSecretKey = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"APISecretKey")['SelectedValue'];
+            $user->IsOauth = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"IsOauth")['SelectedValue'] ? 1 : 0;
             
-            //dd("APIKey: ".$user->ApiKey.", APISecretKey: ".$user->ApiSecretKey.", IsOauth: ".$user->IsOauth);
             $user->StepName = "OrderSetup";
         }
         else if ($user->StepName == "OrderSetup")
         {
             $user->IsPriceIncTax = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"PriceIncTax")['SelectedValue'] ? 1 : 0;
-             $user->DownloadVirtualItems = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"DownloadVirtualItems")['SelectedValue'] ? 1 : 0;
+            $user->DownloadVirtualItems = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"DownloadVirtualItems")['SelectedValue'] ? 1 : 0;
             $user->StepName = "UserConfig";
         }
         else if ($user->StepName == "UserConfig")
         {
             $user->IsOauth = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"IsOauth")['SelectedValue'] ? 1 : 0;
-             $user->IsPriceIncTax = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"PriceIncTax")['SelectedValue'] ? 1 : 0;
-             $user->DownloadVirtualItems = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"DownloadVirtualItems")['SelectedValue'] ? 1 : 0;
+            $user->IsPriceIncTax = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"PriceIncTax")['SelectedValue'] ? 1 : 0;
+            $user->DownloadVirtualItems = collect($request->input('ConfigItems'))->firstWhere('ConfigItemId',"DownloadVirtualItems")['SelectedValue'] ? 1 : 0;
         }
         
         $user->save();
 
         $response = ConfigStage::ConfigSetUp($user,'saveConfig');
 
-        //return json_encode($response);
+        //OAuthController::DiscogsOauth($user->id); //Discogs Authentication
+
         return SendResponse::httpResponse($response);
 
     }
@@ -148,7 +129,6 @@ class ConfigController extends Controller
 
         $response = ConfigStage::getShippingTags();
 
-        //return json_encode($response);
         return SendResponse::httpResponse($response);
     }
 
@@ -164,7 +144,6 @@ class ConfigController extends Controller
         
         $response = ConfigStage::getPaymentTags();
 
-        //return json_encode($response);
         return SendResponse::httpResponse($response);
     }
 
@@ -189,7 +168,6 @@ class ConfigController extends Controller
         {
             $error = $ex->getMessage();
         }
-        //return ['Error'=>$error];
         return SendResponse::httpResponse(['Error'=>$error]);
     }
 
