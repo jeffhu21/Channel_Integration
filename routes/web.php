@@ -52,7 +52,7 @@ Route::get('/oauth_verifier',[OAuthController::class,'getVerifier']);
 
 Route::get('/test/{app_user_id}',[OAuthController::class,'DiscogsOauth']);
 
-Route::controller(OAuthController::class)->middleware(['auth'])->group(
+Route::controller(OAuthController::class)->group(
 
     function()
     {
@@ -60,9 +60,10 @@ Route::controller(OAuthController::class)->middleware(['auth'])->group(
             return view('AppKey');
         })->name('AppKey');
         Route::post('/AppKey','saveAppKey')->name('save_app_key');
-        //Route::get('/request_token','requestToken')->name('request_token');
-        Route::post('/request_token','requestToken')->name('request_token');
-        Route::get('/authorize','oauthAuthorize')->name('authorize');
+        Route::get('/request_token/{id?}','requestToken')->name('request_token');
+        //Route::post('/request_token','requestToken')->name('request_token');
+        //Route::get('/authorize','oauthAuthorize')->name('authorize');
+        Route::get('/authorize/{oauth_token}','oauthAuthorize')->name('authorize');
         Route::get('/access_token','accessToken')->name('access_token');
         //Route::post('/access_token','accessToken')->name('access_token');
         

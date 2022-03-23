@@ -9,7 +9,7 @@ use App\Http\Controllers\Discogs\OAuthController as OAuthController;
 use Illuminate\Http\Request;
 
 
-use App\Models\Linnworks\AppUser as AppUser;
+use App\Models\AppUser as AppUser;
 use App\Models\Linnworks\ConfigStage as ConfigStage;
 
 
@@ -34,10 +34,9 @@ class ConfigController extends Controller
 
         $validator=Validator::make($request->all(),[
             'LinnworksUniqueIdentifier' => 'required',
-            'Email' => 'required|string|email|max:255|unique:user_infos',
-            'AccountName' => 'required|string|unique:user_infos',
+            'Email' => 'required|string|email|max:255|unique:app_users',
+            'AccountName' => 'required|string|unique:app_users',
         ]);
-
 
         if($validator->fails())
         {
@@ -79,7 +78,7 @@ class ConfigController extends Controller
         
         $app_user = $result['User'];
 
-        OAuthController::DiscogsOauth($app_user->id); //Discogs Authentication
+        //OAuthController::DiscogsOauth($app_user->id); //Discogs Authentication
 
         $response = ConfigStage::ConfigSetUp($app_user,'userConfig');
         //$collection = collect($response['ConfigItems'])->where('ConfigItemId',"APIKey")->first()['Description'];

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Linnworks;
 
 use Illuminate\Http\Request;
 
-use App\Models\Linnworks\AppUser as AppUser;
+use App\Models\AppUser as AppUser;
 
 class AppUserAccess
 {

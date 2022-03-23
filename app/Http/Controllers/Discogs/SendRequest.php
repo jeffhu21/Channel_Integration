@@ -21,7 +21,7 @@ use App\Models\OauthToken;
 use App\Models\DiscogsApplication;
 use App\Models\AppKey;
 
-//use App\Models\Linnworks\AppUser as AppUser;
+//use App\Models\AppUser as AppUser;
 
 class SendRequest
 {
@@ -42,38 +42,35 @@ class SendRequest
     public static function oauthHeader($app_user_id)
     {
 
-        //$app = DiscogsApplication::firstWhere('user_id',Auth::user()->id);
         
-       // $app = AppKey->first();
 
         //$app = OauthToken::firstWhere('app_user_id',$app_user_id);
+
+        //Get Consumer Key
+        $app_keys = AppKey::first();
+
+        if($app_keys == null)
+        {
+            return null;
+        }
+
         $app = null;
 
-        if($app_user_id != null)
+        if($app_user_id != 0)
         {
-            $app = DB::table('oauth_tokens')
-                ->join('app_keys','oauth_tokens.app_owner_id','=','app_keys.owner_id')
-                ->where('app_user_id',$app_user_id)
-                ->first();
-        }
-        else
-        {
-            $app = DB::table('app_keys')
-                ->join('oauth_tokens','app_keys.user_id','=','oauth_tokens.user_id')
-                ->first();
+            //Retrieve Oauth Token
+            $app = OauthToken::firstWhere('app_user_id',$app_user_id);
+            
         }
 
-        dd($app);
+        //dd("App = ".$app);
 
         $middleware = new Oauth1([
 
-            'consumer_key' => $app->discogs_consumer_key,
-            'consumer_secret' => $app->discogs_consumer_secret,
+            'consumer_key' => $app_keys->discogs_consumer_key,
+            'consumer_secret' => $app_keys->discogs_consumer_secret,
 
-            //'consumer_key' => $app->consumer_key,
-            //'consumer_secret' => $app->consumer_secret,
-
-            //'consumer_key' => Config::get('discogsAuth.CONSUMER_KEY'),
+           //'consumer_key' => Config::get('discogsAuth.CONSUMER_KEY'),
             //'consumer_secret' => Config::get('discogsAuth.CONSUMER_SECRET'),
 
             'nonce'=>uniqid('linnworks_'),
@@ -83,38 +80,41 @@ class SendRequest
             'timestamp'=>now()->format('YmdHis'),
             //'callback'=>"https://localhost:8080",
 
-            'callback'=>$app->callback_url.'/'.$app_user_id,
+            'callback'=>$app_keys->callback_url,
 
-            'token' => $oauth_token,
-            'token_secret' => $oauth_token_secret,
-            'verifier' => $oauth_verifier
+            'token' => ($app_user_id!=0)?$app->oauth_token:'',
+            'token_secret' => ($app_user_id!=0)?$app->oauth_secret:'',
+            'verifier' => ($app_user_id!=0)?$app->oauth_verifier:''
         ]);
-
         return $middleware;
 
     }
 
     //public static function httpRequest($method,$dir,$authenticated=false,$q='',$oauth_token='',$oauth_token_secret='',$oauth_verifier='')
-    public static function httpRequest($method,$dir,$authenticated=false,$q='',$app_user_id='')
+    public static function httpRequest($method,$dir,$authenticated=false,$q='',$app_user_id=0)
     {
         $BASE_URL = 'https://api.discogs.com/';
         $stack = HandlerStack::create(); 
+        $error = null;
+        $res = null;
 
+        
         //$middleware = self::oauthHeader($oauth_token,$oauth_token_secret,$oauth_verifier);
         $middleware = self::oauthHeader($app_user_id);
 
-        $stack->push($middleware);
+        if($middleware != null)
+        {
+            $stack->push($middleware);
+        }
 
         $client = new Client([
             'base_uri' => $BASE_URL,
             'handler' => $stack,
         ]);
-
-        $error = null;
-        $res = null;
-
+        
         try
         {
+            
             switch ($method) 
             {
                 case 'GET':
@@ -129,7 +129,6 @@ class SendRequest
                     break;
                 
             }
-
             if($res->getStatusCode()!=200 && $res->getStatusCode()!=201 && $res != null)
             {
                 $error=$res->getStatusCode()." and " .$res->getReasonPhrase();
@@ -150,16 +149,20 @@ class SendRequest
         }
         finally
         {
-            if($error != null)
+            if($res == null)
             {
-                //echo($error."\n");
+                $error = 'Something Wrong';
+               
             }
+
+          
+            
         }
         //dd($res->getBody());
         //dd(response()->json(["Error"=>$error,"Response"=>$res]));
         return ["Error"=>$error,"Response"=>$res];
     }
 
-    
+
 
 }

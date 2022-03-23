@@ -15,40 +15,26 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Discogs\SendRequest as SendRequest;
 
 use App\Models\OauthToken;
 use App\Models\User;
 use App\Models\AppKey;
-//use App\Models\DiscogsApplication;
-//use App\Models\LinnworksApplication;
+use App\Models\AppUser;
 
-/*
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\UriInterface;
-*/
 
 class OAuthController extends Controller
 {
 
     //Make request for request token
-    public static function requestToken($app_user_id)
+    public static function requestToken(Request $request)
     {
         $dir = 'oauth/request_token';
-        
-        //Get Consumer Key
-        $app_keys = AppKey::first();
-        
-        //Add Owner ID and App User Id in Oauth Token Table
-        $app=OauthToken::create([
-            'app_user_id'=>$app_user_id,
-            'app_owner_id'=>$app_keys->user_id
-        ]);
 
-        $res = SendRequest::httpRequest('GET',$dir,false,'',$app_user_id);
-
+        $res = SendRequest::httpRequest('GET',$dir);
+      
         $msg=null;
         $stream=null;
         if($res['Error'] != null)
@@ -61,9 +47,18 @@ class OAuthController extends Controller
         $oauth_token = $stream['oauth_token']; //Temporary Token
         $oauth_token_secret = $stream['oauth_token_secret']; //Temporary Token Secret
 
-        $this->saveOauthToken($app_user_id,$oauth_token,$oauth_token_secret); //Save Temporary Token
+        
+        if($request->id != null)
+        {
+            self::saveOauthToken($request->id,$oauth_token,$oauth_token_secret); //Save Temporary Token
+        }
+        
+      
+        return redirect('authorize/'.$oauth_token);
+      
 
-       // $msg = 'Successful!';
+        //return ["Error"=>$msg,"Response"=>$stream];
+        // $msg = 'Successful!';
 
        // return view('/DiscogsOauth',['next_step'=>'Authorize','message'=>$msg]);
 
@@ -71,46 +66,35 @@ class OAuthController extends Controller
 
 
     //Redirect to outside domain(Discogs) to get the authorization from Linnworks
-    public static function oauthAuthorize($app_user_id)
+    public static function oauthAuthorize(Request $request)
     {
-        $app = OauthToken::where('app_user_id', $app_user_id)->first();
+        //$app = OauthToken::where('app_user_id', $app_user_id)->first();
+       
+        $dir = 'https://www.discogs.com/oauth/authorize?oauth_token=' . $request->oauth_token; 
 
-        $dir = 'https://www.discogs.com/oauth/authorize?oauth_token=' . $app->oauth_token; 
-        
         return redirect()->away($dir);
     }
 
     public static function getVerifier(Request $request)
-    {
-        dd($request);
+    {  
         $oauth_verifier=$request->oauth_verifier;  //Verifier Authorized by User
-        $app=OauthToken::where('app_user_id', $app_user_id)->update([
+        $oauth_token=$request->oauth_token;
+
+        $app=OauthToken::where('oauth_token', $oauth_token)->update([
             'oauth_verifier'=>$oauth_verifier
         ]); 
-        //$this->saveOauthToken($app_user_id,$oauth_token,$oauth_token_secret);
+
+        $row = OauthToken::firstWhere('oauth_token', $oauth_token);
+
+        self::accessToken($row->app_user_id);
     }
 
     public static function accessToken($app_user_id)
     {       
-        
-        
-        //$app = OauthToken::where('app_user_id', $app_user_id)->first();
-
-        /*
-        $oauth_token=$request->session()->get('oauth_token'); //Temporary Token
-        $oauth_token_secret=$request->session()->get('oauth_token_secret'); //Temporary Token Secret
-        */
-
-        //$oauth_token=$app->oauth_token; //Temporary Token
-        //$oauth_token_secret=$app->oauth_secret; //Temporary Token Secret
-
-        //$oauth_verifier=$oauth_verifier;  //Verifier Authorized by User
-
-        //$res = SendRequest::httpGet('oauth/access_token',false,$oauth_token,$oauth_token_secret,$oauth_verifier);
 
         //$res = SendRequest::httpRequest('GET','oauth/access_token',false,'',$oauth_token,$oauth_token_secret,$oauth_verifier);
         $res = SendRequest::httpRequest('GET','oauth/access_token',false,'',$app_user_id);
-
+        
         $error=null;
         $stream=null;
         if($res['Error'] != null)
@@ -123,12 +107,8 @@ class OAuthController extends Controller
         $stream = Psr7\Query::parse($res['Response']->getBody()->getContents());
         $oauth_token = $stream['oauth_token']; //Permanent Token
         $oauth_token_secret = $stream['oauth_token_secret']; //Permanent Token Secret
-        
 
-        $this->saveOauthToken($oauth_token,$oauth_token_secret);
-
-        //$this->saveOauthToken2($oauth_token,$oauth_token_secret,$oauth_verifier);
-
+        self::saveOauthToken($app_user_id,$oauth_token,$oauth_token_secret);
     }
 
     public function saveAppKey(Request $request)
@@ -163,10 +143,8 @@ class OAuthController extends Controller
     
     public static function DiscogsOauth($app_user_id)
     {
-        self::requestToken($app_user_id);
-        
-        self::oauthAuthorize($app_user_id);
-
+        //echo("DiscogsOauth"."\n");
+        return redirect('request_token/'.$app_user_id);
         
     }
     
@@ -219,13 +197,29 @@ class OAuthController extends Controller
         return ["Error"=>$error,"Stream"=>$stream];
     }
 
-    public function saveOauthToken($app_user_id,$oauth_token,$oauth_token_secret,$oauth_verifier='')
+    public static function saveOauthToken($app_user_id,$oauth_token,$oauth_token_secret,$oauth_verifier='')
     {
-        $app=OauthToken::where('app_user_id', $app_user_id)->update([
-            'oauth_token'=>$oauth_token,
-            'oauth_secret'=>$oauth_token_secret,
-            'oauth_verifier'=>$oauth_verifier
-        ]);
+        $record = OauthToken::firstWhere('app_user_id',$app_user_id);
+
+        $app_user = AppUser::firstWhere('id',$app_user_id);
+        
+        if($record != null)
+        {
+            $app=$app_user->OauthToken()->update([
+                'oauth_token'=>$oauth_token,
+                'oauth_secret'=>$oauth_token_secret,
+                'oauth_verifier'=>$oauth_verifier
+            ]);
+        }
+        else
+        {
+            $app=$app_user->OauthToken()->create([
+                'oauth_token'=>$oauth_token,
+                'oauth_secret'=>$oauth_token_secret,
+                'oauth_verifier'=>$oauth_verifier
+            ]);
+        }
+
     }
     
     

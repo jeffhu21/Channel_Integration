@@ -49,8 +49,10 @@ class User extends Authenticatable
     }
 
     //Added Function
+    /*
     public function oauthToken()
     {
         return $this->hasMany(OauthToken::class);
     }
+    */
 }
