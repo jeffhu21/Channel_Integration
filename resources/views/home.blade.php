@@ -42,14 +42,24 @@
 
                     <div class=" bg-indigo-50  items-center justify-center mt-8 px-6 py-6">
 
-                        <h2 class=" text-lg text-center font-semibold uppercase mb-4">Discogs Oauth</h2>
+                        <h2 class=" text-lg text-center font-semibold uppercase mb-4">Discogs App</h2>
                         
                             <p>1. REGISTER IN DISCOGS. <a href="http://www.discogs.com"><span>http://www.discogs.com</span></a></p>
 
-                            <p>2. OBTAIN CONSUMER KEY AND CONSUMER SECRET FROM DEVELOPER SETTINGS</p>
+                            <p>2. OBTAIN CONSUMER KEY AND CONSUMER SECRET FROM CREATING APPLICATION</p>
 
-                            <p>3. AUTHENTICATION</p>
+                            <p>3. COPY CONSUMER KEY AND CONSUMER SECRET TO SAVE</p>
+                    </div>
 
+                    <div class=" bg-indigo-50  items-center justify-center mt-8 px-6 py-6">
+
+                        <h2 class=" text-lg text-center font-semibold uppercase mb-4">Linnworks App</h2>
+                        
+                            <p>1. REGISTER IN LINNWORKS. <a href="http://www.linnworks.com"><span>http://www.linnworks.com</span></a></p>
+
+                            <p>2. OBTAIN APPLICATION ID AND APPLICATION SECRET FROM CREATING APPLICATION</p>
+
+                            <p>3. COPY APPLICATION ID AND APPLICATION SECRET TO SAVE</p>
                     </div>
                     
                         <div class="flex items-center justify-center mt-4">
@@ -57,12 +67,14 @@
                         
                                 
                                 <x-button class="ml-4">
-                                    <a href="{{ route('DiscogsOauth') }}">
-                                    {{ __('Authentication') }}
+                                    <a href="{{ route('AppKey') }}">
+                                    {{ __('Save App Keys') }}
                                     </a>
                                 </x-button>
                                 
                         </div>
+
+                        
                 </div>
         </div>
 

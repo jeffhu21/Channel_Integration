@@ -134,7 +134,8 @@ class ConfigStage
                     'ReadOnly' => false,
                     'SelectedValue' => $user->ApiKey ?? '',
                     'SortOrder' => 1,
-                    'ValueType' => config('linnworksHelper.ConfigValueType.Password'),
+                    'ValueType' => $setting->ConfigValueType['Password'],
+                    
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
@@ -151,7 +152,7 @@ class ConfigStage
                     'ReadOnly' => false,
                     'SelectedValue' => $user->APISecretKey ?? '',
                     'SortOrder' => 2,
-                    'ValueType' => config('linnworksHelper.ConfigValueType.Password'),
+                    'ValueType' => $setting->ConfigValueType['Password'],
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
@@ -167,7 +168,7 @@ class ConfigStage
                     'ReadOnly' => false,
                     'SelectedValue' => ($user->IsOauth==1) ? 'true' : 'false',
                     'SortOrder' => 3,
-                    'ValueType' => config('linnworksHelper.ConfigValueType.Boolean'),
+                    'ValueType' => $setting->ConfigValueType['Boolean'],
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
@@ -184,7 +185,7 @@ class ConfigStage
                     'ReadOnly' => false,
                     'SelectedValue' => ($user->IsOauth==1) ? 'true' : 'false',
                     'SortOrder' => 3,
-                    'ValueType' => config('linnworksHelper.ConfigValueType.List'),
+                    'ValueType' => $setting->ConfigValueType['List'],
                     'ListValues'=>[
                         $setting->ListValue =
                         [
@@ -291,7 +292,7 @@ class ConfigStage
                     'ReadOnly'=> false,
                     'SelectedValue'=> ($user->IsPriceIncTax==1) ? 'true' : 'false',
                     'SortOrder'=> 1,
-                    'ValueType'=> config('linnworksHelper.ConfigValueType.Boolean'),
+                    'ValueType'=> $setting->ConfigValueType['Boolean'],
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
@@ -306,7 +307,7 @@ class ConfigStage
                     'ReadOnly'=> false,
                     'SelectedValue'=> ($user->DownloadVirtualItems==1) ? 'true' : 'false',
                     'SortOrder'=> 2,
-                    'ValueType'=> config('linnworksHelper.ConfigValueType.Boolean'),
+                    'ValueType'=> $setting->ConfigValueType['Boolean'],
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
@@ -335,7 +336,7 @@ class ConfigStage
                     'ReadOnly'=> false,
                     'SelectedValue'=> ($user->IsOauth==1) ? 'true' : 'false',
                     'SortOrder'=> 1,
-                    'ValueType'=> config('linnworksHelper.ConfigValueType.Boolean'),
+                    'ValueType'=> $setting->ConfigValueType['Boolean'],
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
@@ -350,7 +351,7 @@ class ConfigStage
                     'ReadOnly'=> false,
                     'SelectedValue'=> ($user->IsPriceIncTax==1) ? 'true' : 'false',
                     'SortOrder'=> 2,
-                    'ValueType'=> config('linnworksHelper.ConfigValueType.Boolean'),
+                    'ValueType'=> $setting->ConfigValueType['Boolean'],
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null
@@ -365,7 +366,7 @@ class ConfigStage
                     'ReadOnly'=> false,
                     'SelectedValue'=> ($user->DownloadVirtualItems==1) ? 'true' : 'false',
                     'SortOrder'=> 3,
-                    'ValueType'=> config('linnworksHelper.ConfigValueType.Boolean'),
+                    'ValueType'=> $setting->ConfigValueType['Boolean'],
                     'ListValues'=>[],
                     'RegExValidation'=>null,
                     'RegExError'=>null

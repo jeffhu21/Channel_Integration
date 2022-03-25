@@ -7,7 +7,7 @@ use App\Http\Controllers\Discogs\OrderController as DiscogsOrderController;
 use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
 use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 use App\Models\Linnworks\Order as Order;
-use App\Models\Linnworks\OrderDespatch as OrderDespatch;
+//use App\Models\Linnworks\OrderDespatch as OrderDespatch;
 
 use App\Models\OauthToken as OauthToken;
 
@@ -15,6 +15,13 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+
+    //Payment Status
+    public $paymentStatus=[
+        'Paid'=>'PAID',
+        'Unpaid'=>'UNPAID',
+        'Cancelled'=>'CANCELLED'
+    ];
 
     public function orders(Request $request)
     {
@@ -45,7 +52,9 @@ class OrderController extends Controller
         }
         $stream = $res['Orders'];
 
-        $PaymentStatus=config('linnworksHelper.PaymentStatus.Unpaid');//Set Default Status Unpaid
+        //$PaymentStatus=config('linnworksHelper.PaymentStatus.Unpaid');//Set Default Status Unpaid
+
+        $PaymentStatus=$this->paymentStatus['Unpaid'];
 
         /**
          * Push Orders to Linnworks
@@ -64,11 +73,11 @@ class OrderController extends Controller
             $order->status == 'Shipped'||
             $order->status == 'Invoice Sent')
             {
-                $PaymentStatus=config('linnworksHelper.PaymentStatus.Paid');
+                $PaymentStatus=$this->paymentStatus['Paid'];
             }
             else if(str_contains($order->status,'Cancelled'))
             {
-                $PaymentStatus=config('linnworksHelper.PaymentStatus.Cancelled');
+                $PaymentStatus=$this->paymentStatus['Cancelled'];
             }
 
             //Could be modified

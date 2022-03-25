@@ -96,6 +96,25 @@ class Order
     'IsInternal'=>'',
     ];
 
+    //DiscountType
+    public $DiscountType=[
+
+        /// <summary>
+        /// The given discount amount will be split evenly across all items and any applicable postage
+        /// </summary>
+        'AllEvenly'=>'AllEvenly',
+        /// <summary>
+        /// The discount amount will be split evenly across all items. Any remaining discount will be applied to the postage where applicable
+        /// </summary>
+        'ItemsThenPostage'=>'ItemsThenPostage',
+        /// <summary>
+        /// The discount amount will be applied to the postage cost where applicable. Any remaining discount will be split evenly across all items
+        /// </summary>
+        'PostageThenItems'=>'PostageThenItems'
+    
+
+    ];
+
 }
 
 

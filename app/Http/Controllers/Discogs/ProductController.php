@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\Discogs\OAuthController as OAuthController;
 use App\Http\Controllers\Discogs\SendRequest as SendRequest;
 
-use App\Models\OauthToken as OauthToken;
+//use App\Models\OauthToken as OauthToken;
 use App\Models\Discogs\Listing as Listing;
 
 class ProductController extends Controller

@@ -29,10 +29,10 @@ class SendRequest
     {
         $header = [
             'content_type' => $authenticated?'application/json':'application/x-www-form-urlencoded',
-            'user_agent' => Config::get('discogsAuth.USER_AGENT')
+            'user_agent' => 'linnworksDiscogs/0.1 +https://www.example.com'
+            //'user_agent' => Config::get('discogsAuth.USER_AGENT')
             //'accept'=>'application/json'
         ];
-        //dd($header);
         return $header;
     }
 
@@ -40,8 +40,6 @@ class SendRequest
     //public static function oauthHeader($oauth_token,$oauth_token_secret,$oauth_verifier)
     public static function oauthHeader($app_user_id)
     {
-
-        
 
         //$app = OauthToken::firstWhere('app_user_id',$app_user_id);
 
@@ -61,8 +59,6 @@ class SendRequest
             $app = OauthToken::firstWhere('app_user_id',$app_user_id);
             
         }
-
-        //dd("App = ".$app);
 
         $middleware = new Oauth1([
 
@@ -97,7 +93,6 @@ class SendRequest
         $error = null;
         $res = null;
 
-        
         //$middleware = self::oauthHeader($oauth_token,$oauth_token_secret,$oauth_verifier);
         $middleware = self::oauthHeader($app_user_id);
 
@@ -153,15 +148,8 @@ class SendRequest
                 $error = 'Something Wrong';
                
             }
-
-          
-            
         }
-        //dd($res->getBody());
         //dd(response()->json(["Error"=>$error,"Response"=>$res]));
         return ["Error"=>$error,"Response"=>$res];
     }
-
-
-
 }

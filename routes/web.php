@@ -19,38 +19,19 @@ use Carbon\Carbon;
 |
 */
 
-
-/*
-Route::get('/DiscogsSetting/{token?}',function(){
-    return view('home');
-})->name('home');
-*/
-
-
 Route::get('/',function(){
-    return view('home1');
+    return view('home');
 });
-
-
-
-/*
-Route::get('/AppKey',function(){
-    return view('AppKey');
-})->middleware('auth')->name('AppKey');
-*/
-
-Route::get('/DiscogsOauth',function(){
-    return view('DiscogsOauth');
-})->middleware('auth')->name('DiscogsOauth');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-
-Route::get('/oauth_verifier',[OAuthController::class,'getVerifier']);
-
-Route::get('/test/{app_user_id}',[OAuthController::class,'DiscogsOauth']);
+/*
+Route::get('/DiscogsOauth',function(){
+    return view('DiscogsOauth');
+})->middleware('auth')->name('DiscogsOauth');
+*/
 
 Route::controller(OAuthController::class)->group(
 
@@ -59,30 +40,35 @@ Route::controller(OAuthController::class)->group(
         Route::get('/AppKey',function(){
             return view('AppKey');
         })->name('AppKey');
+
         Route::post('/AppKey','saveAppKey')->middleware('auth')->name('save_app_key');
+        
+        Route::get('/oauth_verifier','getVerifier');
+
+        /*
         Route::get('/request_token/{id?}','requestToken')->name('request_token');
-        //Route::post('/request_token','requestToken')->name('request_token');
-        //Route::get('/authorize','oauthAuthorize')->name('authorize');
         Route::get('/authorize/{oauth_token}','oauthAuthorize')->name('authorize');
         Route::get('/access_token','accessToken')->name('access_token');
+        */
+
+        //Route::post('/request_token','requestToken')->name('request_token');
+        //Route::get('/authorize','oauthAuthorize')->name('authorize');
         //Route::post('/access_token','accessToken')->name('access_token');
         
     }
 );
 
+//Testing
+/*
 Route::get('/orders/{id}',[OrderController::class,'getOrderById']);
 Route::get('/list',[OrderController::class,'listOrders']);
 
 Route::get('/inventory/{PageNumber}',[ProductController::class,'getInventory']);
 
 Route::get('/Testing',[OrderController::class,'testing']); //Tester
-
+*/
 
 require __DIR__.'/auth.php';
-
-Route::get('/oauth')->missing(function(Request $request){
-    echo('Message');
-});
 
 /*
 Route::fallback(

@@ -5,16 +5,14 @@ namespace App\Http\Controllers\Linnworks;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Discogs\ProductController as DiscogsProductController;
 use App\Http\Controllers\Discogs\OAuthController as OAuthController;
-use Illuminate\Http\Request;
-
 use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
 use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
-use App\Models\Linnworks\ProductsListings as ProductsListingsRequest;
-
+//use App\Models\Linnworks\ProductsListings as ProductsListingsRequest;
 use App\Models\Linnworks\PostSaleOptions as PostSaleOptions;
-use App\Models\OauthToken as OauthToken;
+//use App\Models\OauthToken as OauthToken;
 use App\Models\Discogs\Listing as Listing;
 
+use Illuminate\Http\Request;
 
 class ListingController extends Controller
 {

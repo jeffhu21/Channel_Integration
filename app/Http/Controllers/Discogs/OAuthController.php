@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Discogs\SendRequest as SendRequest;
-
 use App\Models\OauthToken;
 use App\Models\User;
 use App\Models\AppKey;
@@ -27,8 +26,7 @@ use App\Models\AppUser;
 class OAuthController extends Controller
 {
 
-    //Make request for request token
-    //public static function requestToken(Request $request)
+    //Make request to Discogs for request token
     public static function requestToken($app_user_id)
     {
         $dir = 'oauth/request_token';
@@ -46,51 +44,39 @@ class OAuthController extends Controller
         $stream = Psr7\Query::parse($res['Response']->getBody()->getContents());
         $oauth_token = $stream['oauth_token']; //Temporary Token
         $oauth_token_secret = $stream['oauth_token_secret']; //Temporary Token Secret
-
         
-        //if($request->id != null)
         if($app_user_id != null)
         {
-            //self::saveOauthToken($request->id,$oauth_token,$oauth_token_secret); //Save Temporary Token
             self::saveOauthToken($app_user_id,$oauth_token,$oauth_token_secret); //Save Temporary Token
         }
         
-        //return redirect('authorize/'.$oauth_token);
-
         return self::oauthAuthorize($oauth_token);
       
-        //return ["Error"=>$msg,"Response"=>$stream];
         // $msg = 'Successful!';
 
        // return view('/DiscogsOauth',['next_step'=>'Authorize','message'=>$msg]);
 
     }
 
-
     //Redirect to outside domain(Discogs) to get the authorization from Linnworks
-    //public static function oauthAuthorize(Request $request)
     public static function oauthAuthorize($oauth_token)
-    {
-        //$app = OauthToken::where('app_user_id', $app_user_id)->first();
-       
+    { 
         $dir = 'https://www.discogs.com/oauth/authorize?oauth_token=' . $oauth_token; 
 
         return redirect()->away($dir);
     }
 
+    //Handle Callback URL from Discogs to get verifier
     public static function getVerifier(Request $request)
     {  
         $oauth_verifier=$request->oauth_verifier;  //Verifier Authorized by User
         $oauth_token=$request->oauth_token;
 
-        //dd('OAuth Verifier='.$oauth_verifier);
-        $app=OauthToken::where('oauth_token', $oauth_token)->update([
+        $row = OauthToken::firstWhere('oauth_token', $oauth_token);
+
+        $app=$row->update([
             'oauth_verifier'=>$oauth_verifier
         ]); 
-
-        //dd('App='.$app);
-
-        $row = OauthToken::firstWhere('oauth_token', $oauth_token);
 
         self::accessToken($row->app_user_id);
     }
@@ -106,18 +92,16 @@ class OAuthController extends Controller
         {
             $error = $res['Error'];
             return ["Error"=>$error,"Response"=>$stream];
-            //return null;
         }
 
         $stream = Psr7\Query::parse($res['Response']->getBody()->getContents());
         $oauth_token = $stream['oauth_token']; //Permanent Token
         $oauth_token_secret = $stream['oauth_token_secret']; //Permanent Token Secret
 
-        $row = OauthToken::firstWhere('app_user_id', $app_user_id);
+        //$row = OauthToken::firstWhere('app_user_id', $app_user_id);
 
         //echo('Row = '.$row->oauth_token.', '.$row->oauth_verifier);
 
-        echo('Success!');
 
         self::saveOauthToken($app_user_id,$oauth_token,$oauth_token_secret);
     }
@@ -154,8 +138,7 @@ class OAuthController extends Controller
     
     public static function DiscogsOauth($app_user_id)
     {
-        //echo("DiscogsOauth"."\n");
-        
+           
         //return redirect('request_token/'.$app_user_id);
 
         return self::requestToken($app_user_id);
@@ -167,14 +150,6 @@ class OAuthController extends Controller
     {
         $dir = 'oauth/identity';
 
-        /*
-        $record = OauthToken::first();
-
-        $token = $record->oauth_token;
-        $token_secret = $record->oauth_secret;
-        */
-
-        //$res = SendRequest::httpGet($dir,true,$token,$token_secret);
         $res = SendRequest::httpRequest('GET',$dir,true,'',$app_user_id);
 
         $error=null;
@@ -187,17 +162,15 @@ class OAuthController extends Controller
         $stream=json_decode($res['Response']->getBody()->getContents());
 
         return ["Error"=>$error,"Username"=>$stream->username];
-        //return $stream->username;
-
+  
     }
 
     //Get User Account in Discogs
-    //public static function getIdentity($token,$token_secret)
+    
     public static function getIdentity($app_user_id)
     {
         $dir = 'oauth/identity';
 
-        //$res = SendRequest::httpGet($dir,true,$token,$token_secret);
         $res = SendRequest::httpRequest('GET',$dir,true,'',$app_user_id);
 
         $error=null;
@@ -218,7 +191,6 @@ class OAuthController extends Controller
 
         $app_user = AppUser::firstWhere('id',$app_user_id);
 
-        //dd('Save');
         
         if($record != null)
         {

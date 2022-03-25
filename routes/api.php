@@ -27,6 +27,8 @@ Route::controller(OAuthController::class)->group(
 
     function()
     {
+        Route::get('/DiscogsOauth/{id}','DiscogsOauth');//Discogs Authentication
+
         Route::get('/postback/{token}', 'saveLinnworksAuthToken');
         Route::get('/application/{id}/{secret}/{token}','saveLinnworksApplication');
         Route::get('/DiscogsSetting','discogsSetting');
@@ -69,6 +71,7 @@ Route::controller(OrderController::class)->prefix('Order')->group(
     function()
     {  
         //Route::get('/Orders','SampleOrders');
+
         /*
         Route::get('/Orders','orders');
         Route::get('/Despatch','despatch');
@@ -143,7 +146,6 @@ Route::controller(ConfiguratorSettings::class)->prefix('Setting')->group(
         
         Route::get('/CheckFeed','checkFeed');
         */
-
         
         Route::post('/GetConfiguratorSettings','getConfiguratorSettings');
         Route::post('/GetCategories','getCategories');
@@ -151,7 +153,6 @@ Route::controller(ConfiguratorSettings::class)->prefix('Setting')->group(
         Route::post('/GetVariationsByCategory','getVariationsByCategory');
 
         Route::post('/CheckFeed','checkFeed');
-        
         
     }
 

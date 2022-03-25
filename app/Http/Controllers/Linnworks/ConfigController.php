@@ -5,10 +5,7 @@ namespace App\Http\Controllers\Linnworks;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
 use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
-use App\Http\Controllers\Discogs\OAuthController as OAuthController;
-use Illuminate\Http\Request;
-
-
+//use App\Http\Controllers\Discogs\OAuthController as OAuthController;
 use App\Models\AppUser as AppUser;
 use App\Models\Linnworks\ConfigStage as ConfigStage;
 
@@ -16,6 +13,7 @@ use App\Models\Linnworks\ConfigStage as ConfigStage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class ConfigController extends Controller
 {

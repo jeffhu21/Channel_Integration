@@ -28,6 +28,15 @@ class UserConfigSetting
         'ListValues'=>[] //Array of ListItem
     ];
 
+    public $ConfigValueType=[
+        'String'=>'STRING',
+        'Int'=>'INT',
+        'Double'=>'DOUBLE',
+        'Boolean'=>'BOOLEAN',
+        'Password'=>'PASSWORD',
+        'List'=>'LIST',
+    ];
+
     public $ListItem =[
         'Display'=>'',
         'Value'=>''
