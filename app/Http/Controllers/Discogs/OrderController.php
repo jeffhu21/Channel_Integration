@@ -19,14 +19,15 @@ use App\Models\OauthToken as OauthToken;
 class OrderController extends Controller
 {
     //
-    public function getOrderById($id)
+    public function getOrderById($id,$app_user_id)
     {
         $dir = 'marketplace/orders/';
 
+        /*
         $record = OauthToken::first();
-
         $token = $record->oauth_token;
         $token_secret = $record->oauth_secret;
+        */
 
         /*
         $token = Config::get('discogsAuth.TOKEN'); //Permanent Token
@@ -34,7 +35,7 @@ class OrderController extends Controller
         */
 
         //$res = SendRequest::httpGet($dir.$id,true,$token,$token_secret);
-        $res = SendRequest::httpRequest('GET',$dir.$id,true,'',$token,$token_secret);
+        $res = SendRequest::httpRequest('GET',$dir.$id,true,'',$app_user_id);
 
         $error=null;
         $stream=null;

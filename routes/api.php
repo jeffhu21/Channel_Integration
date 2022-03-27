@@ -27,11 +27,11 @@ Route::controller(OAuthController::class)->group(
 
     function()
     {
-        Route::get('/DiscogsOauth/{id}','DiscogsOauth');//Discogs Authentication
+        Route::get('/DiscogsOauth/{id}','APIDiscogsOauth');//Discogs Authentication
 
-        Route::get('/postback/{token}', 'saveLinnworksAuthToken');
-        Route::get('/application/{id}/{secret}/{token}','saveLinnworksApplication');
-        Route::get('/DiscogsSetting','discogsSetting');
+        //Route::get('/postback/{token}', 'saveLinnworksAuthToken');
+        //Route::get('/application/{id}/{secret}/{token}','saveLinnworksApplication');
+        //Route::get('/DiscogsSetting','discogsSetting');
     }
 );
 

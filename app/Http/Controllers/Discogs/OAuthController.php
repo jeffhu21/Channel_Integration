@@ -10,12 +10,12 @@ use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
-use Illuminate\Support\Facades\Config;
+//use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Str;
-
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 use App\Http\Controllers\Discogs\SendRequest as SendRequest;
 use App\Models\OauthToken;
@@ -79,8 +79,11 @@ class OAuthController extends Controller
         ]); 
 
         self::accessToken($row->app_user_id);
+
+        return view('/DiscogsOauth',['message'=>'Successful!']);
     }
 
+    //Get the permanent token from Discogs through authorized by user
     public static function accessToken($app_user_id)
     {       
         //$res = SendRequest::httpRequest('GET','oauth/access_token',false,'',$oauth_token,$oauth_token_secret,$oauth_verifier);
@@ -102,10 +105,12 @@ class OAuthController extends Controller
 
         //echo('Row = '.$row->oauth_token.', '.$row->oauth_verifier);
 
-
         self::saveOauthToken($app_user_id,$oauth_token,$oauth_token_secret);
+
+        //return view('/DiscogsOauth',['message'=>'Successful!']);
     }
 
+    //Save Consumer Key and Secret in Application created in Discogs and Application Id and Secret in Application created in Linnworks
     public function saveAppKey(Request $request)
     {
         $user_id = AppKey::firstWhere('user_id',Auth::user()->id);
@@ -132,11 +137,57 @@ class OAuthController extends Controller
             ]);
         }
 
-        return view('home1');
+        return view('home');
     }
 
+    //
+    public static function DiscogsOauth(Request $request)
+    {
+        $app_user_email = $request['app_user_email'];
+
+        $msg = null;
+        
+        if($app_user_email != null)
+        {
+            /*
+            $app_user_id = AppUser::firstWhere('Email',$app_user_email)->value('id');
+
+            //dd($app_user_id);
+
+            if($app_user_id != null)
+            {
+                return self::requestToken($app_user_id);
+            }
+            else
+            {
+                $msg = 'Email Not Found!';
+
+                return view('/DiscogsOauth',['message'=>$msg]);
+            }
+            */
+
+            
+            $app = AppUser::firstWhere('Email',$app_user_email);
+
+            if($app != null)
+            {
+                $app_user_id = $app->id;
+
+                return self::requestToken($app_user_id);
+            }
+            else
+            {
+                $msg = 'Email Not Found!';
+
+                return view('/DiscogsOauth',['message'=>$msg]);
+            }
+            
+        }
+
+    }
     
-    public static function DiscogsOauth($app_user_id)
+    //
+    public static function APIDiscogsOauth($app_user_id)
     {
            
         //return redirect('request_token/'.$app_user_id);
@@ -145,6 +196,8 @@ class OAuthController extends Controller
         
     }
     
+
+    //Get username in Discogs
     //public static function getUsername($token,$token_secret)
     public static function getUsername($app_user_id)
     {
@@ -166,7 +219,6 @@ class OAuthController extends Controller
     }
 
     //Get User Account in Discogs
-    
     public static function getIdentity($app_user_id)
     {
         $dir = 'oauth/identity';
@@ -185,13 +237,13 @@ class OAuthController extends Controller
         return ["Error"=>$error,"Stream"=>$stream];
     }
 
+    //Save the oauth token
     public static function saveOauthToken($app_user_id,$oauth_token,$oauth_token_secret)
     {
         $record = OauthToken::firstWhere('app_user_id',$app_user_id);
 
         $app_user = AppUser::firstWhere('id',$app_user_id);
 
-        
         if($record != null)
         {
             $app=$app_user->OauthToken()->update([

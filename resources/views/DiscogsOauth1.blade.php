@@ -1,6 +1,5 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
+<html>
+<head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -20,69 +19,133 @@
             }
         </style>
     </head>
-    <body class="antialiased">
 
-    <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
-            @if (Route::has('login'))
-                <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
-                    @auth
-                        <a href="{{ url('/dashboard') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Dashboard</a>
-                    @else
-                        <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Log in</a>
+    @if(empty($next_step))
+    
+    
+    <body class="antialiased" onload="pageLoad('Request Token')">
+    
 
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">Register</a>
-                        @endif
-                    @endauth
-                </div>
-            @endif
+    @else
         
-                <div>
-                    <h1 class=" text-center text-xl uppercase">Linnworks Discogs Integration</h1>
+    <body class="antialiased" onload="pageLoad('{{$next_step}}')">
 
-                    <div class=" bg-indigo-50  items-center justify-center mt-8 px-6 py-6">
+    @endif
 
-                        <h2 class=" text-lg text-center font-semibold uppercase mb-4">Discogs App</h2>
+    <!--
+        <body class="antialiased">
+            -->
+
+    <script>
+        
+        /*
+            pxvTtclSSYamXqdapHmd
+            GOLdMOLlkoqIGhmdPCXsZrchRyfiwmzq
+            http://0bf4-2607-fea8-3d1f-6450-4cc9-b80a-c22e-88af.ngrok.io
+        */
+
+        function pageLoad($next_step)
+        {
+            if($next_step === 'Request Token')
+            {
+                document.getElementById('field1').disabled = false;
+                document.getElementById('step1').disabled = false;
+                document.getElementById('step2').disabled = true;
+                document.getElementById('step3').disabled = true;
+
+            }
+            if($next_step === 'Authorize')
+            {
+                
+                document.getElementById('field1').disabled = true;
+                document.getElementById('step1').disabled = true;
+                document.getElementById('step2').disabled = false;
+                document.getElementById('step3').disabled = true;
+            }
+            if($next_step === 'Access Token')
+            {
+                document.getElementById('field1').disabled = true;
+                document.getElementById('step1').disabled = true;
+                document.getElementById('step2').disabled = true;
+                document.getElementById('step3').disabled = false;
+            }
+        }
+
+        
+        
+    </script>
+
+    <x-guest-layout>
+    <x-auth-card>
+
+        <x-slot name="logo">
+            <!--
+            <a href="/">
+                <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+            </a>
+            -->
+        </x-slot>
+
+            <div>
+                
+                <form method="POST" action='{{route("request_token")}}' id="form1">
+
+                    <fieldset id="field1">
+
+                        <legend class=" text-center text-lg">Discogs Oauth</legend>
                         
-                            <p>1. REGISTER IN DISCOGS. <a href="http://www.discogs.com"><span>http://www.discogs.com</span></a></p>
+                        @csrf
+                        <div class="flex justify-center mt-6">
+                            <x-label for="consumer_key" :value="__('Consumer Key')" />
 
-                            <p>2. OBTAIN CONSUMER KEY AND CONSUMER SECRET FROM CREATING APPLICATION</p>
-
-                            <p>3. COPY CONSUMER KEY AND CONSUMER SECRET TO SAVE</p>
-                    </div>
-
-                    <div class=" bg-indigo-50  items-center justify-center mt-8 px-6 py-6">
-
-                        <h2 class=" text-lg text-center font-semibold uppercase mb-4">Linnworks App</h2>
-                        
-                            <p>1. REGISTER IN LINNWORKS. <a href="http://www.linnworks.com"><span>http://www.linnworks.com</span></a></p>
-
-                            <p>2. OBTAIN APPLICATION ID AND APPLICATION SECRET FROM CREATING APPLICATION</p>
-
-                            <p>3. COPY APPLICATION ID AND APPLICATION SECRET TO SAVE</p>
-                    </div>
-                    
-                        <div class="flex items-center justify-center mt-4">
-
-                        
-                                
-                                <x-button class="ml-4">
-                                    <a href="{{ route('AppKey') }}">
-                                    {{ __('Save App Keys') }}
-                                    </a>
-                                </x-button>
-
-                                <x-button class="ml-4">
-                                    <a href="{{ route('DiscogsOauthForm') }}">
-                                    {{ __('Request Discogs Tokens') }}
-                                    </a>
-                                </x-button>
-                                
+                            <x-input id="consumer_key" class="block mt-1 w-full" type="text" name="consumer_key" />
                         </div>
+                        <div class="flex justify-center mt-6">
+                            <x-label for="consumer_secret" :value="__('Consumer Secret')" />
 
+                            <x-input id="consumer_secret" class="block mt-1 w-full" type="text" name="consumer_secret" />
+                        </div>
                         
+                        <div class="flex justify-center mt-6">
+                            <x-label for="callback_url" :value="__('Callback URL')" />
+
+                            <x-input id="callback_url" class="block mt-1 w-full" type="text" name="callback_url" value="localhost:8080"/>
+                        </div>
+                        
+                        
+                    </fieldset>
+
+                </form>
+
+                <div class="flex justify-center mt-6">
+                    {{(isset($message)&&isset($next_step))?$message.' Please go to next step and click '.$next_step.'.':''}}
                 </div>
-        </div>
+
+                <div class="flex items-center justify-end mt-4">
+
+                        <x-button class="ml-4 h-10" id="step1" type="submit" form="form1">
+                            {{ __('Request Token') }}
+                        </x-button>
+
+                        <a href='{{route("authorize")}}'>
+                            <x-button class="ml-4 h-10" id="step2" type="button">
+                            {{ __('Authorize') }}
+                            </x-button> 
+                        </a>
+
+                        <a href='{{route("access_token")}}'>
+                            <x-button class="ml-4 h-10" id="step3" type="button">
+                                {{ __('Access Token') }}
+                            </x-button>
+                        </a>
+                </div>
+                
+
+            </div>
+        
+        </x-auth-card>
+        </x-guest-layout>
 
     </body>
+
 </html>

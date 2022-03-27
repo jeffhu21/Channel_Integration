@@ -45,6 +45,14 @@ Route::controller(OAuthController::class)->group(
         
         Route::get('/oauth_verifier','getVerifier');
 
+        Route::get('/DiscogsOauth',function(){
+            return view('DiscogsOauth');
+        })
+        //->middleware('auth')
+        ->name('DiscogsOauthForm');
+        
+        Route::post('/DiscogsOauth','DiscogsOauth')->name('DiscogsOauth');
+
         /*
         Route::get('/request_token/{id?}','requestToken')->name('request_token');
         Route::get('/authorize/{oauth_token}','oauthAuthorize')->name('authorize');
