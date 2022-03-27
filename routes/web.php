@@ -33,15 +33,18 @@ Route::get('/DiscogsOauth',function(){
 })->middleware('auth')->name('DiscogsOauth');
 */
 
+
 Route::controller(OAuthController::class)->group(
 
     function()
     {
+        //Route::get('/EmailTest/{email}','EmailTest')->name('EmailTest');
+
         Route::get('/AppKey',function(){
             return view('AppKey');
-        })->name('AppKey');
+        })->middleware('auth')->name('AppKey');
 
-        Route::post('/AppKey','saveAppKey')->middleware('auth')->name('save_app_key');
+        Route::post('/AppKey','saveAppKey')->name('save_app_key');
         
         Route::get('/oauth_verifier','getVerifier');
 

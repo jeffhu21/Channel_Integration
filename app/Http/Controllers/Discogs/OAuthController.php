@@ -11,6 +11,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
 //use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -22,6 +23,8 @@ use App\Models\OauthToken;
 use App\Models\User;
 use App\Models\AppKey;
 use App\Models\AppUser;
+
+use App\Mail\DiscogsAuthentication;
 
 class OAuthController extends Controller
 {
@@ -80,7 +83,9 @@ class OAuthController extends Controller
 
         self::accessToken($row->app_user_id);
 
-        return view('/DiscogsOauth',['message'=>'Successful!']);
+        //return view('/DiscogsOauth',['message'=>'Successful!']);
+
+        return 'Authentication Successful!';
     }
 
     //Get the permanent token from Discogs through authorized by user
@@ -140,7 +145,7 @@ class OAuthController extends Controller
         return view('home');
     }
 
-    //
+    //Form for App User to do the authentication by entering email
     public static function DiscogsOauth(Request $request)
     {
         $app_user_email = $request['app_user_email'];
@@ -186,13 +191,15 @@ class OAuthController extends Controller
 
     }
     
-    //
-    public static function APIDiscogsOauth($app_user_id)
+    //Without form. Authentication by App User to click authenticate button in the received email from App
+    public static function APIDiscogsOauth(Request $request)
     {
            
         //return redirect('request_token/'.$app_user_id);
+        //dd($request->id);
+        //return ($request->id);
 
-        return self::requestToken($app_user_id);
+        return self::requestToken($request->id);
         
     }
     
@@ -263,4 +270,12 @@ class OAuthController extends Controller
 
     }
     
+    /*
+    public function EmailTest($email)
+    {
+        Mail::to($email)->send(new DiscogsAuthentication(11)); 
+
+        //dd('Email Sent!');
+    }
+    */
 }

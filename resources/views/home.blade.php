@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>Linnworks Discogs Integration</title>
 
         <!-- Fonts -->
         <link href="/css/app.css" rel="stylesheet">
@@ -64,8 +64,6 @@
                     
                         <div class="flex items-center justify-center mt-4">
 
-                        
-                                
                                 <x-button class="ml-4">
                                     <a href="{{ route('AppKey') }}">
                                     {{ __('Save App Keys') }}

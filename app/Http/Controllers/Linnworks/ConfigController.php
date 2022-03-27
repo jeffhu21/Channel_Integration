@@ -8,8 +8,9 @@ use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 //use App\Http\Controllers\Discogs\OAuthController as OAuthController;
 use App\Models\AppUser as AppUser;
 use App\Models\Linnworks\ConfigStage as ConfigStage;
+use App\Mail\DiscogsAuthentication;
 
-
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
@@ -43,9 +44,10 @@ class ConfigController extends Controller
                 'IsOauth'=>true,
                 'StepName'=>'AddCredentials',
             ]);
-
+            //Send Email to App User for Discogs Authentication
+            //Mail::to($user->Email)->send(new DiscogsAuthentication($user->id));
         }
-
+        
         return SendResponse::httpResponse(['Error'=>$error,'AuthorizationToken'=>$auth_token]);
     }
 
@@ -61,7 +63,7 @@ class ConfigController extends Controller
 
         //redirect('test/'.$app_user->id); //Discogs Authentication
 
-        //OAuthController::DiscogsOauth($app_user->id); //Discogs Authentication
+        //OAuthController::DiscogsOauth($app_user->id); //Discogs Authentication 
 
         $response = ConfigStage::ConfigSetUp($app_user,'userConfig');
       
