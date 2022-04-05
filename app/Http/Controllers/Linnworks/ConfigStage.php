@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Models\Linnworks;
+//namespace App\Models\Linnworks;
+namespace App\Http\Controllers\Linnworks;
 
 use App\Models\Linnworks\AppUser as AppUser;
 
@@ -10,8 +11,13 @@ use App\Models\Linnworks\PaymentTagSetting as PaymentTagSetting;
 
 class ConfigStage
 {
-
-    public static function ConfigSetUp($user,$action)
+    /**
+         * Provide form for each step name
+         * @param $user - App User
+         * @param $caller - The caller from userConfig or saveConfig function
+         * @return "App\Models\Linnworks\UserConfigSetting for different step name"
+    */
+    public static function ConfigSetUp($user,$caller)
     {
         $result=null;
 
@@ -29,11 +35,11 @@ class ConfigStage
         }
         else
         {
-            if($action == 'userConfig')
+            if($caller == 'userConfig')
             {
                 $result = 'User Config is at invalid stage';
             }
-            if($action == 'saveConfig')
+            if($caller == 'saveConfig')
             {
                 $result = ['Error'=>'','StepName'=>'','WizardStepDescription'=>'',
                             'WizardStepTitle'=>'','ConfigItems'=>array()];
@@ -43,6 +49,10 @@ class ConfigStage
         return $result;
     }
 
+    /**
+         * Create shipping tags with friendly names and their tags in Linnworks config wizard for user to config
+         * @return "App\Models\Linnworks\ShippingTagSetting"
+    */
     public static function getShippingTags()
     {
         $setting = new ShippingTagSetting();
@@ -76,6 +86,10 @@ class ConfigStage
         return $setting->response;
     }
 
+    /**
+         * Create payment tags with friendly names and their tags in Linnworks config wizard for user to config
+         * @return "App\Models\Linnworks\PaymentTagSetting"
+    */
     public static function getPaymentTags()
     {
         $setting = new PaymentTagSetting();
@@ -114,6 +128,11 @@ class ConfigStage
         return $setting->response;
     }
     
+    /**
+         * Credential Form for user to fill out 
+         * @param $user - App User
+         * @return "App\Models\Linnworks\UserConfigSetting"
+    */
     public static function getApiCredentials($user)
     {
         $setting = new UserConfigSetting();
@@ -273,6 +292,11 @@ class ConfigStage
         return $setting->UserConfig;
     }
 
+    /**
+         * Order Form for user to fill out  
+         * @param $user - App User
+         * @return "App\Models\Linnworks\UserConfigSetting"
+    */
     public static function getOrderSetup($user)
     {
         $setting = new UserConfigSetting();
@@ -317,6 +341,11 @@ class ConfigStage
         return $setting->UserConfig;
     }
 
+    /**
+         * Config Form for user to fill out 
+         * @param $user - App User
+         * @return "App\Models\Linnworks\UserConfigSetting"
+    */
     public static function getConfigStep($user)
     {
         $setting = new UserConfigSetting();

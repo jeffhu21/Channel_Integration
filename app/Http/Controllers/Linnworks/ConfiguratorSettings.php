@@ -3,13 +3,24 @@
 namespace App\Http\Controllers\Linnworks;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Discogs\ConfiguratorSettings as DiscogsConfiguratorSettings;
+use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
+use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 
 use App\Models\Linnworks\ConfiguratorSetting as ConfiguratorSetting;
+use App\Models\Linnworks\Category as Category;
+use App\Models\Linnworks\CategoryAttribute as CategoryAttribute;
+use App\Models\Linnworks\CategoryVariation as CategoryVariation;
+use App\Models\Linnworks\Feed as Feed;
 
 use Illuminate\Http\Request;
 
 class ConfiguratorSettings extends Controller
 {
+    /**
+         * Provide settings for the listing screen layout in Linnworks
+         * @return "App\Models\Linnworks\ConfiguratorSetting"
+    */
     public function getConfiguratorSettings()
     {
         $setting = new ConfiguratorSetting();
@@ -211,27 +222,161 @@ class ConfiguratorSettings extends Controller
         return SendResponse::httpResponse($setting->response);
     }
 
-    public function getCategories()
+    /**
+         * Get a list of categories
+         * @param Request $request - with AuthorizationToken, PageNumber
+         * @return "App\Models\Linnworks\Category"
+    */
+    public function getCategories(Request $request)
     {
-        //return ["Error"=>null,"Response"=>null];
-        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
+        
+        if ($request->PageNumber <= 0)
+        {
+            return ['Error' => "Invalid page number"];
+        }
+
+        $result = AppUserAccess::getUserByToken($request);
+
+        if($result['Error'] != null)
+        {
+            return $result['Error'];
+        }
+        
+        $app_user = $result['User'];
+        $error=null;
+
+        /*
+        $res=DiscogsConfiguratorSettings::searchDB($request->PageNumber,$app_user->id);
+
+        if($res['Error'] != null)
+        {
+            $error=$res['Error'];
+            return ["Error"=>$error];
+        }
+        */
+        
+        $cat = new Category();
+
+        /*
+        $cat->ListingCategory=[
+            //"CategoryId"=>0,
+            //"CategoryName"=>''
+        ];
+        */
+
+        //return SendResponse::httpResponse(['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Categories']->pagination->pages,'Categories'=>$cat->ListingCategory]);
+        return SendResponse::httpResponse(['Error'=>$error,'HasMorePages'=>false,'Categories'=>$cat->ListingCategory]);
     }
 
-    public function getAttributesByCategory()
-    {
-        //return ["Error"=>null,"Response"=>null];
-        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
+    /**
+         * Get a list of required and optional attributes by category
+         * @param Request $request - with AuthorizationToken, CategoryIds[], GeneralSettings[]
+         * @return "App\Models\Linnworks\CategoryAttribute"
+    */
+    public function getAttributesByCategory(Request $request)
+    {    
+        //
+        $request_ids = $request->input('CategoryIds'); 
+
+        //Provided in GetConfiguratorSettings
+        //GeneralSettings is an array[ID,Values]
+        //ID is ConfigItemId in GetConfiguratorSettings and Values are chosen by customer
+        $request_settings = $request->input('GeneralSettings'); 
+
+        if($request->GeneralSettings == null || count($request_settings) == 0)
+        {
+            return ['Error' => "General Settings Not Found"];
+        }
+
+        $result = AppUserAccess::getUserByToken($request);
+        if($result['Error'] != null)
+        {
+            return $result['Error'];
+        }
+        
+        $app_user = $result['User'];
+        $error=null;
+
+        $attr = new CategoryAttribute();
+        
+        $attr->ListingCategoryAttribute=[
+
+            "Error"=>null,
+            "ID"=>"",
+            "FriendlyName"=>"Free Shipping",
+            "Description"=>"Free Shipping",
+            "MustBeSpecified"=>$attr->MustBeSpecified['2'],
+            "ExpectedType"=>$attr->ExpectedType['4'],
+            "ValueOptions"=>["true","false"],
+            "ValueFromOptionsList"=>true,
+            "MaxAttributeUse"=>1,
+            "AttributeReadFrom"=>$attr->AttributeReadFrom['2'],
+            "RegExValidation"=>null,
+            "RegExError"=>null
+
+        ];
+        
+
+        return SendResponse::httpResponse(["Error"=>$error,"Attributes"=>$attr->ListingCategoryAttribute]);
     }
 
-    public function getVariationsByCategory()
+    /**
+         * Get a list of required variation options by category
+         * @param Request $request - with AuthorizationToken, CategoryIds[], GeneralSettings[]
+         * @return "App\Models\Linnworks\CategoryVariation"
+    */
+    public function getVariationsByCategory(Request $request)
     {
-        //return ["Error"=>null,"Response"=>null];
-        return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
+        //
+        $request_ids = $request->input('CategoryIds'); 
+
+        //Provided in GetConfiguratorSettings
+        //GeneralSettings is an array[ID,Values]
+        //ID is ConfigItemId in GetConfiguratorSettings and Values are chosen by customer
+        $request_settings = $request->input('GeneralSettings'); 
+
+        if($request->GeneralSettings == null || count($request_settings) == 0)
+        {
+            return ['Error' => "General Settings Not Found"];
+        }
+
+        $result = AppUserAccess::getUserByToken($request);
+        if($result['Error'] != null)
+        {
+            return $result['Error'];
+        }
+        
+        $app_user = $result['User'];
+        $error=null;
+
+        $attr = new CategoryVariation();
+
+        $attr->ListingCategoryVariation=[];
+
+        return SendResponse::httpResponse(["Error"=>$error,"MaxVariationAttributes"=>50,"NeededVariations"=>$attr->ListingCategoryVariation]);
     }
 
-    public function checkFeed()
+    /**
+         * Check status of submitted batch for listing creation, update or deletions
+         * @param Request $request - with AuthorizationToken, ChannelFeedId
+         * @return "App\Models\Linnworks\Feed"
+    */
+    public function checkFeed(Request $request)
     {
-        //return ["Error"=>null,"Response"=>null];
+        $result = AppUserAccess::getUserByToken($request);
+        if($result['Error'] != null)
+        {
+            return $result['Error'];
+        }
+        
+        $app_user = $result['User'];
+        $error=null;
+
+        //ChannelFeedId returned from ListingUpdate or ListingDelete
+        $FeedId = $request->ChannelFeedId;
+
+
+        
         return SendResponse::httpResponse(["Error"=>null,"Response"=>null]);
     }
 }

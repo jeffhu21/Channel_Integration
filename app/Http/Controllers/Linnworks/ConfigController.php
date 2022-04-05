@@ -5,19 +5,27 @@ namespace App\Http\Controllers\Linnworks;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
 use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
-//use App\Http\Controllers\Discogs\OAuthController as OAuthController;
+
 use App\Models\AppUser as AppUser;
-use App\Models\Linnworks\ConfigStage as ConfigStage;
+use App\Http\Controllers\Linnworks\ConfigStage as ConfigStage;
 use App\Mail\DiscogsAuthentication;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Config;
+
+//use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
+
 
 class ConfigController extends Controller
 {
+    /**
+         * Add AppUser into database when the seller firstly installs the channel integration
+         * Send email to AppUser to do the authentication required by Discogs
+         * @param Request $request - with LinnworksUniqueIdentifier, Email, AccountName
+         * @return [String: $error, String: $auth_token]
+    */
     public function addNewUser(Request $request)
     {
         $error = null;
@@ -51,6 +59,11 @@ class ConfigController extends Controller
         return SendResponse::httpResponse(['Error'=>$error,'AuthorizationToken'=>$auth_token]);
     }
 
+    /**
+         * Provide Config forms for user to complete according to Linnworks wizard
+         * @param Request $request - with AuthorizationToken
+         * @return [String: $error, String: StepName, String AccountName, String WizardStepDescription, String WizardStepTitle, ConfigItems[]]
+    */
     public function userConfig(Request $request)
     {
         $result = AppUserAccess::getUserByToken($request);
@@ -61,15 +74,16 @@ class ConfigController extends Controller
         
         $app_user = $result['User'];
 
-        //redirect('test/'.$app_user->id); //Discogs Authentication
-
-        //OAuthController::DiscogsOauth($app_user->id); //Discogs Authentication 
-
         $response = ConfigStage::ConfigSetUp($app_user,'userConfig');
       
         return SendResponse::httpResponse($response);
     }
 
+    /**
+         * Update and Save the Config Information of user
+         * @param Request $request - with AuthorizationToken, ConfigItems[], StepName
+         * @return [String: $error, String: AuthorizationToken, String: StepName, String WizardStepDescription, String WizardStepTitle, ConfigItems[]]
+    */
     public function saveConfig(Request $request)
     {
         
@@ -111,12 +125,15 @@ class ConfigController extends Controller
 
         $response = ConfigStage::ConfigSetUp($user,'saveConfig');
 
-        //OAuthController::DiscogsOauth($user->id); //Discogs Authentication
-
         return SendResponse::httpResponse($response);
 
     }
 
+    /**
+         * Pre-populate a list of shipping tags in Linnworks config wizard
+         * @param Request $request - with AuthorizationToken
+         * @return [String: $error, ShippingTags[]]
+    */
     public function shippingTags(Request $request)
     {
         $result = AppUserAccess::getUserByToken($request);
@@ -132,6 +149,11 @@ class ConfigController extends Controller
         return SendResponse::httpResponse($response);
     }
 
+    /**
+         * Pre-populate a list of payment tags in Linnworks config wizard
+         * @param Request $request - with AuthorizationToken
+         * @return [String: $error, PaymentTags[]]
+    */
     public function paymentTags(Request $request)
     {
         $result = AppUserAccess::getUserByToken($request);
@@ -147,6 +169,11 @@ class ConfigController extends Controller
         return SendResponse::httpResponse($response);
     }
 
+    /**
+         * Remove the app user from database 
+         * @param Request $request - with AuthorizationToken
+         * @return [String: $error]
+    */
     public function deleted(Request $request)
     {
         $result = AppUserAccess::getUserByToken($request);
@@ -171,6 +198,11 @@ class ConfigController extends Controller
         return SendResponse::httpResponse(['Error'=>$error]);
     }
 
+    /**
+         * Test the customer's integration is valid
+         * @param Request $request - with AuthorizationToken
+         * @return [String: $error]
+    */
     public function test(Request $request)
     {
         $result = AppUserAccess::getUserByToken($request);
@@ -196,13 +228,13 @@ class ConfigController extends Controller
                 $error = 'Config Not Finished!';
             }
 
-            //$error = 'User config does not exist';
+            
         }
         catch(Exception $ex)
         {
             $error = $ex->getMessage();
         }
-        //return ['Error'=>$error];
+        
         return SendResponse::httpResponse(['Error'=>$error]);
     }
 

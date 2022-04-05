@@ -8,7 +8,11 @@ use App\Models\AppUser as AppUser;
 
 class AppUserAccess
 {
-    //Check Request with AuthorizationToken
+    /**
+         * Check Request with AuthorizationToken and retrieve the user
+         * @param Request $request - with AuthorizationToken
+         * @return [String: Error, AppUser: $user]
+    */
     public static function getUserByToken(Request $request)
     {
         $user = null;
@@ -34,7 +38,11 @@ class AppUserAccess
         return ['Error' => null,'User'=>$user];
     }
 
-    //Load AppUser from AppUser Model
+    /**
+         * Retrieve AppUser from database
+         * @param $token - Authorization Token
+         * @return [String: $error, AppUser: $user]
+    */
     public static function loadAppUser($token)
     {
         $error = null;

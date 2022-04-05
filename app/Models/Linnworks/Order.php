@@ -4,6 +4,7 @@ namespace App\Models\Linnworks;
 
 class Order 
 {
+    //Order Structure in Linnworks
     public $order=[
 
         'BillingAddress'=>[],
@@ -20,7 +21,7 @@ class Order
 
         'PaymentStatus'=>'',
         'ChannelBuyerName'=>'',
-        'ReferenceNumber'=>'',
+        'ReferenceNumber'=>'', //Order ID in Discogs
         'ExternalReference'=>'',
         'SecondaryReferenceNumber'=>'',
         'Currency'=>'',
@@ -64,8 +65,8 @@ class Order
     'UseChannelTax'=>'',
     'IsService'=>false,
 
-    'OrderLineNumber'=>'',
-    'SKU'=>'',
+    'OrderLineNumber'=>'', //Order Item ID
+    'SKU'=>'', //Order Item Release ID
     'PricePerUnit'=>'',
     'Qty'=>'',
     'TaxRate'=>'',

@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\discogs;
 
-use Illuminate\Support\Facades\DB;
+//use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7;
@@ -11,12 +12,12 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
+/*
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
-
 use Illuminate\Support\Facades\Auth;
-
+*/
 use App\Models\OauthToken;
 use App\Models\AppKey;
 
@@ -24,24 +25,29 @@ use App\Models\AppKey;
 
 class SendRequest
 {
-    //Set the oauth content header
+    /**
+         * Set the content type of header
+         * @param $authenticated - optional
+         * @return $header - request header
+    */
     public static function contentHeader($authenticated=false)
     {
         $header = [
             'content_type' => $authenticated?'application/json':'application/x-www-form-urlencoded',
             'user_agent' => 'linnworksDiscogs/0.1 +https://www.example.com'
             //'user_agent' => Config::get('discogsAuth.USER_AGENT')
-            //'accept'=>'application/json'
+
         ];
         return $header;
     }
 
-    //Set the oauth authentication header
-    //public static function oauthHeader($oauth_token,$oauth_token_secret,$oauth_verifier)
+    /**
+         * Set the oauth header
+         * @param $app_user_id - App\Models\AppUser id
+         * @return $middleware - oauth header
+    */
     public static function oauthHeader($app_user_id)
     {
-
-        //$app = OauthToken::firstWhere('app_user_id',$app_user_id);
 
         //Get Consumer Key
         $app_keys = AppKey::first();
@@ -73,7 +79,6 @@ class SendRequest
             //'signature_method'=>"PLAINTEXT",
             'signature_method'=>"HMAC-SHA1",
             'timestamp'=>now()->format('YmdHis'),
-            //'callback'=>"https://localhost:8080",
 
             'callback'=>$app_keys->callback_url,
 
@@ -85,7 +90,15 @@ class SendRequest
 
     }
 
-    //public static function httpRequest($method,$dir,$authenticated=false,$q='',$oauth_token='',$oauth_token_secret='',$oauth_verifier='')
+    /**
+         * Send the http request to url of Discogs
+         * @param $method - GET,POST or DELETE method
+         * @param $dir - part of url
+         * @param $authenticated - optional
+         * @param $q - optional query
+         * @param $app_user_id - optional 
+         * @return [String:$error,HttpResponse:$res]
+    */
     public static function httpRequest($method,$dir,$authenticated=false,$q='',$app_user_id=0)
     {
         $BASE_URL = 'https://api.discogs.com/';
@@ -93,7 +106,6 @@ class SendRequest
         $error = null;
         $res = null;
 
-        //$middleware = self::oauthHeader($oauth_token,$oauth_token_secret,$oauth_verifier);
         $middleware = self::oauthHeader($app_user_id);
 
         if($middleware != null)
@@ -118,7 +130,6 @@ class SendRequest
                     $res = $client->request('POST',$dir,['auth' => 'oauth','header' => self::contentHeader($authenticated),'json'=>$q]);
                     break;
                 case 'DELETE':
-                    //$listing_id=$q['listing_id'];
                     $res = $client->request('DELETE',$dir,['auth' => 'oauth','header' => self::contentHeader($authenticated)]);
                     break;
                 
@@ -149,7 +160,6 @@ class SendRequest
                
             }
         }
-        //dd(response()->json(["Error"=>$error,"Response"=>$res]));
         return ["Error"=>$error,"Response"=>$res];
     }
 }

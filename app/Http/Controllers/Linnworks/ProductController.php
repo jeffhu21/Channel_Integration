@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Linnworks;
 
+use Illuminate\Http\Request;
+
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Discogs\ProductController as DiscogsProductController;
 use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
@@ -10,11 +12,14 @@ use App\Models\Linnworks\Product as Product;
 
 //use App\Models\OauthToken as OauthToken;
 
-use Illuminate\Http\Request;
-
 class ProductController extends Controller
 {
     
+    /**
+         * Retrieve all the products in Discogs with pagination and push to Linnworks
+         * @param Request $request - with AuthorizationToken, PageNumber
+         * @return [String: $error, Boolean: HasMorePages, $products[App\Models\Linnworks\Product]]
+    */
     public function products(Request $request)
     {
         if ($request->PageNumber <= 0)
@@ -30,13 +35,10 @@ class ProductController extends Controller
         }
         
         $app_user = $result['User'];
+
         $error=null;
 
-
-        //Get Product from Discogs
-
-        //$res=DiscogsProductController::getInventory($request->PageNumber,$token,$token_secret);
-
+        //Retrieve products from Discogs
         $res=DiscogsProductController::getInventory($request->PageNumber,$app_user->id);
 
         if($res['Error'] != null)
@@ -44,40 +46,41 @@ class ProductController extends Controller
             $error=$res['Error'];
             return ["Error"=>$error];
         }
-        $products = [];
-        //Could be changed with pagination
 
-        //$productsCount = count($res['Products']->listings);
+        /** 
+         * $product - one product from Discogs
+         * $obj - one product pushing to Linnworks
+         * $products - array of products pushing to Linnworks
+         */
+        $products = [];
         
+        //Loop each product of $res['Products']->listings from Discogs and push to Linnworks $products array
         foreach ($res['Products']->listings as $product) 
         {
             $obj = new Product();
 
             $obj->product = [
                 
-                'SKU'=>$product->release->id, 
+                'SKU'=>$product->release->id, //SKU in Linnworks refers to Discogs release id
                 'Title'=>$product->release->title,
                 'Price'=>$product->price->value,
                 'Quantity'=>$product->format_quantity,
-                'Reference'=>$product->id
+                'Reference'=>$product->id //Reference in Linnworks refers to Discogs product id
             ];
             array_push($products,$obj->product);
         }  
 
-        /*
-        if($request->PageNumber < $res['Products']->pagination->pages)
-        {
-            $HasMorePages = true;
-        }
-        */
-
-        //return ['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Products']->pagination->pages,'Products'=>$products];
         return SendResponse::httpResponse(['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Products']->pagination->pages,'Products'=>$products]);
     }
 
+    /**
+         * Update the inventory in Discogs
+         * @param Request $request - with AuthorizationToken, Products[App\Models\Linnworks\ProductInventory]
+         * @return [String: $error, Products[String: Error,String: SKU]]
+    */
     public function inventoryUpdate(Request $request)
     {
-        $request_products=json_decode($request->Products);
+        $request_products=$request->input('Products');
     
         if($request->Products == null || count($request_products) == 0)
         {
@@ -91,8 +94,7 @@ class ProductController extends Controller
         }
         
         $app_user = $result['User'];
-        //$HasError = false;
-        $UpdateInventory = "";
+        //$UpdateInventory = "";
         $error=null;
 
         $inventory_product = [
@@ -100,34 +102,42 @@ class ProductController extends Controller
             'SKU'=>''
         ];
         
-        $products = [];
+        /** 
+         * $product - one updated product from Linnworks
+         * $UpdateFailedProducts - array of products failed to update in Discogs
+         */
+        $UpdateFailedProducts = [];
 
         foreach ($request_products as $product) 
         {
-            
+            //Update inventory in Discogs by sending request
             $res=DiscogsProductController::updateInventory($product,$app_user->id);
 
-            /*
+            
             if($res['Error'] != null)
             {
                 $error = $error.$res['Error']."\n";
-                $UpdateInventory = $UpdateInventory.$res["SKU"].", ";   
+                //$UpdateInventory = $UpdateInventory.$res["SKU"].", ";   
+                //$inventory_product['Error'] = $res['Error'];
+                $inventory_product['Error'] = 'SKU does not exist';
+                $inventory_product['SKU'] = $res['SKU'];
+
+                array_push($UpdateFailedProducts,$inventory_product);
             }    
-            */
-            $inventory_product['Error'] = $res['Error'];
-            $inventory_product['SKU'] = $res['SKU'];
-            array_push($products,$inventory_product);
+            
         }
         
-        //return ["Error"=>null,"Products"=>["Error"=>$error,"SKU"=>$UpdateInventory]];
-        return SendResponse::httpResponse(["Error"=>null,"Products"=>$products]);
+        return SendResponse::httpResponse(["Error"=>$error,"Products"=>$UpdateFailedProducts]);
     }
 
+    /**
+         * Update the inventory price in Discogs
+         * @param Request $request - with AuthorizationToken, Products[App\Models\Linnworks\ProductPrice]
+         * @return [String: $error, Products[String: Error,String: SKU]]
+    */
     public function priceUpdate(Request $request)
     {
-        $request_products=json_decode($request->Products);
-
-        //dd($request->Products);
+        $request_products=$request->input('Products');
     
         if($request->Products == null || count($request_products) == 0)
         {
@@ -142,43 +152,37 @@ class ProductController extends Controller
         
         $app_user = $result['User'];
 
-        $UpdatePrice = "";
+        //$UpdatePrice = "";
         $error=null;
-
-        /*
-        $record = OauthToken::first();
-        $token = $record->oauth_token;
-        $token_secret = $record->oauth_secret;
-        $token_verifier=$record->oauth_verifier;
-        */
 
         $inventory_product = [
             'Error'=>'',
             'SKU'=>''
         ];
         
-        $products = [];
+        /** 
+         * $product - one updated product from Linnworks
+         * $UpdateFailedProducts - array of products failed to update in Discogs
+         */
+        $UpdateFailedProducts = [];
 
         foreach ($request_products as $product) 
         {
-            
+            //Update price in Discogs by sending request
             $res=DiscogsProductController::updatePrice($product,$app_user->id);
 
-            /*
+            
             if($res['Error'] != null)
             {
                 $error = $error.$res['Error']."\n";
-                $UpdatePrice = $UpdatePrice.$res["SKU"].", ";   
+                //$UpdatePrice = $UpdatePrice.$res["SKU"].", ";  
+                //$inventory_product['Error'] = $res['Error'];
+                $inventory_product['Error'] = 'SKU does not exist';
+                $inventory_product['SKU'] = $res['SKU'];
+                array_push($UpdateFailedProducts,$inventory_product); 
             }
-            */
-
-            $inventory_product['Error'] = $res['Error'];
-            $inventory_product['SKU'] = $res['SKU'];
-            array_push($products,$inventory_product);
-            
         }
         
-        //return ["Error"=>null,"Products"=>["Error"=>$error,"SKU"=>$UpdatePrice]];
-        return SendResponse::httpResponse(["Error"=>null,"Products"=>$products]);
+        return SendResponse::httpResponse(["Error"=>null,"Products"=>$UpdateFailedProducts]);
     }
 }

@@ -7,6 +7,8 @@ use App\Http\Controllers\discogs\OrderController as OrderController;
 use App\Http\Controllers\discogs\ProductController as ProductController;
 //use App\Http\Controllers\linnworks\ConfigController as ConfigController;
 
+use App\Http\Controllers\Discogs\ConfiguratorSettings as DiscogsConfiguratorSettings;
+
 use Carbon\Carbon;
 /*
 |--------------------------------------------------------------------------
@@ -70,14 +72,14 @@ Route::controller(OAuthController::class)->group(
 );
 
 //Testing
-/*
+
 Route::get('/orders/{id}',[OrderController::class,'getOrderById']);
 Route::get('/list',[OrderController::class,'listOrders']);
 
 Route::get('/inventory/{PageNumber}',[ProductController::class,'getInventory']);
 
-Route::get('/Testing',[OrderController::class,'testing']); //Tester
-*/
+Route::get('/Testing/{PageNumber}/{app_user_id}',[DiscogsConfiguratorSettings::class,'searchDB']); //Tester
+
 
 require __DIR__.'/auth.php';
 

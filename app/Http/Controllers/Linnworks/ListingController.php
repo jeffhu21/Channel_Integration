@@ -2,21 +2,25 @@
 
 namespace App\Http\Controllers\Linnworks;
 
+use Illuminate\Http\Request;
+
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Discogs\ProductController as DiscogsProductController;
 use App\Http\Controllers\Discogs\OAuthController as OAuthController;
 use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
 use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
-//use App\Models\Linnworks\ProductsListings as ProductsListingsRequest;
-use App\Models\Linnworks\PostSaleOptions as PostSaleOptions;
 //use App\Models\OauthToken as OauthToken;
 use App\Models\Discogs\Listing as Listing;
-
-use Illuminate\Http\Request;
+use App\Models\Linnworks\PostSaleOptions as PostSaleOptions;
+//use App\Models\Linnworks\ProductsListings as ProductsListingsRequest;
 
 class ListingController extends Controller
 {
-    //
+    /**
+         * Provide options of kinds of refunds and returns
+         * @param Request $request - with AuthorizationToken
+         * @return "App\Models\Linnworks\PostSaleOptions"
+    */
     public function postSaleOptions(Request $request)
     {
         $result = AppUserAccess::getUserByToken($request);
@@ -41,17 +45,18 @@ class ListingController extends Controller
             "CanReturn"=> false
         ];
 
-
         return SendResponse::httpResponse($postSaleOption->postsale);
     }
 
-    
-
+    /**
+         * Create or update the list of items
+         * @param Request $request - with AuthorizationToken, Type, Listings[], Settings[]
+         * @return [String: $error, String: ChannelFeedId]
+    */
     public function listingUpdate(Request $request) //ProductsListingsRequest
     {
-
-        $request_listings=json_decode($request->Listings);
-        $request_settings=json_decode($request->Settings);
+        $request_listings=$request->input('Listings');
+        $request_settings=$request->input('Settings');
 
         if($request->Listings == null || count($request_listings) == 0)
         {
@@ -139,19 +144,7 @@ class ListingController extends Controller
             {
                 
                 $res = DiscogsProductController::createList($obj->listing,$app_user->id);
-                
-                //dd(json_decode($res['Response']->getBody()->getContents())->listing_id);
 
-                /*
-                if($res['Error'] != null)
-                {
-                    return ['Error'=>$res['Error']];
-                    //$error = $error.$res['Error']."\n";
-                    //$UpdateInventory = $UpdateInventory.$res["SKU"].", ";   
-                }  
-                
-                return ['ChannelFeedId'=>json_decode($res['Response']->getBody()->getContents())->listing_id,"Error"=>null];
-                */
             }
 
             if($request->Type == 'UPDATE')
@@ -161,21 +154,20 @@ class ListingController extends Controller
             }
             if($res['Error'] != null)
             {
-                return ['Error'=>$res['Error']];
-                //$error = $error.$res['Error']."\n";
-                //$UpdateInventory = $UpdateInventory.$res["SKU"].", ";   
+                return ['Error'=>$res['Error']]; 
             }  
-                
-            //return ['ChannelFeedId'=>json_decode($res['Response']->getBody()->getContents())->listing_id,"Error"=>null];
             return SendResponse::httpResponse(['ChannelFeedId'=>json_decode($res['Response']->getBody()->getContents())->listing_id,"Error"=>null]);
         }    
     }
 
+    /**
+         * Delete the list of items
+         * @param Request $request - with AuthorizationToken, ExternalListingIds[]
+         * @return [String: $error, String: ChannelFeedId]
+    */
     public function listingDelete(Request $request)
     {
-        $request_ids=json_decode($request->ExternalListingIds);
-
-        //dd(count($request_ids));
+        $request_ids=$request->input('ExternalListingIds');
 
         if($request->ExternalListingIds == null || count($request_ids) == 0)
         {
@@ -192,10 +184,7 @@ class ListingController extends Controller
 
         foreach ($request_ids as $data) 
         {
-
             $res = DiscogsProductController::deleteListing($data,$app_user->id);
-            //dd($res);
-            //return ['ChannelFeedId'=>$data->ExternalListingId,"Error"=>null];
             return SendResponse::httpResponse(['ChannelFeedId'=>$data->ExternalListingId,"Error"=>null]);
         }
 

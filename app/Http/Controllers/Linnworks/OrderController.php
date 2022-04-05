@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Linnworks;
 
+use Illuminate\Http\Request;
+
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Discogs\OrderController as DiscogsOrderController;
 use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
 use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 use App\Models\Linnworks\Order as Order;
-//use App\Models\Linnworks\OrderDespatch as OrderDespatch;
 
-use App\Models\OauthToken as OauthToken;
-
-use Illuminate\Http\Request;
+//use App\Models\OauthToken as OauthToken;
 
 class OrderController extends Controller
 {
@@ -23,6 +22,11 @@ class OrderController extends Controller
         'Cancelled'=>'CANCELLED'
     ];
 
+    /**
+         * Retrieve all the orders in Discogs with pagination created after specified time of parameter UTCTimeFrom in Request and push to Linnworks
+         * @param Request $request - with AuthorizationToken, UTCTimeFrom, PageNumber
+         * @return [String: $error, Boolean: HasMorePages, $orders[App\Models\Linnworks\Order]]
+    */
     public function orders(Request $request)
     {
         if ($request->PageNumber <= 0)
@@ -31,6 +35,7 @@ class OrderController extends Controller
         }
 
         $result = AppUserAccess::getUserByToken($request);
+
         if($result['Error'] != null)
         {
             return $result['Error'];
@@ -40,9 +45,9 @@ class OrderController extends Controller
 
         $error = null;
 
-        $filter = 'created_after='.($request->UTCTimeFrom);//Could be converted to different time zone
-
-        //Retrieve Orders from Discogs
+        //Could be converted to different time zone
+        //Retrieve orders from Discogs after UTCTimeFrom by sending request
+        $filter = 'created_after='.($request->UTCTimeFrom);
         $res = DiscogsOrderController::listOrders($filter,$request->PageNumber,$app_user->id);
 
         if($res['Error'] != null)
@@ -52,22 +57,19 @@ class OrderController extends Controller
         }
         $stream = $res['Orders'];
 
-        //$PaymentStatus=config('linnworksHelper.PaymentStatus.Unpaid');//Set Default Status Unpaid
-
+        //Set Default Status Unpaid
         $PaymentStatus=$this->paymentStatus['Unpaid'];
 
-        /**
-         * Push Orders to Linnworks
-         * @param orders - array of orders push to Linnworks
+        /** 
+         * $order - one order from Discogs
+         * $obj - one order pushing to Linnworks
+         * $orders - array of orders pushing to Linnworks
          */
         $orders = [];
 
-        /**
-         * @param order - order from Discogs
-         */
+        //Loop each order of $stream->orders from Discogs and push to Linnworks $orders array
         foreach ($stream->orders as $order) 
         {
-
             //Set the payment status
             if($order->status == 'Payment Received'||
             $order->status == 'Shipped'||
@@ -80,15 +82,10 @@ class OrderController extends Controller
                 $PaymentStatus=$this->paymentStatus['Cancelled'];
             }
 
-            //Could be modified
-            /**
-             * @param obj - order pushing to Linnworks
-             */
             $obj = new Order();
 
             //Split the shipping address to full name, address and phone number
             $str = $order->shipping_address;
-
             $pos = strpos($str,"\n");
             
             if($pos != false)
@@ -123,7 +120,7 @@ class OrderController extends Controller
 
             }
 
-            //Setting order pushing to Linnworks
+            //Get the Order from Discogs and set the order to Linnworks
             $obj->order = [
                 'DeliveryAddress' => [$obj->address=
                 [
@@ -156,7 +153,6 @@ class OrderController extends Controller
                 'MarketplaceTaxId' => ""
             ];
 
-            //$itemCount = count($order->items);
             $j=0;
 
             foreach($order->items as $item)
@@ -164,17 +160,16 @@ class OrderController extends Controller
                 $obj->OrderItem=[
                         //'IsService' => false,
                         'ItemTitle' => "",
-                        'SKU' => $item->release->id,
+                        'SKU' => $item->release->id, //SKU in Linnworks refers to Discogs release id
                         'LinePercentDiscount' => 0,
                         'PricePerUnit' => $item->price->value,
                         'Qty' => 1,
-                        'OrderLineNumber' => $item->id,
+                        'OrderLineNumber' => $item->id, //Order Line Number in Linnworks refers to Discogs item id
                         'TaxCostInclusive' => true,
                         'TaxRate' => 13,
                         'UseChannelTax' => false
                 ];
-                $obj->order['OrderItems'][$j]=$obj->OrderItem;
-                //array_push($obj->order['OrderItems'][$j],$obj->OrderItem);
+                $obj->order['OrderItems'][$j]=$obj->OrderItem; //Add each order 
                 $j++;
             }
 
@@ -189,7 +184,6 @@ class OrderController extends Controller
                     'Value' => "Val".$a
                 ];
                 $obj->order['ExtendedProperties'][$a]=$obj->OrderExtendedProperty;
-                //array_push($obj->order['ExtendedProperties'],$obj->OrderExtendedProperty);
             }
 
             for ($a = 0; $a < $randNotes; $a++)
@@ -201,7 +195,6 @@ class OrderController extends Controller
                     'NoteUserName' => "Channel"
                 ];
                 $obj->order['Notes'][$a]=$obj->OrderNote;
-                //array_push($obj->order['Notes'],$obj->OrderNote);
             }
 
                 /*
@@ -221,16 +214,54 @@ class OrderController extends Controller
                 $obj->order['Notes']=$obj->OrderNote;
                 */
             
-            //$orders[$i]=$obj->order;
             array_push($orders,$obj->order);
             
         }
         return SendResponse::httpResponse(['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Orders']->pagination->pages,'Orders'=>$orders]);
     }
 
-    
+    /**
+         * Update the despatched orders' status in Discogs with the despatch details
+         * @param Request $request - with AuthorizationToken, Orders[App\Models\Linnworks\OrderDespatch]
+         * @return [String: $error, Orders[String: $error,String ReferenceNumber]]
+    */
+    public function despatch(Request $request)
+    {
+        $request_orders=$request->input('Orders');
 
-    //
+        if($request->Orders == null || count($request_orders) == 0)
+        {
+            return ['Error' => "No Despatched Orders"];
+        }
+        
+        $result = AppUserAccess::getUserByToken($request);
+        if($result['Error'] != null)
+        {
+            return $result['Error'];
+        }
+        
+        $app_user = $result['User'];
+        $UpdateFailedOrders = [];
+        $error=null;
+
+        //Update Despatched Orders in Discogs
+        foreach ($request_orders as $order) 
+        { 
+            $res=DiscogsOrderController::updateOrder($order,$app_user->id);
+            
+            if($res['Error'] != null)
+            {
+                $error = $error.$res['Error']."\n";
+
+                //$UpdateFailedOrder = $UpdateFailedOrder.$res["ReferenceNumber"].", ";
+                array_push($UpdateFailedOrders,['Error'=>$res['Error'],'ReferenceNumber'=>$res['ReferenceNumber']]);
+            }
+        }
+        
+        return SendResponse::httpResponse(["Error"=>$error,"Orders"=>$UpdateFailedOrder]);
+    }
+
+    
     /*
     public function SampleOrders(Request $request)
     {
@@ -371,49 +402,6 @@ class OrderController extends Controller
     }
     */
     
-    public function despatch(Request $request)
-    {
-        $request_orders=json_decode($request->Orders);
-
-        if($request->Orders == null || count($request_orders) == 0)
-        {
-            return ['Error' => "Invalid page number"];
-        }
-        
-        $result = AppUserAccess::getUserByToken($request);
-        if($result['Error'] != null)
-        {
-            return $result['Error'];
-        }
-        
-        $app_user = $result['User'];
-        //$HasError = false;
-        $UpdateOrder = "";
-        $error=null;
-
-        //Push Updated Orders back to Discogs
-        foreach ($request_orders as $order) 
-        //for ($i=0; $i < count($request_orders); $i++) 
-        { 
-            /*
-            $obj = new OrderDespatch();
-            $obj->order=$order;
-            $UpdateOrder=DiscogsOrderController::updateOrder($obj);
-            */
-            $res=DiscogsOrderController::updateOrder($order,$app_user->id);
-            
-            if($res['Error'] != null)
-            {
-                //$HasError = true;
-                $error = $error.$res['Error']."\n";
-                $UpdateOrder = $UpdateOrder.$res["ReferenceNumber"].", ";
-
-
-                //return $UpdateOrder;
-            }
-        }
-        
-        return SendResponse::httpResponse(["Error"=>null,"Orders"=>["Error"=>$error,"ReferenceNumber"=>$UpdateOrder]]);
-    }
+    
 
 }

@@ -5,6 +5,7 @@ namespace App\Models\Linnworks;
 //Not Used
 class OrderDespatch 
 {
+    //Despatched Order from Linnworks
     public $order=[
 
         'ReferenceNumber'=>'',
@@ -13,12 +14,12 @@ class OrderDespatch
         'TrackingNumber'=>'',
         'SecondaryTrackingNumbers'=>'',
         'ProcessedOn'=>'',
-        'Items'=>[],
+        'Items'=>[], //Despatch Item
 
     ];
 
     public $item=[
-        'SKU'=>'',
+        'SKU'=>'',//
         'OrderLineNumber'=>'',
         'DespatchedQuantity'=>0,
     ];
