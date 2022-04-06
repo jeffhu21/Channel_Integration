@@ -212,7 +212,7 @@ class OAuthController extends Controller
     }
 
     /**
-         * Create or update the oauth token into database
+         * Create or update the oauth token in database
          * @param $app_user_id - App\Models\AppUser id
          * @param $oauth_token - App\Models\OauthToken oauth token
          * @param $oauth_token_secret - App\Models\OauthToken oauth token secret

@@ -72,15 +72,14 @@ Route::controller(OrderController::class)->prefix('Order')->group(
     {  
         //Route::get('/Orders','SampleOrders');
 
-        
+        /*
         Route::get('/Orders','orders');
         Route::get('/Despatch','despatch');
+        */
         
-        
-        /*
         Route::post('/Orders','orders');
         Route::post('/Despatch','despatch');
-        */
+        
         
     }
 
@@ -125,7 +124,6 @@ Route::controller(ListingController::class)->prefix('Listing')->group(
         //Route::get('/CheckFeed','checkFeed');
         
         
-        Route::post('/PostSaleOptions','postSaleOptions');
         
         Route::post('/ListingUpdate','listingUpdate');
         Route::post('/ListingDelete','listingDelete');
