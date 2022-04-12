@@ -10,6 +10,9 @@ use App\Http\Controllers\discogs\ProductController as ProductController;
 use App\Http\Controllers\Discogs\ConfiguratorSettings as DiscogsConfiguratorSettings;
 
 use Carbon\Carbon;
+
+use Illuminate\Support\Facades\File;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,6 +26,26 @@ use Carbon\Carbon;
 
 Route::get('/',function(){
     return view('home');
+});
+
+Route::get('storage/{filename}',function($filename)
+{
+    $path = storage_path('app/public/'.$filename);
+
+    if(!File::exists($path))
+    {
+        abort(404);
+    }
+
+    $file = File::get($path);
+    $type = File::mimeType($path);
+
+    $response = Response::make($file,200);
+    $response->header("Content-Type",$type);
+
+    return $response;
+
+    //return response()->download(storage_path('app/public/'.$filename));
 });
 
 Route::get('/dashboard', function () {

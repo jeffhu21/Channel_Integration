@@ -72,13 +72,13 @@ Route::controller(OrderController::class)->prefix('Order')->group(
     {  
         //Route::get('/Orders','SampleOrders');
 
-        /*
+        
         Route::get('/Orders','orders');
         Route::get('/Despatch','despatch');
-        */
         
-        Route::post('/Orders','orders');
-        Route::post('/Despatch','despatch');
+        
+        //Route::post('/Orders','orders');
+        //Route::post('/Despatch','despatch');
         
         
     }
