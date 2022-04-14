@@ -86,52 +86,36 @@ class OrderController extends Controller
 
             //Split the shipping address to full name, address and phone number
             $str = $order->shipping_address;
-            $pos = strpos($str,"\n");
-            
-            if($pos != false)
+
+            $address = preg_split("/[\n]+/",$str,-1,PREG_SPLIT_NO_EMPTY);
+
+            if(isset($address[4]))
             {
-                $FullName = substr($str,0,$pos);
-                $str = substr($str,$pos+1);
+                $phone = preg_split("/:\s/",$address[4]);
             }
-
-            $phone_pos = stripos($str,"PHONE");
-
-            if($phone_pos != false)
+            else
             {
-                $address = substr($str,0,$phone_pos);
-                $str = substr($str,$phone_pos);
-                $pos=0;
-                
-                while(is_numeric(substr($str,$pos,1))!=1)
-                {
-                    $pos++;
-                }
-                $str=substr($str,$pos);
-
-                if($str != "")
-                {
-                    while(is_numeric(substr($str,$pos,1))==1||substr($str,$pos,1)=='-')
-                    {
-                        $pos++;
-                    }
-                    $PhoneNumber=substr($str,0,$pos);
-                    $other = substr($str,$pos);
-                }
-
+                $phone = '';
             }
 
             //Get the Order from Discogs and set the order to Linnworks
             $obj->order = [
-                'DeliveryAddress' => [$obj->address=
-                [
-                    'Address1' => str_replace("\n"," ",$address),
-                    'FullName' => $FullName,
-                    'PhoneNumber' => $PhoneNumber,
+                'DeliveryAddress' => 
+                [$obj->address=
+                    [
+                    
+                    
+                    'FullName' => (!isset($address[0]))?'':$address[0],
+                    'Address1' => (!isset($address[1]))?'':$address[1],
+                    'Town'=>(!isset($address[2]))?'':$address[2],
+                    'Country'=>(!isset($address[3]))?'':$address[3],
+                    'PhoneNumber' => (!isset($phone[1]))?'':$phone[1],
                     ],
                 ],
-                'BillingAddress' => [$obj->address=
-                [
-                    'Address1' => str_replace("\n"," ",$other),
+                'BillingAddress' => 
+                [$obj->address=
+                    [
+                    'Address1' => (!isset($address[5]))?'':$address[5],
                     ],
                 ],
                 'ChannelBuyerName' => $order->buyer->username,
