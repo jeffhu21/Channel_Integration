@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\discogs;
+namespace App\Http\Controllers\Discogs;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

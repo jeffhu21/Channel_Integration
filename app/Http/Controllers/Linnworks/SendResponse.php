@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\linnworks;
+namespace App\Http\Controllers\Linnworks;
 
 use Illuminate\Http\Request;
 

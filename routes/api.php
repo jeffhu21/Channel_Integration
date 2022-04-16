@@ -3,13 +3,13 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\discogs\OAuthController as OAuthController;
-use App\Http\Controllers\linnworks\AuthController as AuthController;
-use App\Http\Controllers\linnworks\ConfigController as ConfigController;
-use App\Http\Controllers\linnworks\OrderController as OrderController;
-use App\Http\Controllers\linnworks\ProductController as ProductController;
-use App\Http\Controllers\linnworks\ListingController as ListingController;
-use App\Http\Controllers\linnworks\ConfiguratorSettings as ConfiguratorSettings;
+use App\Http\Controllers\Discogs\OAuthController as OAuthController;
+use App\Http\Controllers\Linnworks\AuthController as AuthController;
+use App\Http\Controllers\Linnworks\ConfigController as ConfigController;
+use App\Http\Controllers\Linnworks\OrderController as OrderController;
+use App\Http\Controllers\Linnworks\ProductController as ProductController;
+use App\Http\Controllers\Linnworks\ListingController as ListingController;
+use App\Http\Controllers\Linnworks\ConfiguratorSettings as ConfiguratorSettings;
 
 /*
 |--------------------------------------------------------------------------

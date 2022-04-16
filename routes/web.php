@@ -2,10 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\discogs\OAuthController as OAuthController;
-use App\Http\Controllers\discogs\OrderController as OrderController;
-use App\Http\Controllers\discogs\ProductController as ProductController;
-//use App\Http\Controllers\linnworks\ConfigController as ConfigController;
+use App\Http\Controllers\Discogs\OAuthController as OAuthController;
+use App\Http\Controllers\Discogs\OrderController as OrderController;
+use App\Http\Controllers\Discogs\ProductController as ProductController;
+//use App\Http\Controllers\Linnworks\ConfigController as ConfigController;
 
 use App\Http\Controllers\Discogs\ConfiguratorSettings as DiscogsConfiguratorSettings;
 
@@ -28,6 +28,7 @@ Route::get('/',function(){
     return view('home');
 });
 
+/*
 Route::get('storage/{filename}',function($filename)
 {
     $path = storage_path('app/public/'.$filename);
@@ -47,24 +48,31 @@ Route::get('storage/{filename}',function($filename)
 
     //return response()->download(storage_path('app/public/'.$filename));
 });
+*/
+
+Route::get('/storage/{filename}',function($filename)
+{
+    $path = storage_path('app/public/'.$filename);
+    
+    if(!File::exists($path))
+    {
+        abort(404);
+    }
+    
+    header("Content-Type: image/png");
+    readfile($path);
+    
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-/*
-Route::get('/DiscogsOauth',function(){
-    return view('DiscogsOauth');
-})->middleware('auth')->name('DiscogsOauth');
-*/
-
-
 Route::controller(OAuthController::class)->group(
 
     function()
     {
-        //Route::get('/EmailTest/{email}','EmailTest')->name('EmailTest');
-
+     
         Route::get('/AppKey',function(){
             return view('AppKey');
         })->middleware('auth')->name('AppKey');
@@ -94,15 +102,44 @@ Route::controller(OAuthController::class)->group(
     }
 );
 
-//Testing
+Route::get('/ClearOption',function(){
+    return view('ClearOption');
+})->middleware('auth')->name('ClearOption');
 
-Route::get('/orders/{id}',[OrderController::class,'getOrderById']);
-Route::get('/list',[OrderController::class,'listOrders']);
+Route::prefix('ClearOption')->middleware('auth')->group(
+    function ()
+    {
+        Route::get('/RouteCache',function()
+        {
+            \Artisan::call('route:cache');
+            return view('ClearOption',['message'=>'Routes cache cleared!']);
+        })->name('RouteCache');
 
-Route::get('/inventory/{PageNumber}',[ProductController::class,'getInventory']);
+        Route::get('/ConfigCache',function()
+        {
+            \Artisan::call('config:cache');
+            return view('ClearOption',['message'=>'Config cache cleared!']);
+        })->name('ConfigCache');
 
-Route::get('/Testing/{PageNumber}/{app_user_id}',[DiscogsConfiguratorSettings::class,'searchDB']); //Tester
+        Route::get('/CacheClear',function()
+        {
+            \Artisan::call('cache:clear');
+            return view('ClearOption',['message'=>'Cache Clear success!']);
+        })->name('CacheClear');
 
+        Route::get('/ViewClear',function()
+        {
+            \Artisan::call('view:clear');
+            return view('ClearOption',['message'=>'View Clear success!']);
+        })->name('ViewClear');
+
+        Route::get('/OptimizeClear',function()
+        {
+            \Artisan::call('optimize:clear');
+            return view('ClearOption',['message'=>'Optimize Clear success!']);
+        })->name('OptimizeClear');
+    }
+);
 
 require __DIR__.'/auth.php';
 

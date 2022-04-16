@@ -20,8 +20,10 @@
         </style>
     </head>
 
+    
     <body class="antialiased">
-            
+
+
     <x-guest-layout>
     <x-auth-card>
 
@@ -35,38 +37,58 @@
 
             <div>
                 
-                <form method="POST" action='{{route("DiscogsOauth")}}' id="form1">
-
                     <fieldset id="field1">
 
-                        <legend class=" text-center text-lg">Discogs Oauth</legend>
-
-                        <div class=" text-center mt-3">Please enter the email in your Linnworks account</div>
+                        <legend class=" text-center text-lg">Please choose an option to clear the cache</legend>
                         
-                        @csrf
+                        
                         <div class="flex justify-center mt-6">
-
-                            <x-label for="app_user_email" :value="__('Email Address')" />
-
-                            <x-input id="app_user_email" class="block mt-1 w-full" type="text" name="app_user_email" />
+                            {{(isset($message))?$message:''}}
                         </div>
                         
+
+                        <div class="flex justify-center mt-6">
+                            <x-button class="ml-4">
+                                <a href="{{ route('RouteCache') }}">
+                                    {{ __('Route cache') }}
+                                </a>
+                            </x-button>
+                        </div>
+
+                        <div class="flex justify-center mt-6">
+                            <x-button class="ml-4">
+                                <a href="{{ route('ConfigCache') }}">
+                                        {{ __('Config cache') }}
+                                </a>
+                            </x-button>
+                        </div>
+
+                        <div class="flex justify-center mt-6">
+                            <x-button class="ml-4">
+                                <a href="{{ route('CacheClear') }}">
+                                        {{ __('Cache clear') }}
+                                </a>
+                            </x-button>
+                        </div>
+
+                        <div class="flex justify-center mt-6">
+                            <x-button class="ml-4">
+                                <a href="{{ route('ViewClear') }}">
+                                        {{ __('View clear') }}
+                                </a>
+                            </x-button>
+                        </div>
+
+                        <div class="flex justify-center mt-6">
+                            <x-button class="ml-4">
+                                <a href="{{ route('OptimizeClear') }}">
+                                        {{ __('Optimize clear') }}
+                                </a>
+                            </x-button>
+                        </div>
+
                     </fieldset>
 
-                </form>
-
-                <div class="flex justify-center mt-6">
-                    {{(isset($message))?$message:''}}
-                </div>
-
-                <div class="flex items-right justify-end mt-4">
-
-                        <x-button class="ml-4 h-10" id="step1" type="submit" form="form1">
-                            {{ __('Authenticate') }}
-                        </x-button>
-                        
-                </div>
-                
             </div>
         
         </x-auth-card>
