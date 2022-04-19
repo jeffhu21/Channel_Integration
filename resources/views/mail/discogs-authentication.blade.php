@@ -3,10 +3,10 @@
 
 Thank you for using Discogs Channel. 
 
-Please click the button below to complete the Discogs Authentication
+Please click the button below to authorize
 
 @component('mail::button', ['url' => $url])
-Authentication
+Authorize
 @endcomponent
 
 Thanks,<br>

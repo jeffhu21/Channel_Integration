@@ -25,8 +25,9 @@ class OrderController extends Controller
          * @param $app_user_id - App\Models\AppUser id 
          * @return [String: $error,HttpResponse->Orders]
     */
-    public function getOrderById($id,$app_user_id)
+    public static function getOrderById($id,$app_user_id)
     {
+        
         $dir = 'marketplace/orders/';
 
         $res = SendRequest::httpRequest('GET',$dir.$id,true,'',$app_user_id);
@@ -42,7 +43,7 @@ class OrderController extends Controller
             $stream=json_decode($res['Response']->getBody()->getContents());
         }
 
-        return ["Error"=>$error,"Order"=>$stream];
+        return ["Error"=>$error,"Orders"=>$stream];
     }
 
     /**

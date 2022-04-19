@@ -23,18 +23,21 @@ class Order
         'ChannelBuyerName'=>'',
         'ReferenceNumber'=>'', //Order ID in Discogs
         'ExternalReference'=>'',
-        'SecondaryReferenceNumber'=>'',
+        'SecondaryReferenceNumber'=>null,
         'Currency'=>'',
         'ReceivedDate'=>'',
         'DispatchBy'=>'',
         'PaidOn'=>'',
         'PostalServiceCost'=>'',
         'PostalServiceTaxRate'=>'',
+        'UseChannelTax' => false
         //Please see the DiscountType enum for an explanation on how to use the DiscountType and Discount fields to apply a top-level discount to orders
+        /*
         'DiscountType'=>'',
         'Discount'=>'',
         'MarketplaceTaxId' =>'',
         'MarketplaceIoss'=>'',
+        */
 
     ];
 
@@ -70,7 +73,7 @@ class Order
     'PricePerUnit'=>'',
     'Qty'=>'',
     'TaxRate'=>'',
-    'LinePercentDiscount'=>0,
+    'LinePercentDiscount'=>0.0,
     'ItemTitle'=>'',
     'Options'=>[],
 

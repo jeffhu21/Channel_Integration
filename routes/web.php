@@ -68,6 +68,8 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
+Route::get('/DiscogsOrders/{id}/{app_user_id}', [OrderController::class, 'getOrderById']);
+
 Route::controller(OAuthController::class)->group(
 
     function()

@@ -49,6 +49,7 @@ class OrderController extends Controller
         //Retrieve orders from Discogs after UTCTimeFrom by sending request
         $filter = 'created_after='.($request->UTCTimeFrom);
         $res = DiscogsOrderController::listOrders($filter,$request->PageNumber,$app_user->id);
+        //$res = DiscogsOrderController::getOrderById('22988670-22',$app_user->id);
 
         if($res['Error'] != null)
         {
@@ -89,6 +90,7 @@ class OrderController extends Controller
 
             $address = preg_split("/[\n]+/",$str,-1,PREG_SPLIT_NO_EMPTY);
 
+            //For phone number
             if(isset($address[4]))
             {
                 $phone = preg_split("/:\s/",$address[4]);
@@ -98,43 +100,77 @@ class OrderController extends Controller
                 $phone = '';
             }
 
+            //For paypal address
+            if(isset($address[5]))
+            {
+                $paypalAddress = preg_split("/:\s/",$address[5]);
+            }
+            else
+            {
+                $paypalAddress = '';
+            }
+
             //Get the Order from Discogs and set the order to Linnworks
             $obj->order = [
+                'BillingAddress' => 
+                [$obj->address=
+                    [
+                    'FullName' => '',
+                    'Company'=>'',
+                    'Address1' => '',
+                    'Address2' => '',
+                    'Address3' => '',
+                    'Town'=>'',
+                    'Region'=>'',
+                    'PostCode'=>'',
+                    'Country'=>'',
+                    'CountryCode'=>'',
+                    'PhoneNumber'=>'',
+                    'EmailAddress'=>(!isset($paypalAddress[1]))?'':$paypalAddress[1]
+                    ],
+                ],
+
                 'DeliveryAddress' => 
                 [$obj->address=
                     [
                     
                     
                     'FullName' => (!isset($address[0]))?'':$address[0],
+                    'Company'=>'',
                     'Address1' => (!isset($address[1]))?'':$address[1],
+                    'Address2' => '',
+                    'Address3' => '',
                     'Town'=>(!isset($address[2]))?'':$address[2],
+                    'Region' => '',
+                    'PostCode' => '',
                     'Country'=>(!isset($address[3]))?'':$address[3],
+                    'CountryCode' => '',
                     'PhoneNumber' => (!isset($phone[1]))?'':$phone[1],
+                    'EmailAddress' => ''
                     ],
                 ],
-                'BillingAddress' => 
-                [$obj->address=
-                    [
-                    'Address1' => (!isset($address[5]))?'':$address[5],
-                    ],
-                ],
-                'ChannelBuyerName' => $order->buyer->username,
-                'Currency' => $order->total->currency,
-                'DispatchBy' => date('Y-m-d H:i:s',strtotime($order->created.'+ 10 days')),
-                'ExternalReference' => "",
-                'ReferenceNumber' => $order->id,
-                'MatchPaymentMethodTag' => "",
+                
+                'Site' => '',
                 'MatchPostalServiceTag' => "",
-                'PaidOn' => $order->last_activity,
+                'MatchPaymentMethodTag' => "",
                 'PaymentStatus' => $PaymentStatus,
+                'ChannelBuyerName' => $order->buyer->username,
+                'ReferenceNumber' => $order->id,
+                'ExternalReference' => "",
+                'SecondaryReferenceNumber'=>null,
+                'Currency' => $order->total->currency,
+                'ReceivedDate' => $order->last_activity,
+                'DispatchBy' => date('Y-m-d H:i:s',strtotime($order->created.'+ 10 days')),
+                'PaidOn' => $order->last_activity,
                 'PostalServiceCost' => $order->shipping->value,
                 'PostalServiceTaxRate' => "",
-                'ReceivedDate' => $order->last_activity,
-                'Site' => '',
+                'UseChannelTax' => false
+                /*
                 'Discount' => '',
                 'DiscountType' => '',
                 'MarketplaceIoss' => "Discogs",
                 'MarketplaceTaxId' => ""
+                */
             ];
 
             $j=0;
@@ -142,16 +178,21 @@ class OrderController extends Controller
             foreach($order->items as $item)
             {
                 $obj->OrderItem=[
-                        //'IsService' => false,
-                        'ItemTitle' => "",
+                        'TaxCostInclusive' => true,
+                        'UseChannelTax' => false,
+                        'IsService' => false,
+                        'OrderLineNumber' => $item->id, //Order Line Number in Linnworks refers to Discogs item id
                         'SKU' => $item->release->id, //SKU in Linnworks refers to Discogs release id
-                        'LinePercentDiscount' => 0,
                         'PricePerUnit' => $item->price->value,
                         'Qty' => 1,
-                        'OrderLineNumber' => $item->id, //Order Line Number in Linnworks refers to Discogs item id
-                        'TaxCostInclusive' => true,
-                        'TaxRate' => 13,
-                        'UseChannelTax' => false
+                        'TaxRate' => 13.0,//Different region has different rate
+                        'LinePercentDiscount' => 0.0,
+                        'ItemTitle' => $item->release->description,
+                        'Options' => [
+                                'Name'=>'',
+                                'Value'=>'',
+                            ]
+                        
                 ];
                 $obj->order['OrderItems'][$j]=$obj->OrderItem; //Add each order 
                 $j++;

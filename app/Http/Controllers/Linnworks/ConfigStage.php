@@ -208,6 +208,12 @@ class ConfigStage
                     'ListValues'=>[
                         $setting->ListValue =
                         [
+                            'Display'=>'Version 1',
+                            'Value' => '1'
+                        ],
+                        /*
+                        $setting->ListValue =
+                        [
                             'Display'=>'Version 1.1',
                             'Value' => '1.1'
                         ],
@@ -281,11 +287,11 @@ class ConfigStage
                             'Display'=>'Version 3.5',
                             'Value' => '3.5'
                         ],
-                        
+                        */
                     ],
                     'RegExValidation'=>null,
                     'RegExError'=>null
-
+                    
                 ]
             ],      
         ];
