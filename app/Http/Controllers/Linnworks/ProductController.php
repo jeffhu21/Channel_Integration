@@ -57,6 +57,11 @@ class ProductController extends Controller
         //Loop each product of $res['Products']->listings from Discogs and push to Linnworks $products array
         foreach ($res['Products']->listings as $product) 
         {
+            //push product with draft, for sale or expired status to Linnworks
+            if($product->status == 'Draft' || $product->status == 'For Sale' || $product->status == 'Expired')
+            {
+
+            
             $obj = new Product();
 
             $obj->product = [
@@ -64,10 +69,12 @@ class ProductController extends Controller
                 'SKU'=>$product->release->id, //SKU in Linnworks refers to Discogs release id
                 'Title'=>$product->release->title,
                 'Price'=>$product->price->value,
-                'Quantity'=>$product->format_quantity,
+                //'Quantity'=>$product->format_quantity,
+                'Quantity'=>$product->quantity,
                 'Reference'=>$product->id //Reference in Linnworks refers to Discogs product id
             ];
             array_push($products,$obj->product);
+            }
         }  
 
         return SendResponse::httpResponse(['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Products']->pagination->pages,'Products'=>$products]);
@@ -80,7 +87,8 @@ class ProductController extends Controller
     */
     public function inventoryUpdate(Request $request)
     {
-        $request_products=$request->input('Products');
+        //$request_products=$request->input('Products');
+        $request_products = json_decode($request->input('Products'));
     
         if($request->Products == null || count($request_products) == 0)
         {
@@ -119,7 +127,7 @@ class ProductController extends Controller
                 $error = $error.$res['Error']."\n";
                 //$UpdateInventory = $UpdateInventory.$res["SKU"].", ";   
                 //$inventory_product['Error'] = $res['Error'];
-                $inventory_product['Error'] = 'SKU does not exist';
+                $inventory_product['Error'] = 'SKU updates failed';
                 $inventory_product['SKU'] = $res['SKU'];
 
                 array_push($UpdateFailedProducts,$inventory_product);

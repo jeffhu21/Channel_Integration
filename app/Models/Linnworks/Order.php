@@ -19,6 +19,9 @@ class Order
         'MatchPaymentMethodTag'=>'',
         
 
+        //'OrderId'=>'', //Added order id
+        'OrderStatus'=>'', //Added order status
+        
         'PaymentStatus'=>'',
         'ChannelBuyerName'=>'',
         'ReferenceNumber'=>'', //Order ID in Discogs

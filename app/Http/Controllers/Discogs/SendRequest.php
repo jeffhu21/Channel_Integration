@@ -134,7 +134,7 @@ class SendRequest
                     break;
                 
             }
-            if($res->getStatusCode()!=200 && $res->getStatusCode()!=201 && $res != null)
+            if($res->getStatusCode()!=200 && $res->getStatusCode()!=201 && $res->getStatusCode()!=204)
             {
                 $error=$res->getStatusCode()." and " .$res->getReasonPhrase();
             }
@@ -152,14 +152,15 @@ class SendRequest
         {
             $error = $ex->getMessage();
         }
+        
         finally
         {
             if($res == null)
-            {
-                $error = 'Something Wrong';
-               
+            {        
+                $error = 'Something Wrong'; 
             }
         }
+        
         return ["Error"=>$error,"Response"=>$res];
     }
 }

@@ -35,6 +35,7 @@ class UserConfigSetting
         'Boolean'=>'BOOLEAN',
         'Password'=>'PASSWORD',
         'List'=>'LIST',
+        'Guid'=>'GUID'
     ];
 
     public $ListItem =[

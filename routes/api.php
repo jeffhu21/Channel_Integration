@@ -78,6 +78,7 @@ Route::controller(OrderController::class)->prefix('Order')->group(
         
         
         Route::post('/Orders','orders');
+        //Route::post('/Orders','OneOrder');
         Route::post('/Despatch','despatch');
         
         

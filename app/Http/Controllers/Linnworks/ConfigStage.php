@@ -361,7 +361,41 @@ class ConfigStage
             'StepName'=> "UserConfig",
             'WizardStepTitle'=> "UserConfig",
             'WizardStepDescription'=> "User Config",
-            'ConfigItems' => [$setting->ConfigItem =
+            'ConfigItems' => [
+                $setting->ConfigItem = 
+                [
+                    'ConfigItemId'=> "SellerId",
+                    'Description' => 'Enter the seller Id',
+                    'GroupName'=>'Account',
+
+                    'MustBeSpecified'=> false,
+                    'Name'=> "Seller Id",
+                    'ReadOnly'=> false,
+                    'SelectedValue'=> $user->UserId ?? '',
+                    'SortOrder'=> 1,
+                    'ValueType'=> $setting->ConfigValueType['Guid'],
+                    'ListValues'=>[],
+                    'RegExValidation'=>null,
+                    'RegExError'=>null
+                ],
+                $setting->ConfigItem = 
+                [
+                    'ConfigItemId'=> "Marketplace",
+                    'Description' => 'Channel Name',
+                    'GroupName'=>'Account',
+
+                    'MustBeSpecified'=> false,
+                    'Name'=> "Marketplace",
+                    'ReadOnly'=> false,
+                    'SelectedValue'=> 'DISCOGSINTEGRATION',
+                    'SortOrder'=> 1,
+                    'ValueType'=> $setting->ConfigValueType['String'],
+                    'ListValues'=>[],
+                    'RegExValidation'=>null,
+                    'RegExError'=>null
+                ],
+                /*
+                $setting->ConfigItem =
                 [
                     'ConfigItemId'=> "IsOauth",
                     'Description'=> "Defines if the authentication type is Oauth",
@@ -376,6 +410,7 @@ class ConfigStage
                     'RegExValidation'=>null,
                     'RegExError'=>null
                 ],
+                */
                 $setting->ConfigItem =
                 [
                     'ConfigItemId'=> "PriceIncTax",

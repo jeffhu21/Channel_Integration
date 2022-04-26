@@ -48,8 +48,7 @@ class OrderController extends Controller
         //Could be converted to different time zone
         //Retrieve orders from Discogs after UTCTimeFrom by sending request
         $filter = 'created_after='.($request->UTCTimeFrom);
-        $res = DiscogsOrderController::listOrders($filter,$request->PageNumber,$app_user->id);
-        //$res = DiscogsOrderController::getOrderById('22988670-22',$app_user->id);
+        $res = DiscogsOrderController::listOrders($request->PageNumber,$app_user->id,$filter);
 
         if($res['Error'] != null)
         {
@@ -58,8 +57,7 @@ class OrderController extends Controller
         }
         $stream = $res['Orders'];
 
-        //Set Default Status Unpaid
-        $PaymentStatus=$this->paymentStatus['Unpaid'];
+        
 
         /** 
          * $order - one order from Discogs
@@ -71,84 +69,153 @@ class OrderController extends Controller
         //Loop each order of $stream->orders from Discogs and push to Linnworks $orders array
         foreach ($stream->orders as $order) 
         {
-            //Set the payment status
-            if($order->status == 'Payment Received'||
-            $order->status == 'Shipped'||
-            $order->status == 'Invoice Sent')
+            //Not push order with shipped status to Linnworks
+            if($order->status != 'Shipped')
             {
-                $PaymentStatus=$this->paymentStatus['Paid'];
+                array_push($orders,$this->mapOrder($order));
             }
-            else if(str_contains($order->status,'Cancelled'))
-            {
-                $PaymentStatus=$this->paymentStatus['Cancelled'];
-            }
+            
+        }
+        return SendResponse::httpResponse(['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Orders']->pagination->pages,'Orders'=>$orders]);
+    }
 
-            $obj = new Order();
+    public function OneOrder(Request $request)
+    {
+        if ($request->PageNumber <= 0)
+        {
+            return ['Error' => "Invalid page number"];
+        }
 
-            //Split the shipping address to full name, address and phone number
-            $str = $order->shipping_address;
+        $result = AppUserAccess::getUserByToken($request);
 
-            $address = preg_split("/[\n]+/",$str,-1,PREG_SPLIT_NO_EMPTY);
+        if($result['Error'] != null)
+        {
+            return $result['Error'];
+        }
+        
+        $app_user = $result['User'];
 
-            //For phone number
-            if(isset($address[4]))
-            {
-                $phone = preg_split("/:\s/",$address[4]);
-            }
-            else
-            {
-                $phone = '';
-            }
+        $error = null;
 
-            //For paypal address
-            if(isset($address[5]))
-            {
-                $paypalAddress = preg_split("/:\s/",$address[5]);
-            }
-            else
-            {
-                $paypalAddress = '';
-            }
+        //Could be converted to different time zone
+        //Retrieve orders from Discogs after UTCTimeFrom by sending request
+        $filter = 'created_after='.($request->UTCTimeFrom);
+        $id = '2988670-22';
+        $res = DiscogsOrderController::getOrderById($id,$app_user->id);
 
-            //Get the Order from Discogs and set the order to Linnworks
-            $obj->order = [
-                'BillingAddress' => 
-                [$obj->address=
-                    [
-                    'FullName' => '',
-                    'Company'=>'',
-                    'Address1' => '',
-                    'Address2' => '',
-                    'Address3' => '',
-                    'Town'=>'',
-                    'Region'=>'',
-                    'PostCode'=>'',
-                    'Country'=>'',
-                    'CountryCode'=>'',
-                    'PhoneNumber'=>'',
-                    'EmailAddress'=>(!isset($paypalAddress[1]))?'':$paypalAddress[1]
-                    ],
+        if($res['Error'] != null)
+        {
+            $error = $res['Error'];
+            return ['Error'=>$error];
+        }
+        $stream = $res['Orders'];
+
+        /** 
+         * $order - one order from Discogs
+         * $obj - one order pushing to Linnworks
+         * $orders - array of orders pushing to Linnworks
+         */
+        $orders = [];
+ 
+        //Not push order with shipped status to Linnworks
+        if($stream->status != 'Shipped')
+        {
+            array_push($orders,$this->mapOrder($stream));
+        }
+
+        return SendResponse::httpResponse(['Error'=>$error,'HasMorePages'=>false,'Orders'=>$orders]);
+    }
+
+    //$order - Discogs Order
+    //Return Linnworks Order
+    public function mapOrder($order)
+    {
+        //$PaymentStatus=$this->paymentStatus['Unpaid'];
+
+        //Set the payment status
+        if($order->status == 'Payment Received')
+        {
+            $PaymentStatus=$this->paymentStatus['Paid'];
+        }
+        else if(str_contains($order->status,'Cancelled'))
+        {
+            $PaymentStatus=$this->paymentStatus['Cancelled'];
+        }
+        else
+        {
+            //Set Default Status Unpaid
+            $PaymentStatus=$this->paymentStatus['Unpaid'];
+        }
+
+        $obj = new Order();
+
+        //Split the shipping address to full name, address and phone number
+        $str = $order->shipping_address;
+
+        $address = preg_split("/[\n]+/",$str,-1,PREG_SPLIT_NO_EMPTY);
+
+        //For phone number
+        if(isset($address[4]))
+        {
+            $phone = preg_split("/:\s/",$address[4]);
+        }
+        else
+        {
+            $phone = '';
+        }
+
+        //For paypal address
+        if(isset($address[5]))
+        {
+            $paypalAddress = preg_split("/:\s/",$address[5]);
+        }
+        else
+        {
+            $paypalAddress = '';
+        }
+
+        //Get the Order from Discogs and set the order to Linnworks
+        $obj->order = [
+            'BillingAddress' => 
+            $obj->address=
+                [
+                'FullName' => '',
+                'Company'=>'',
+                'Address1' => '',
+                'Address2' => '',
+                'Address3' => '',
+                'Town'=>'',
+                'Region'=>'',
+                'PostCode'=>'',
+                'Country'=>'',
+                'CountryCode'=>'',
+                'PhoneNumber'=>'',
+                'EmailAddress'=>(!isset($paypalAddress[1]))?'':$paypalAddress[1]
                 ],
+            
 
-                'DeliveryAddress' => 
-                [$obj->address=
-                    [
-                    
-                    
-                    'FullName' => (!isset($address[0]))?'':$address[0],
-                    'Company'=>'',
-                    'Address1' => (!isset($address[1]))?'':$address[1],
-                    'Address2' => '',
-                    'Address3' => '',
-                    'Town'=>(!isset($address[2]))?'':$address[2],
-                    'Region' => '',
-                    'PostCode' => '',
-                    'Country'=>(!isset($address[3]))?'':$address[3],
-                    'CountryCode' => '',
-                    'PhoneNumber' => (!isset($phone[1]))?'':$phone[1],
-                    'EmailAddress' => ''
-                    ],
+            'DeliveryAddress' => 
+            $obj->address=
+                [
+                
+                
+                'FullName' => (!isset($address[0]))?'':$address[0],
+                'Company'=>'',
+                'Address1' => (!isset($address[1]))?'':$address[1],
+                'Address2' => '',
+                'Address3' => '',
+                'Town'=>(!isset($address[2]))?'':$address[2],
+                'Region' => '',
+                'PostCode' => '',
+                'Country'=>(!isset($address[3]))?'':$address[3],
+                'CountryCode' => '',
+                'PhoneNumber' => (!isset($phone[1]))?'':$phone[1],
+                'EmailAddress' => ''
                 ],
+            
+            
+                //'OrderId'=>$order->id, //Added
+                'OrderStatus'=> $order->status,//Added
                 
                 'Site' => '',
                 'MatchPostalServiceTag' => "",
@@ -159,90 +226,107 @@ class OrderController extends Controller
                 'ExternalReference' => "",
                 'SecondaryReferenceNumber'=>null,
                 'Currency' => $order->total->currency,
+                
                 'ReceivedDate' => $order->last_activity,
                 'DispatchBy' => date('Y-m-d H:i:s',strtotime($order->created.'+ 10 days')),
                 'PaidOn' => $order->last_activity,
+                
+                /*
+                'ReceivedDate' => date('Y-m-d H:i:s',strtotime($order->last_activity)),
+                'DispatchBy' => date('Y-m-d H:i:s',strtotime($order->created.'+ 10 days')),
+                'PaidOn' => date('Y-m-d H:i:s',strtotime($order->last_activity)),
+                */
                 'PostalServiceCost' => $order->shipping->value,
                 'PostalServiceTaxRate' => "",
                 'UseChannelTax' => false
-                /*
-                'Discount' => '',
-                'DiscountType' => '',
-                'MarketplaceIoss' => "Discogs",
-                'MarketplaceTaxId' => ""
-                */
-            ];
+            /*
+            'Discount' => '',
+            'DiscountType' => '',
+            'MarketplaceIoss' => "Discogs",
+            'MarketplaceTaxId' => ""
+            */
+        ];
 
-            $j=0;
+        $j=0;
 
-            foreach($order->items as $item)
+        foreach($order->items as $item)
+        {
+            $res = DiscogsOrderController::getReleaseTitle($item->release->id);
+
+            if($res['Error'] != null)
             {
-                $obj->OrderItem=[
-                        'TaxCostInclusive' => true,
-                        'UseChannelTax' => false,
-                        'IsService' => false,
-                        'OrderLineNumber' => $item->id, //Order Line Number in Linnworks refers to Discogs item id
-                        'SKU' => $item->release->id, //SKU in Linnworks refers to Discogs release id
-                        'PricePerUnit' => $item->price->value,
-                        'Qty' => 1,
-                        'TaxRate' => 13.0,//Different region has different rate
-                        'LinePercentDiscount' => 0.0,
-                        'ItemTitle' => $item->release->description,
-                        'Options' => [
+                $title = '';
+            }
+            else
+            {
+                $title = $res['Titles'];
+            }
+            
+            $obj->OrderItem=[
+                    'TaxCostInclusive' => true,
+                    'UseChannelTax' => false,
+                    'IsService' => false,
+                    'OrderLineNumber' => $item->id, //Order Line Number in Linnworks refers to Discogs item id
+                    'SKU' => $item->release->id, //SKU in Linnworks refers to Discogs release id
+                    'PricePerUnit' => number_format($item->price->value,2),
+                    //'PricePerUnit' => $item->price->value,
+                    'Qty' => 1,
+                    'TaxRate' => 13.0,//Different region has different rate
+                    'LinePercentDiscount' => 0.0,
+                    'ItemTitle' => $title,
+                    'Options' => [
+                            [
                                 'Name'=>'',
                                 'Value'=>'',
                             ]
-                        
-                ];
-                $obj->order['OrderItems'][$j]=$obj->OrderItem; //Add each order 
-                $j++;
-            }
-
-            $randProps = rand(0, 2);
-            $randNotes = rand(0, 2);
-
-            for ($a = 0; $a < $randProps; $a++)
-            {
-                $obj->OrderExtendedProperty=[
-                    'Name' => "Prop".$a, 
-                    'Type' => "Info", 
-                    'Value' => "Val".$a
-                ];
-                $obj->order['ExtendedProperties'][$a]=$obj->OrderExtendedProperty;
-            }
-
-            for ($a = 0; $a < $randNotes; $a++)
-            {
-                $obj->OrderNote=[
-                    'IsInternal' => false,
-                    'Note' => "Note - ".$a,
-                    'NoteEntryDate' => now(),
-                    'NoteUserName' => "Channel"
-                ];
-                $obj->order['Notes'][$a]=$obj->OrderNote;
-            }
-
-                /*
-                $obj->OrderExtendedProperty=[
-                    'Name' => "Prop".$order->tracking->career, 
-                    'Type' => "Tracking Number", 
-                    'Value' => $order->tracking->number
-                ];
-                $obj->order['ExtendedProperties']=$obj->OrderExtendedProperty;
-        
-                $obj->OrderNote=[
-                    'IsInternal' => false,
-                    'Note' => "Note - ",
-                    'NoteEntryDate' => now(),
-                    'NoteUserName' => "Channel"
-                ];
-                $obj->order['Notes']=$obj->OrderNote;
-                */
-            
-            array_push($orders,$obj->order);
-            
+                        ]
+                    
+            ];
+            $obj->order['OrderItems'][$j]=$obj->OrderItem; //Add each order 
+            $j++;
         }
-        return SendResponse::httpResponse(['Error'=>$error,'HasMorePages'=>$request->PageNumber < $res['Orders']->pagination->pages,'Orders'=>$orders]);
+
+        $randProps = rand(0, 2);
+        $randNotes = rand(0, 2);
+
+        for ($a = 0; $a < $randProps; $a++)
+        {
+            $obj->OrderExtendedProperty=[
+                'Name' => "Prop".$a, 
+                'Type' => "Info", 
+                'Value' => "Val".$a
+            ];
+            $obj->order['ExtendedProperties'][$a]=$obj->OrderExtendedProperty;
+        }
+
+        for ($a = 0; $a < $randNotes; $a++)
+        {
+            $obj->OrderNote=[
+                'IsInternal' => false,
+                'Note' => "Note - ".$a,
+                'NoteEntryDate' => now(),
+                'NoteUserName' => "Channel"
+            ];
+            $obj->order['Notes'][$a]=$obj->OrderNote;
+        }
+
+            /*
+            $obj->OrderExtendedProperty=[
+                'Name' => "Prop".$order->tracking->career, 
+                'Type' => "Tracking Number", 
+                'Value' => $order->tracking->number
+            ];
+            $obj->order['ExtendedProperties']=$obj->OrderExtendedProperty;
+    
+            $obj->OrderNote=[
+                'IsInternal' => false,
+                'Note' => "Note - ",
+                'NoteEntryDate' => now(),
+                'NoteUserName' => "Channel"
+            ];
+            $obj->order['Notes']=$obj->OrderNote;
+            */
+            return $obj->order;
     }
 
     /**

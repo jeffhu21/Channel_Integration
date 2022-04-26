@@ -68,6 +68,17 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
+
+Route::get('/test',function()
+{
+    //return Carbon::now()->addDays(30);
+    //return now();
+    $date = '2022-03-25T09:43:22-07:00';
+    $dateFormat = new DateTime($date);
+    return $dateFormat;
+});
+
+
 Route::get('/DiscogsOrders/{id}/{app_user_id}', [OrderController::class, 'getOrderById']);
 
 Route::controller(OAuthController::class)->group(

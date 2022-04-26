@@ -19,6 +19,32 @@ use App\Http\Controllers\Discogs\SendRequest as SendRequest;
 
 class OrderController extends Controller
 {
+
+    /**
+         * Retrieve Release Title from Discogs by Release ID
+         * @param $id - release id
+         * @return [String: $error,HttpResponse->Title]
+    */
+    public static function getReleaseTitle($id)
+    {
+        $dir = 'releases/'.$id;
+
+        $res = SendRequest::httpRequest('GET',$dir,true);
+
+        $error=null;
+        $stream=null;
+        if($res['Error'] != null)
+        {
+            $error = $res['Error'];
+        }
+        else
+        {
+            $stream=json_decode($res['Response']->getBody()->getContents());
+        }
+
+        return ["Error"=>$error,"Titles"=>$stream->title];
+    }
+
     /**
          * Retrieve Orders from Discogs by ID
          * @param $id - order id
@@ -53,7 +79,7 @@ class OrderController extends Controller
          * @param $app_user_id - App\Models\AppUser id 
          * @return [String: $error,HttpResponse->Orders]
     */
-    public static function listOrders($filter='',$PageNumber,$app_user_id)
+    public static function listOrders($PageNumber,$app_user_id,$filter='')
     {
         $dir = 'marketplace/orders?';
 

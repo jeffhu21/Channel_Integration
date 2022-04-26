@@ -70,10 +70,16 @@ class ProductController extends Controller
         $error = null;
         $dir = 'marketplace/listings/';
 
+        /*
         $listing_id = $product['Reference'];
         $release_id = $product['SKU'];
+        $q = ['release_id'=>$release_id,'quantity'=>$product['Quantity']];
+        */
 
-        $q = ['release_id'=>$release_id,'format_quantity'=>$product['Quantity']];
+        $listing_id = $product->Reference;
+        $release_id = $product->SKU;
+        $q = ['release_id'=>$release_id,'quantity'=>$product->Quantity];
+
 
         $res = SendRequest::httpRequest('POST',$dir.$listing_id,true,$q,$app_user_id);
 
