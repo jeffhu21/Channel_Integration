@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 */
 
 use App\Http\Controllers\Discogs\OAuthController as OAuthController;
+use App\Http\Controllers\Discogs\OrderController as OrderController;
 use App\Http\Controllers\Discogs\SendRequest as SendRequest;
 
 //use App\Models\OauthToken as OauthToken;
@@ -72,14 +73,25 @@ class ProductController extends Controller
 
         /*
         $listing_id = $product['Reference'];
-        $release_id = $product['SKU'];
+        $catno = $product['SKU'];
         $q = ['release_id'=>$release_id,'quantity'=>$product['Quantity']];
         */
 
         $listing_id = $product->Reference;
-        $release_id = $product->SKU;
-        $q = ['release_id'=>$release_id,'quantity'=>$product->Quantity];
+        $catno = $product->SKU;
 
+        $result=OrderController::getListingById($listing_id,$app_user_id);
+
+        if($result['Error'] != null)
+        {
+            $release_id = '';
+        }
+        else
+        {
+            $release_id = $result['Listing']->release->id;
+        }
+
+        $q = ['release_id'=>$release_id,'quantity'=>$product->Quantity];
 
         $res = SendRequest::httpRequest('POST',$dir.$listing_id,true,$q,$app_user_id);
 
@@ -88,7 +100,7 @@ class ProductController extends Controller
             $error = $res['Error'];
         }
 
-        return ["Error"=>$error,"SKU"=>$release_id];
+        return ["Error"=>$error,"SKU"=>$catno];
 
     }
 
@@ -103,10 +115,27 @@ class ProductController extends Controller
         $error = null;
         $dir = 'marketplace/listings/';
 
+        /*
         $listing_id = $product['Reference'];
-        $release_id = $product['SKU'];
+        $catno = $product['SKU'];
+        $q = ['release_id'=>$release_id,'quantity'=>$product['Quantity']];
+        */
 
-        $q = ['release_id'=>$release_id,'price'=>$product['Price']];
+        $listing_id = $product->Reference;
+        $catno = $product->SKU;
+
+        $result=OrderController::getListingById($listing_id,$app_user_id);
+
+        if($result['Error'] != null)
+        {
+            $release_id = '';
+        }
+        else
+        {
+            $release_id = $result['Listing']->release->id;
+        }
+
+        $q = ['release_id'=>$release_id,'quantity'=>$product->Quantity];
 
         $res = SendRequest::httpRequest('POST',$dir.$listing_id,true,$q,$app_user_id);
 
@@ -115,7 +144,7 @@ class ProductController extends Controller
             $error = $res['Error'];
         }
 
-        return ["Error"=>$error,"SKU"=>$release_id];
+        return ["Error"=>$error,"SKU"=>$catno];
     }
 
     /**

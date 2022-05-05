@@ -20,7 +20,7 @@ class Order
         
 
         //'OrderId'=>'', //Added order id
-        'OrderStatus'=>'', //Added order status
+        //'OrderStatus'=>'', //Added order status
         
         'PaymentStatus'=>'',
         'ChannelBuyerName'=>'',

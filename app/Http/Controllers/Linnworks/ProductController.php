@@ -66,7 +66,7 @@ class ProductController extends Controller
 
             $obj->product = [
                 
-                'SKU'=>$product->release->id, //SKU in Linnworks refers to Discogs release id
+                'SKU'=>$product->release->catalog_number, //SKU in Linnworks refers to Discogs release catalog number
                 'Title'=>$product->release->title,
                 'Price'=>$product->price->value,
                 //'Quantity'=>$product->format_quantity,

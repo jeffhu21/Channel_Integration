@@ -10,6 +10,8 @@ use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
 use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 use App\Models\Linnworks\Order as Order;
 
+use Carbon\Carbon;
+
 //use App\Models\OauthToken as OauthToken;
 
 class OrderController extends Controller
@@ -72,7 +74,7 @@ class OrderController extends Controller
             //Not push order with shipped status to Linnworks
             if($order->status != 'Shipped')
             {
-                array_push($orders,$this->mapOrder($order));
+                array_push($orders,$this->mapOrder($order,$app_user->id));
             }
             
         }
@@ -120,7 +122,7 @@ class OrderController extends Controller
         //Not push order with shipped status to Linnworks
         if($stream->status != 'Shipped')
         {
-            array_push($orders,$this->mapOrder($stream));
+            array_push($orders,$this->mapOrder($stream,$app_user->id));
         }
 
         return SendResponse::httpResponse(['Error'=>$error,'HasMorePages'=>false,'Orders'=>$orders]);
@@ -128,7 +130,7 @@ class OrderController extends Controller
 
     //$order - Discogs Order
     //Return Linnworks Order
-    public function mapOrder($order)
+    public function mapOrder($order,$app_user_id)
     {
         //$PaymentStatus=$this->paymentStatus['Unpaid'];
 
@@ -215,7 +217,7 @@ class OrderController extends Controller
             
             
                 //'OrderId'=>$order->id, //Added
-                'OrderStatus'=> $order->status,//Added
+                //'OrderStatus'=> $order->status,//Added
                 
                 'Site' => '',
                 'MatchPostalServiceTag' => "",
@@ -251,23 +253,27 @@ class OrderController extends Controller
 
         foreach($order->items as $item)
         {
-            $res = DiscogsOrderController::getReleaseTitle($item->release->id);
+            //$res = DiscogsOrderController::getReleaseTitle($item->release->id);
+            $res = DiscogsOrderController::getListingById($item->id,$app_user_id);
 
             if($res['Error'] != null)
             {
                 $title = '';
+                $catno = '';
             }
             else
             {
-                $title = $res['Titles'];
+                $title = $res['Listing']->release->title;
+                $catno = $res['Listing']->release->catalog_number;
             }
+            
             
             $obj->OrderItem=[
                     'TaxCostInclusive' => true,
                     'UseChannelTax' => false,
                     'IsService' => false,
                     'OrderLineNumber' => $item->id, //Order Line Number in Linnworks refers to Discogs item id
-                    'SKU' => $item->release->id, //SKU in Linnworks refers to Discogs release id
+                    'SKU' => $catno, //SKU in Linnworks refers to Discogs release catno
                     'PricePerUnit' => number_format($item->price->value,2),
                     //'PricePerUnit' => $item->price->value,
                     'Qty' => 1,
@@ -286,6 +292,7 @@ class OrderController extends Controller
             $j++;
         }
 
+        /*
         $randProps = rand(0, 2);
         $randNotes = rand(0, 2);
 
@@ -309,24 +316,29 @@ class OrderController extends Controller
             ];
             $obj->order['Notes'][$a]=$obj->OrderNote;
         }
+        */
 
-            /*
-            $obj->OrderExtendedProperty=[
-                'Name' => "Prop".$order->tracking->career, 
-                'Type' => "Tracking Number", 
-                'Value' => $order->tracking->number
-            ];
-            $obj->order['ExtendedProperties']=$obj->OrderExtendedProperty;
-    
-            $obj->OrderNote=[
-                'IsInternal' => false,
-                'Note' => "Note - ",
-                'NoteEntryDate' => now(),
-                'NoteUserName' => "Channel"
-            ];
-            $obj->order['Notes']=$obj->OrderNote;
-            */
-            return $obj->order;
+            
+        $obj->OrderExtendedProperty=[
+            [
+            'Name' => "", 
+            'Type' => "", 
+            'Value' => ""
+            ]
+        ];
+        $obj->order['ExtendedProperties']=$obj->OrderExtendedProperty;
+
+        $obj->OrderNote=[
+            [
+            'IsInternal' => false,
+            'Note' => "",
+            'NoteEntryDate' => Carbon::parse($order->created),
+            'NoteUserName' => $order->buyer->username
+            ]
+        ];
+        $obj->order['Notes']=$obj->OrderNote;
+        
+        return $obj->order;
     }
 
     /**

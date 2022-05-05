@@ -73,9 +73,11 @@ Route::get('/test',function()
 {
     //return Carbon::now()->addDays(30);
     //return now();
-    $date = '2022-03-25T09:43:22-07:00';
-    $dateFormat = new DateTime($date);
-    return $dateFormat;
+    //$date = '2022-03-25T09:43:22-07:00';
+    //$dateFormat = new DateTime($date);
+
+    //return date('Y-m-d H:i:s',strtotime('2022-03-05T11:10:10-08:00'));
+    return now()->format('YmdHis');
 });
 
 
