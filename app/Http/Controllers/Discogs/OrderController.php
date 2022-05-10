@@ -124,15 +124,15 @@ class OrderController extends Controller
         $error = null;
         $dir = 'marketplace/orders/';
   
-        $id=$order['ReferenceNumber']; //Order ID
+        $id=$order->ReferenceNumber; //Order ID
         
         //TO DO: Update the status of the despatched order from New Order to Shipped
         //Update Listing's quantity by minus despatched quantity
-        foreach ($order['Items'] as $item) 
+        foreach ($order->Items as $item) 
         {
             $product = new Product();
-            $product->SKU = $item['SKU'];
-            $product->Reference = $item['OrderLineNumber'];
+            $product->SKU = $item->SKU;
+            $product->Reference = $item->OrderLineNumber;
 
             $res = self::getListingById($product->Reference,$app_user_id);
 
@@ -143,9 +143,10 @@ class OrderController extends Controller
             else
             {
                 $qty = $res['Listing']->quantity;
+                //dd($qty);
             }
 
-            $product->Quantity = $qty-$item['DespatchedQuantity'];
+            $product->Quantity = $qty-$item->DespatchedQuantity;
 
             $updateInventory = ProductController::updateInventory($product,$app_user_id);
         }
@@ -157,7 +158,7 @@ class OrderController extends Controller
 
 
         //Update the message
-        $msg = 'Your order is delivered on '.$order['ProcessedOn'].', Shipping Method: '.$order['ShippingMethod'].'Shipping Vendor: '.$order['ShippingVendor'].' Tracking Number: '.$order['TrackingNumber'].' '; //To be modified upon the requirement
+        $msg = 'Your order is delivered on '.$order->ProcessedOn.', Shipping Method: '.$order->ShippingMethod.', Shipping Vendor: '.$order->ShippingVendor.', Tracking Number: '.$order->TrackingNumber.' '; //To be modified upon the requirement
         
         //$q = ['order_id'=>$id,'status'=>'Payment Received','message'=>$msg,'tracking'=>$msg];
         $q = ['order_id'=>$id,'status'=>'Shipped','message'=>$msg,'tracking'=>$msg];

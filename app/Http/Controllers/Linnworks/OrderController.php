@@ -348,7 +348,8 @@ class OrderController extends Controller
     */
     public function despatch(Request $request)
     {
-        $request_orders=$request->input('Orders');
+        //$request_orders=$request->input('Orders');
+        $request_orders = json_decode($request->input('Orders'));
 
         if($request->Orders == null || count($request_orders) == 0)
         {
@@ -379,7 +380,7 @@ class OrderController extends Controller
             }
         }
         
-        return SendResponse::httpResponse(["Error"=>$error,"Orders"=>$UpdateFailedOrder]);
+        return SendResponse::httpResponse(["Error"=>$error,"Orders"=>$UpdateFailedOrders]);
     }
 
     
