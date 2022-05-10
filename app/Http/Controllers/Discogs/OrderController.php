@@ -15,6 +15,8 @@ use Illuminate\Support\Str;
 */
 //use App\Models\OauthToken as OauthToken;
 //use App\Models\Linnworks\OrderDespatch as OrderDespatch;
+use App\Models\Linnworks\ProductInventory as Product;
+use App\Http\Controllers\Discogs\ProductController as ProductController;
 use App\Http\Controllers\Discogs\SendRequest as SendRequest;
 
 class OrderController extends Controller
@@ -125,6 +127,28 @@ class OrderController extends Controller
         $id=$order['ReferenceNumber']; //Order ID
         
         //TO DO: Update the status of the despatched order from New Order to Shipped
+        //Update Listing's quantity by minus despatched quantity
+        foreach ($order['Items'] as $item) 
+        {
+            $product = new Product();
+            $product->SKU = $item['SKU'];
+            $product->Reference = $item['OrderLineNumber'];
+
+            $res = self::getListingById($product->Reference,$app_user_id);
+
+            if($res['Error'] != null)
+            {
+                $error = $res['Error'];
+            }
+            else
+            {
+                $qty = $res['Listing']->quantity;
+            }
+
+            $product->Quantity = $qty-$item['DespatchedQuantity'];
+
+            $updateInventory = ProductController::updateInventory($product,$app_user_id);
+        }
 
         /*
         $q = ['status'=>'Shipped'];
@@ -133,7 +157,7 @@ class OrderController extends Controller
 
 
         //Update the message
-        $msg = 'Your order is on its way, Shipping Vendor: '.$order['ShippingVendor'].' Tracking Number: '.$order['TrackingNumber'].' '; //To be modified upon the requirement
+        $msg = 'Your order is delivered on '.$order['ProcessedOn'].', Shipping Method: '.$order['ShippingMethod'].'Shipping Vendor: '.$order['ShippingVendor'].' Tracking Number: '.$order['TrackingNumber'].' '; //To be modified upon the requirement
         
         //$q = ['order_id'=>$id,'status'=>'Payment Received','message'=>$msg,'tracking'=>$msg];
         $q = ['order_id'=>$id,'status'=>'Shipped','message'=>$msg,'tracking'=>$msg];
