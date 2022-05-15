@@ -10,6 +10,10 @@ use App\Http\Controllers\Linnworks\AppUserAccess as AppUserAccess;
 use App\Http\Controllers\Linnworks\SendResponse as SendResponse;
 use App\Models\Linnworks\Order as Order;
 
+use App\Models\AppUser;
+use App\Models\NotifyFailedDespatchedOrder as NotifyFailedDespatchedOrder;
+use App\Models\NotifyFailedDespatchedItem as NotifyFailedDespatchedItem;
+
 use Carbon\Carbon;
 
 //use App\Models\OauthToken as OauthToken;
@@ -363,21 +367,54 @@ class OrderController extends Controller
         }
         
         $app_user = $result['User'];
+        //dd(($app_user));
         $UpdateFailedOrders = [];
         $error=null;
 
         //Update Despatched Orders in Discogs
         foreach ($request_orders as $order) 
         { 
-            $res=DiscogsOrderController::updateOrder($order,$app_user->id);
+            //$res=DiscogsOrderController::updateOrder($order,$app_user->id);
             
-            if($res['Error'] != null)
-            {
-                $error = $error.$res['Error']."\n";
+            //if($res['Error'] != null)
+            //{
+                //$error = $error.$res['Error']."\n";
 
                 //$UpdateFailedOrder = $UpdateFailedOrder.$res["ReferenceNumber"].", ";
-                array_push($UpdateFailedOrders,['Error'=>$res['Error'],'ReferenceNumber'=>$res['ReferenceNumber']]);
-            }
+                //array_push($UpdateFailedOrders,['Error'=>$res['Error'],'ReferenceNumber'=>$res['ReferenceNumber']]);
+            
+                //Save UpdateFailedOrders into Database for future notification
+                $failedOrder = NotifyFailedDespatchedOrder::firstWhere('ReferenceNumber',$order->ReferenceNumber);
+
+                
+                if($failedOrder == null)
+                {
+                    $failedOrder=$app_user->NotifyFailedDespatchedOrder()->create([
+                        //'AppUserId'=>$app_user->id,
+                        'ReferenceNumber'=>$order->ReferenceNumber,
+                        'ShippingVendor'=>$order->ShippingVendor,
+                        'ShippingMethod'=>$order->ShippingMethod,
+                        'TrackingNumber'=>$order->TrackingNumber,
+                        //'SecondaryTrackingNumbers'=>$order->SecondaryTrackingNumbers,
+                        'ProcessedOn'=>$order->ProcessedOn
+                    ]);
+                
+
+                    foreach ($order->Items as $item) 
+                    { 
+                        
+                        $failedItem=NotifyFailedDespatchedItem::create([
+                            'ReferenceNumber'=>$failedOrder->ReferenceNumber,
+                            'SKU'=>$item->SKU,
+                            'OrderLineNumber'=>$item->OrderLineNumber,
+                            'DespatchedQuantity'=>$item->DespatchedQuantity
+                        ]);
+                        
+                    }
+
+                    //dd($failedItem);
+                }
+            //}
         }
         
         return SendResponse::httpResponse(["Error"=>$error,"Orders"=>$UpdateFailedOrders]);

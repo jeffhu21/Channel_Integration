@@ -32,4 +32,9 @@ class AppUser extends Model
         return $this->hasOne(OauthToken::class);
     }
     
+    public function NotifyFailedDespatchedOrder()
+    {
+        return $this->hasMany(NotifyFailedDespatchedOrder::class);
+    }
+    
 }

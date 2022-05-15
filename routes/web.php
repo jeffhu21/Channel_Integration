@@ -77,7 +77,9 @@ Route::get('/test',function()
     //$dateFormat = new DateTime($date);
 
     //return date('Y-m-d H:i:s',strtotime('2022-03-05T11:10:10-08:00'));
-    return now()->format('YmdHis');
+    //return now()->format('YmdHis');
+
+    OrderController::autoNotify();
 });
 
 

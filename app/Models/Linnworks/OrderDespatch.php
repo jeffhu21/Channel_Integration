@@ -6,23 +6,29 @@ namespace App\Models\Linnworks;
 class OrderDespatch 
 {
     //Despatched Order from Linnworks
-    public $order=[
+    //public $order=[
 
-        'ReferenceNumber'=>'',
-        'ShippingVendor'=>'',
-        'ShippingMethod'=>'',
-        'TrackingNumber'=>'',
-        'SecondaryTrackingNumbers'=>'',
-        'ProcessedOn'=>'',
-        'Items'=>[], //Despatch Item
+        public string $ReferenceNumber;
+        public string $ShippingVendor;
+        public string $ShippingMethod;
+        public string $TrackingNumber;
+        public string $SecondaryTrackingNumbers;
+        public string $ProcessedOn;
+        public $Items = [
+            
+        ]; //Despatch Item
 
-    ];
+    //];
 
+    
+
+    /*
     public $item=[
         'SKU'=>'',//
         'OrderLineNumber'=>'',
         'DespatchedQuantity'=>0,
     ];
+    */
 
 
 }

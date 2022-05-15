@@ -5,6 +5,8 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
+use App\Http\Controllers\Discogs\OrderController as OrderController;
+
 class Kernel extends ConsoleKernel
 {
     /**
@@ -19,6 +21,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('telescope:prune')->daily();
 
         $schedule->command('auth:clear-resets')->everyFiveMinutes();
+
+        //Call AutoNotify
+        $schedule->call(function(){
+            OrderController::autoNotify();
+        })->everyFiveMinutes();
     }
 
     /**
