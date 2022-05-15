@@ -29,6 +29,9 @@ use App\Models\Linnworks\ItemDespatch as ItemDespatch;
 class OrderController extends Controller
 {
 
+    /**
+         * Scan failed notified orders to Discogs and resend
+    */
     public static function autoNotify()
     {
        // $despatchedOrders = [];
@@ -39,32 +42,27 @@ class OrderController extends Controller
 
         foreach ($orders as $order) 
         {
-            $obj = new OrderDespatch();
+            $despatchedOrder = new OrderDespatch();
 
-            $obj->ReferenceNumber=$order->ReferenceNumber;
-            $obj->ShippingVendor=$order->ShippingVendor;
-            $obj->ShippingMethod=$order->ShippingMethod;
-            $obj->TrackingNumber=$order->TrackingNumber;
-            //$obj->SecondaryTrackingNumbers=$order->SecondaryTrackingNumbers;
-            $obj->ProcessedOn=$order->ProcessedOn;
+            $despatchedOrder->ReferenceNumber=$order->ReferenceNumber;
+            $despatchedOrder->ShippingVendor=$order->ShippingVendor;
+            $despatchedOrder->ShippingMethod=$order->ShippingMethod;
+            $despatchedOrder->TrackingNumber=$order->TrackingNumber;
+            //$despatchedOrder->SecondaryTrackingNumbers=$order->SecondaryTrackingNumbers;
+            $despatchedOrder->ProcessedOn=$order->ProcessedOn;
             $items = NotifyFailedDespatchedItem::where('ReferenceNumber','=',$order->ReferenceNumber)->get();
             
-            //$j=0;
             foreach ($items as $item) 
             {
                 $oItem = new ItemDespatch();
                 $oItem->SKU=$item->SKU;
                 $oItem->OrderLineNumber=$item->OrderLineNumber;
                 $oItem->DespatchedQuantity=$item->DespatchedQuantity;
-                //$obj->order['Items'][$j]=$obj->item; //Add each order 
-                //$j++;
-                echo($oItem->SKU);
-                array_push($obj->Items,$oItem);
+                
+                array_push($despatchedOrder->Items,$oItem);
             }
-            //array_push($despatchedOrders,$obj->order);
-            //$OrderDespatch->Items=[], //Despatch Item
             
-            self::updateOrder($obj,$order->app_user_id);
+            self::updateOrder($despatchedOrder,$order->app_user_id);
         }
 
         //$despatchedOrders = NotifyFailedDespatchedOrder::all();
@@ -173,18 +171,13 @@ class OrderController extends Controller
         $dir = 'marketplace/orders/';
   
         $id=$order->ReferenceNumber; //Order ID
-        
-        //echo($order->Items);
 
-        //TO DO: Update the status of the despatched order from New Order to Shipped
         //Update Listing's quantity by minus despatched quantity
         foreach ($order->Items as $item) 
         {
             $product = new Product();
             $product->SKU = $item->SKU;
             $product->Reference = $item->OrderLineNumber;
-
-            //echo($item->SKU."\n");
 
             $res = self::getListingById($product->Reference,$app_user_id);
 
@@ -200,10 +193,8 @@ class OrderController extends Controller
 
             $product->Quantity = $qty-$item->DespatchedQuantity;
 
-            //$updateInventory = ProductController::updateInventory($product,$app_user_id);
+            $updateInventory = ProductController::updateInventory($product,$app_user_id);
         }
-
-        //dd('Meat');
 
         /*
         $q = ['status'=>'Shipped'];

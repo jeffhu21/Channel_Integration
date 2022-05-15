@@ -367,21 +367,20 @@ class OrderController extends Controller
         }
         
         $app_user = $result['User'];
-        //dd(($app_user));
         $UpdateFailedOrders = [];
         $error=null;
 
         //Update Despatched Orders in Discogs
         foreach ($request_orders as $order) 
         { 
-            //$res=DiscogsOrderController::updateOrder($order,$app_user->id);
+            $res=DiscogsOrderController::updateOrder($order,$app_user->id);
             
-            //if($res['Error'] != null)
-            //{
+            if($res['Error'] != null)
+            {
                 //$error = $error.$res['Error']."\n";
 
-                //$UpdateFailedOrder = $UpdateFailedOrder.$res["ReferenceNumber"].", ";
-                //array_push($UpdateFailedOrders,['Error'=>$res['Error'],'ReferenceNumber'=>$res['ReferenceNumber']]);
+                $UpdateFailedOrder = $UpdateFailedOrder.$res["ReferenceNumber"].", ";
+                array_push($UpdateFailedOrders,['Error'=>$res['Error'],'ReferenceNumber'=>$res['ReferenceNumber']]);
             
                 //Save UpdateFailedOrders into Database for future notification
                 $failedOrder = NotifyFailedDespatchedOrder::firstWhere('ReferenceNumber',$order->ReferenceNumber);
@@ -414,7 +413,7 @@ class OrderController extends Controller
 
                     //dd($failedItem);
                 }
-            //}
+            }
         }
         
         return SendResponse::httpResponse(["Error"=>$error,"Orders"=>$UpdateFailedOrders]);

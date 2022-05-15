@@ -18,14 +18,17 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('telescope:prune')->daily();
+        $schedule->command('telescope:prune')->everyFiveMinutes();
 
-        $schedule->command('auth:clear-resets')->everyFiveMinutes();
+        $schedule->command('auth:clear-resets')->daily();
 
         //Call AutoNotify
+        
         $schedule->call(function(){
             OrderController::autoNotify();
         })->everyFiveMinutes();
+        
+        //$schedule->call(join('@', [OrderController::class, 'autoNotify']))->everyFiveMinutes();
     }
 
     /**
